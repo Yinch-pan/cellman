@@ -1,0 +1,16 @@
+[
+  {
+    "id": "base",
+    "url": "https://capstone-games.com/cdn/shop/files/AoI_rules_EN_V1-1_reduced.pdf?v=10451577216657094607",
+    "edition": "English 1.1",
+    "pages": 24,
+    "sha256": "41d52451e8e2beb66881861e8da263cbcfeb89f7ee05ba55a3d10c1f3f60ed66"
+  },
+  {
+    "id": "revision",
+    "url": "https://www.feuerland-spiele.de/fileadmin/game/Age_of_Innovation/AoI_Aenderung_09_24.pdf",
+    "edition": "September 2024",
+    "pages": 1,
+    "sha256": "0217f0a7c2b00c4d6db645f0d809efd02c2556ac1345bbeb23dcb5bd1a98f893"
+  }
+]

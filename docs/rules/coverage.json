@@ -1,0 +1,2670 @@
+[
+  {
+    "id": "component-supply",
+    "category": "setup",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 4
+      }
+    ],
+    "caseIds": [
+      "component-supply-normal",
+      "component-supply-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "choice-pairs",
+    "category": "setup",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 4
+      }
+    ],
+    "caseIds": [
+      "choice-pairs-normal",
+      "choice-pairs-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "initial-placement",
+    "category": "setup",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 4
+      }
+    ],
+    "caseIds": [
+      "initial-placement-normal",
+      "initial-placement-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "starting-income",
+    "category": "setup",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 4
+      }
+    ],
+    "caseIds": [
+      "starting-income-normal",
+      "starting-income-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "terrain-cycle",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "terrain-cycle-normal",
+      "terrain-cycle-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "adjacency",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "adjacency-normal",
+      "adjacency-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "river-reach",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "river-reach-normal",
+      "river-reach-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "bridges",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "bridges-normal",
+      "bridges-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "large-board",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "large-board-normal",
+      "large-board-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "small-board",
+    "category": "map",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 9
+      }
+    ],
+    "caseIds": [
+      "small-board-normal",
+      "small-board-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "terraform-build",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "terraform-build-normal",
+      "terraform-build-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "partial-terraform",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "partial-terraform-normal",
+      "partial-terraform-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "upgrade-guild",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "upgrade-guild-normal",
+      "upgrade-guild-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "upgrade-school",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "upgrade-school-normal",
+      "upgrade-school-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "upgrade-palace",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "upgrade-palace-normal",
+      "upgrade-palace-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "upgrade-university",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "upgrade-university-normal",
+      "upgrade-university-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "innovation-payment",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "innovation-payment-normal",
+      "innovation-payment-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "sailing",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "sailing-normal",
+      "sailing-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "terraform-track",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "terraform-track-normal",
+      "terraform-track-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "conversions",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "conversions-normal",
+      "conversions-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "send-scholar",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "send-scholar-normal",
+      "send-scholar-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "public-actions",
+    "category": "actions",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 10
+      }
+    ],
+    "caseIds": [
+      "public-actions-normal",
+      "public-actions-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "gain-power",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "gain-power-normal",
+      "gain-power-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "spend-power",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "spend-power-normal",
+      "spend-power-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "burn-power",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "burn-power-normal",
+      "burn-power-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "leech-capacity",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "leech-capacity-normal",
+      "leech-capacity-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "leech-cost",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "leech-cost-normal",
+      "leech-cost-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "leech-all-or-none",
+    "category": "power",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 8
+      }
+    ],
+    "caseIds": [
+      "leech-all-or-none-normal",
+      "leech-all-or-none-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "scholar-slots",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "scholar-slots-normal",
+      "scholar-slots-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "return-scholar",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "return-scholar-normal",
+      "return-scholar-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "threshold-power",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "threshold-power-normal",
+      "threshold-power-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "city-key",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "city-key-normal",
+      "city-key-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "top-exclusive",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "top-exclusive-normal",
+      "top-exclusive-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "science-income",
+    "category": "science",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 15
+      }
+    ],
+    "caseIds": [
+      "science-income-normal",
+      "science-income-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "found-city",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "found-city-normal",
+      "found-city-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "university-city",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "university-city-normal",
+      "university-city-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "claimed-buildings",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "claimed-buildings-normal",
+      "claimed-buildings-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "merge-cities",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "merge-cities-normal",
+      "merge-cities-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "annex-city",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "annex-city-normal",
+      "annex-city-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "monument-city",
+    "category": "cities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 16
+      }
+    ],
+    "caseIds": [
+      "monument-city-normal",
+      "monument-city-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "income",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "income-normal",
+      "income-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "pass",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "pass-normal",
+      "pass-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "pass-order",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "pass-order-normal",
+      "pass-order-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "science-bonus",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "science-bonus-normal",
+      "science-bonus-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "reset-actions",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "reset-actions-normal",
+      "reset-actions-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-coins",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "bonus-coins-normal",
+      "bonus-coins-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "round-six",
+    "category": "rounds",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 17
+      }
+    ],
+    "caseIds": [
+      "round-six-normal",
+      "round-six-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "network",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "network-normal",
+      "network-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "science-rank",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "science-rank-normal",
+      "science-rank-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "ties",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "ties-normal",
+      "ties-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "coins",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "coins-normal",
+      "coins-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "zero-science",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "zero-science-normal",
+      "zero-science-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "equal-winners",
+    "category": "scoring",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 18
+      }
+    ],
+    "caseIds": [
+      "equal-winners-normal",
+      "equal-winners-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "two-player-dummy-science",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "two-player-dummy-science-normal",
+      "two-player-dummy-science-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "two-player-area",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "two-player-area-normal",
+      "two-player-area-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "two-player-market",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "two-player-market-normal",
+      "two-player-market-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "three-player-market",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "three-player-market-normal",
+      "three-player-market-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "four-player-market",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "four-player-market-normal",
+      "four-player-market-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "five-player-supply",
+    "category": "playerCounts",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 7
+      }
+    ],
+    "caseIds": [
+      "five-player-supply-normal",
+      "five-player-supply-boundary"
+    ],
+    "milestone": "m1",
+    "status": "specified"
+  },
+  {
+    "id": "desert",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "desert-normal",
+      "desert-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "forest",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "forest-normal",
+      "forest-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "lake",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "lake-normal",
+      "lake-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "mountain",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "mountain-normal",
+      "mountain-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "plains",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "plains-normal",
+      "plains-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "swamp",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "swamp-normal",
+      "swamp-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "wasteland",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 19
+      }
+    ],
+    "caseIds": [
+      "wasteland-normal",
+      "wasteland-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "blessed",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "blessed-normal",
+      "blessed-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "felines",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "felines-normal",
+      "felines-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "goblins",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "goblins-normal",
+      "goblins-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "illusionists",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      },
+      {
+        "sourceId": "revision",
+        "page": 1
+      }
+    ],
+    "caseIds": [
+      "illusionists-normal",
+      "illusionists-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "inventors",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "inventors-normal",
+      "inventors-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "lizards",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "lizards-normal",
+      "lizards-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "moles",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      },
+      {
+        "sourceId": "revision",
+        "page": 1
+      }
+    ],
+    "caseIds": [
+      "moles-normal",
+      "moles-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "monks",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "monks-normal",
+      "monks-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "navigators",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      },
+      {
+        "sourceId": "revision",
+        "page": 1
+      }
+    ],
+    "caseIds": [
+      "navigators-normal",
+      "navigators-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "omar",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "omar-normal",
+      "omar-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "philosophers",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "philosophers-normal",
+      "philosophers-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "psychics",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 20
+      }
+    ],
+    "caseIds": [
+      "psychics-normal",
+      "psychics-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "deus-ex-machina",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "deus-ex-machina-normal",
+      "deus-ex-machina-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "trading-routes",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "trading-routes-normal",
+      "trading-routes-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "professors",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "professors-normal",
+      "professors-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "architecture",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "architecture-normal",
+      "architecture-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "census",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "census-normal",
+      "census-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "colleges",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "colleges-normal",
+      "colleges-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "communications",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "communications-normal",
+      "communications-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "league-of-cities",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "league-of-cities-normal",
+      "league-of-cities-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "libraries",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "libraries-normal",
+      "libraries-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "sewerage",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "sewerage-normal",
+      "sewerage-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "steam-power",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "steam-power-normal",
+      "steam-power-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "steel",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "steel-normal",
+      "steel-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "neutral-workshop",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "neutral-workshop-normal",
+      "neutral-workshop-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "neutral-guild",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "neutral-guild-normal",
+      "neutral-guild-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "neutral-school",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "neutral-school-normal",
+      "neutral-school-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "neutral-university",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "neutral-university-normal",
+      "neutral-university-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "neutral-palace",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "neutral-palace-normal",
+      "neutral-palace-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "monument",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 21
+      }
+    ],
+    "caseIds": [
+      "monument-normal",
+      "monument-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-1-normal",
+      "palace-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-2-normal",
+      "palace-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-3-normal",
+      "palace-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-4-normal",
+      "palace-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-5-normal",
+      "palace-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-6-normal",
+      "palace-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-7",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-7-normal",
+      "palace-7-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-8",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-8-normal",
+      "palace-8-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-9",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-9-normal",
+      "palace-9-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-10",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-10-normal",
+      "palace-10-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-11",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-11-normal",
+      "palace-11-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-12",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-12-normal",
+      "palace-12-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-13",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-13-normal",
+      "palace-13-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-14",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-14-normal",
+      "palace-14-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-15",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-15-normal",
+      "palace-15-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-16",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-16-normal",
+      "palace-16-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "palace-17",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 22
+      }
+    ],
+    "caseIds": [
+      "palace-17-normal",
+      "palace-17-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-1-normal",
+      "bonus-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-2-normal",
+      "bonus-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-3-normal",
+      "bonus-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-4-normal",
+      "bonus-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-5-normal",
+      "bonus-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-6-normal",
+      "bonus-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-7",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-7-normal",
+      "bonus-7-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-8",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-8-normal",
+      "bonus-8-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-9",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-9-normal",
+      "bonus-9-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "bonus-10",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "bonus-10-normal",
+      "bonus-10-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-1-normal",
+      "city-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-2-normal",
+      "city-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-3-normal",
+      "city-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-4-normal",
+      "city-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-5-normal",
+      "city-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-6-normal",
+      "city-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "city-7",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "city-7-normal",
+      "city-7-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-1-normal",
+      "power-action-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-2-normal",
+      "power-action-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-3-normal",
+      "power-action-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-4-normal",
+      "power-action-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-5-normal",
+      "power-action-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "power-action-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "power-action-6-normal",
+      "power-action-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-1-normal",
+      "book-action-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-2-normal",
+      "book-action-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-3-normal",
+      "book-action-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-4-normal",
+      "book-action-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-5-normal",
+      "book-action-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "book-action-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 23
+      }
+    ],
+    "caseIds": [
+      "book-action-6-normal",
+      "book-action-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-1-normal",
+      "competency-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-2-normal",
+      "competency-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-3-normal",
+      "competency-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-4-normal",
+      "competency-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-5-normal",
+      "competency-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-6-normal",
+      "competency-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-7",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-7-normal",
+      "competency-7-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-8",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-8-normal",
+      "competency-8-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-9",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-9-normal",
+      "competency-9-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-10",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-10-normal",
+      "competency-10-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-11",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-11-normal",
+      "competency-11-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "competency-12",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "competency-12-normal",
+      "competency-12-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-1",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-1-normal",
+      "round-score-1-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-2",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-2-normal",
+      "round-score-2-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-3",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-3-normal",
+      "round-score-3-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-4",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-4-normal",
+      "round-score-4-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-5",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-5-normal",
+      "round-score-5-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-6",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-6-normal",
+      "round-score-6-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-7",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-7-normal",
+      "round-score-7-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-8",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-8-normal",
+      "round-score-8-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-9",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-9-normal",
+      "round-score-9-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-10",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-10-normal",
+      "round-score-10-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-11",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-11-normal",
+      "round-score-11-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  },
+  {
+    "id": "round-score-12",
+    "category": "abilities",
+    "sourceRefs": [
+      {
+        "sourceId": "base",
+        "page": 24
+      }
+    ],
+    "caseIds": [
+      "round-score-12-normal",
+      "round-score-12-boundary"
+    ],
+    "milestone": "m3",
+    "status": "specified"
+  }
+]

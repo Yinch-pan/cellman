@@ -1,0 +1,26 @@
+{
+  "status": "planned-not-verified",
+  "rulesVersion": "aoi-1.1+2024-09",
+  "sourceEdition": "English 1.1 plus official September 2024 faction balance changes",
+  "map": "official-large",
+  "players": [
+    3,
+    4,
+    5
+  ],
+  "factions": [
+    "blessed",
+    "goblins",
+    "navigators",
+    "omar",
+    "philosophers"
+  ],
+  "homelands": [
+    "forest",
+    "lake",
+    "mountain",
+    "plains",
+    "swamp"
+  ],
+  "note": "Two-player official small board still needs a legible source. Do not enable unsupported content in room setup. M1 catalogue is provisional until all required choices have implemented effects."
+}

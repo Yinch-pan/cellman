@@ -1,26 +1,80 @@
 {
-  "status": "planned-not-verified",
+  "status": "implemented-development-preset-not-full-milestone",
   "rulesVersion": "aoi-1.1+2024-09",
-  "sourceEdition": "English 1.1 plus official September 2024 faction balance changes",
+  "sourceEdition": "English 1.1 plus official September 2024 balance revision",
   "map": "official-large",
   "players": [
-    3,
-    4,
-    5
+    3
   ],
-  "factions": [
-    "blessed",
-    "goblins",
-    "navigators",
-    "omar",
-    "philosophers"
+  "fixedSeats": [
+    {
+      "native": "forest",
+      "faction": "blessed",
+      "bonus": "coins"
+    },
+    {
+      "native": "lake",
+      "faction": "navigators",
+      "bonus": "power"
+    },
+    {
+      "native": "mountain",
+      "faction": "goblins",
+      "bonus": "guild"
+    }
   ],
-  "homelands": [
-    "forest",
-    "lake",
-    "mountain",
-    "plains",
-    "swamp"
+  "palaces": [
+    "workshop-score",
+    "city-discount",
+    "school-pass",
+    "power-books",
+    "immediate-score"
   ],
-  "note": "Two-player official small board still needs a legible source. Do not enable unsupported content in room setup. M1 catalogue is provisional until all required choices have implemented effects."
+  "innovations": [
+    "colleges",
+    "sewerage",
+    "league-of-cities",
+    "libraries",
+    "census",
+    "communications",
+    "steel",
+    "architecture"
+  ],
+  "bonusPool": [
+    "coins",
+    "power",
+    "guild",
+    "scholar",
+    "school",
+    "bigbuilding"
+  ],
+  "bookActions": [
+    "power",
+    "science",
+    "coins"
+  ],
+  "roundTiles": [
+    "workshop-law",
+    "guild-law",
+    "school-bank",
+    "big-medicine",
+    "advance-engineering",
+    "innovation-law"
+  ],
+  "finalRoundTile": "workshop",
+  "competencies": "All 12 types in a fixed market; see packages/rules/src/catalog.ts",
+  "validation": [
+    "Six-round independent baseline fixture",
+    "Rule boundary tests",
+    "Three-account room and saved-command browser flow",
+    "Dropped response and gateway retry browser tests"
+  ],
+  "outstanding": [
+    "Full randomized faction/homeland setup and draft",
+    "Complete faction, palace and innovation catalogue",
+    "Legible unmodified small-map source and 2-player differences",
+    "Source-linked case IDs and full M1/M3 coverage gates",
+    "Experienced human playthrough",
+    "Public hosting and measured capacity"
+  ]
 }

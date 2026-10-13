@@ -1,17 +1,555 @@
-import React,{useEffect,useState} from 'react';
-import {api,setCsrf,label} from './api';
-import {GamePage} from './game';
-const route=()=>location.hash.slice(1)||'/';
-export function go(path:string){location.hash=path;}
-export function App(){const [path,setPath]=useState(route),[user,setUser]=useState<any>(null),[loading,setLoading]=useState(true),[error,setError]=useState('');useEffect(()=>{const onHash=()=>setPath(route());addEventListener('hashchange',onHash);api('/auth/me').then(d=>{setUser(d.user);setCsrf(d.csrf??'');}).catch(e=>setError(e.message)).finally(()=>setLoading(false));return()=>removeEventListener('hashchange',onHash);},[]);
- const logout=async()=>{await api('/auth/logout',{});setUser(null);setCsrf('');go('/');};
- return <><header className="site-header"><a href="#/" className="brand"><span className="brand-mark">⬡</span>弈间<span className="brand-caption">把好游戏，留给好朋友</span></a><nav><a href="#/">游戏大厅</a><a href="#/games">我的对局</a><span className="preview-badge">开发预览</span>{user?<button className="text-button" onClick={logout}>{user.name} · 退出</button>:<span className="muted">免费开房 · 异步回合</span>}</nav></header>{error&&<div className="notice error">{error}</div>}{loading?<div className="empty">正在连接弈间…</div>:path==='/demo'?<GamePage demo/>:!user?<Auth onLogin={d=>{setUser(d.user);setCsrf(d.csrf);}}/>:path.startsWith('/game/')?<GamePage id={path.split('/')[2]}/>:path.startsWith('/room/')?<Room id={path.split('/')[2].split('?')[0]} invite={new URLSearchParams(path.split('?')[1]).get('invite')??undefined} user={user}/>:<Lobby user={user} onlyGames={path==='/games'}/>}<footer>弈间开发预览 · 当前仅开放三人固定配置用于功能测试，规则与内容尚未完整。</footer></>;
+import React, { useEffect, useState } from "react";
+import { api, setCsrf, label } from "./api";
+import { GamePage } from "./game";
+const route = () => location.hash.slice(1) || "/";
+export function go(path: string) {
+  location.hash = path;
 }
-function Auth({onLogin}:{onLogin:(data:any)=>void}){const [mode,setMode]=useState<'login'|'register'|'recover'>('login'),[username,setUsername]=useState(''),[password,setPassword]=useState(''),[recovery,setRecovery]=useState(''),[saved,setSaved]=useState(''),[pendingLogin,setPendingLogin]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
- async function submit(e:React.FormEvent){e.preventDefault();setBusy(true);setError('');try{if(mode==='recover'){const r=await api('/auth/recover',{username,password,recoveryCode:recovery});setSaved(r.recoveryCode);setMode('login');return;}let code='';if(mode==='register')code=(await api('/auth/register',{username,password})).recoveryCode;const data=await api('/auth/login',{username,password});setCsrf(data.csrf);if(code){setSaved(code);setPendingLogin(data);}else onLogin(data);}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- return <main className="welcome"><section className="welcome-copy"><div className="eyebrow">为慢慢思考的人，留一张桌子</div><h1>下一回合，<br/>随时回来。</h1><p>与朋友一起开拓版图、研究科技、建造城市。<br/>不必约齐整晚，轮到你时再做出下一步。</p><div className="hero-board" aria-hidden="true">{Array.from({length:18},(_,i)=><div key={i} className={'mini-hex h'+i%5}>{[2,5,8,12,14].includes(i)?'⌂':''}</div>)}</div><div className="hero-caption"><span>01 / 大创造时代</span><span>AGE OF INNOVATION</span></div><div className="hero-tags"><span>回合制联机</span><span>自动保存进度</span><span>提交前预览</span></div></section><section className="auth-card"><div className="eyebrow">欢迎来到弈间</div><h2>{mode==='register'?'从一张新桌开始':mode==='recover'?'恢复你的账号':'老朋友，请落座'}</h2><p className="muted">先登录，就能创建房间或接着上次的对局。</p><form onSubmit={submit}><label>用户名<input autoComplete="username" value={username} onChange={e=>setUsername(e.target.value)} required placeholder="3–24 位字母、数字或下划线"/></label><label>密码<input type="password" autoComplete={mode==='login'?'current-password':'new-password'} value={password} onChange={e=>setPassword(e.target.value)} required minLength={mode==='login'?1:12} placeholder={mode==='recover'?'输入新密码，至少 12 位':'至少 12 位字符'}/></label>{mode==='recover'&&<label>恢复码<input value={recovery} onChange={e=>setRecovery(e.target.value)} required/></label>}{error&&<p className="error" role="alert">{error}</p>}<button className="primary full" disabled={busy}>{busy?'正在连接…':mode==='login'?'登录弈间':mode==='register'?'注册并登录':'重置密码'}</button></form><div className="auth-links"><button className="text-button" onClick={()=>setMode(mode==='login'?'register':'login')}>{mode==='login'?'创建账号':'返回登录'}</button><button className="text-button" onClick={()=>setMode('recover')}>忘记密码</button></div><div className="divider"/><button className="secondary full" onClick={()=>go('/demo')}>先看看游戏桌面</button><p className="small muted">本地演示可切换座位，不会创建联机对局。</p></section>{saved&&<div className="modal-backdrop"><section className="modal"><h2>请保存恢复码</h2><p>恢复码只显示这一次。忘记密码时，可以用它恢复账号。</p><code className="recovery-code">{saved}</code><button className="primary" onClick={()=>{setSaved('');if(pendingLogin)onLogin(pendingLogin);}}>我已保存</button></section></div>}</main>;
+export function App() {
+  const [path, setPath] = useState(route),
+    [user, setUser] = useState<any>(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState("");
+  useEffect(() => {
+    const onHash = () => setPath(route());
+    addEventListener("hashchange", onHash);
+    api("/auth/me")
+      .then((d) => {
+        setUser(d.user);
+        setCsrf(d.csrf ?? "");
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+    return () => removeEventListener("hashchange", onHash);
+  }, []);
+  const logout = async () => {
+    await api("/auth/logout", {});
+    setUser(null);
+    setCsrf("");
+    go("/");
+  };
+  return (
+    <>
+      <header className="site-header">
+        <a href="#/" className="brand">
+          <span className="brand-mark">⬡</span>弈间
+          <span className="brand-caption">把好游戏，留给好朋友</span>
+        </a>
+        <nav>
+          <a href="#/">游戏大厅</a>
+          <a href="#/games">我的对局</a>
+          <span className="preview-badge">开发预览</span>
+          {user ? (
+            <button className="text-button" onClick={logout}>
+              {user.name} · 退出
+            </button>
+          ) : (
+            <span className="muted">免费开房 · 异步回合</span>
+          )}
+        </nav>
+      </header>
+      {error && <div className="notice error">{error}</div>}
+      {loading ? (
+        <div className="empty">正在连接弈间…</div>
+      ) : path === "/demo" ? (
+        <GamePage demo />
+      ) : !user ? (
+        <Auth
+          onLogin={(d) => {
+            setUser(d.user);
+            setCsrf(d.csrf);
+          }}
+        />
+      ) : path.startsWith("/game/") ? (
+        <GamePage id={path.split("/")[2]} />
+      ) : path.startsWith("/room/") ? (
+        <Room
+          id={path.split("/")[2].split("?")[0]}
+          invite={
+            new URLSearchParams(path.split("?")[1]).get("invite") ?? undefined
+          }
+          user={user}
+        />
+      ) : (
+        <Lobby user={user} onlyGames={path === "/games"} />
+      )}
+      <footer>
+        弈间开发预览 · 当前仅开放三人固定配置用于功能测试，规则与内容尚未完整。
+      </footer>
+    </>
+  );
 }
-function Lobby({user,onlyGames}:{user:any;onlyGames:boolean}){const [rooms,setRooms]=useState<any[]>([]),[games,setGames]=useState<any[]>([]),[visibility,setVisibility]=useState('public'),[error,setError]=useState('');const refresh=async()=>{try{const [r,g]=await Promise.all([api('/rooms'),api('/me/games')]);setRooms(r);setGames(g);}catch(e){setError((e as Error).message);}};useEffect(()=>{refresh();const t=setInterval(()=>{if(!document.hidden)refresh();},15000);return()=>clearInterval(t);},[]);const create=async()=>{try{const room=await api('/rooms',{visibility,seats:3});go('/room/'+room.id+(visibility==='private'?'?invite='+room.inviteToken:''));}catch(e){setError((e as Error).message);}};
- return <main className="lobby"><div className="page-heading"><div><div className="eyebrow">很高兴又见到你，{user.name}</div><h1>{onlyGames?'接着上次的思考':'今天，玩点什么？'}</h1></div><span className="status-pill"><i/>{games.filter(g=>g.needAction).length} 局等你行动</span></div>{error&&<p className="error">{error}</p>}{!onlyGames&&<section className="game-feature"><div><span className="tag">建设 · 策略 · 经济</span><h2>大创造时代</h2><div className="english-title">AGE OF INNOVATION</div><p>让你的文明，从第一座工坊开始。<br/>探索地形，精研学科，书写独一无二的创造时代。</p><div className="feature-meta"><span>三人固定配置预览</span><span>异步回合</span><span>进度自动保存</span></div><div className="inline"><select aria-label="房间可见性" value={visibility} onChange={e=>setVisibility(e.target.value)}><option value="public">公开房间</option><option value="private">仅凭邀请加入</option></select><button className="primary" onClick={create}>创建房间</button><button className="text-button" onClick={()=>go('/demo')}>试试桌面 →</button></div></div><div className="city-art" aria-hidden="true"><div className="art-sun"/><div className="tower t1"/><div className="tower t2"/><div className="tower t3"/><div className="art-caption">一座城市，<br/>无数种可能。</div></div></section>}<section><div className="section-heading"><h2>我的对局</h2><span>{games.length} 局</span></div>{games.length?<div className="card-grid">{games.map(g=><button className="game-card" key={g.id} onClick={()=>go('/game/'+g.id)}><span className={'tag '+(g.needAction?'attention':'')}>{g.status==='finished'?'已结束':g.needAction?'轮到你了':'等待伙伴'}</span><h3>大创造时代</h3><p>{g.names.join(' · ')}</p><span>第 {g.round} / 6 轮 →</span></button>)}</div>:<div className="empty-panel">还没有对局。创建一张桌子，邀请朋友一起开始。</div>}</section>{!onlyGames&&<section><div className="section-heading"><h2>可以加入的房间</h2><button className="text-button" onClick={refresh}>刷新</button></div>{rooms.length?<div className="room-list">{rooms.map(r=><button key={r.id} onClick={()=>go('/room/'+r.id)}><span className="room-icon">⬡</span><strong>{r.host} 的游戏桌</strong><span>大创造时代</span><span>{r.count} / {r.capacity} 人</span><span className="tag">{r.visibility==='private'?'邀请房间':'公开招募'}</span><span>查看 →</span></button>)}</div>:<div className="empty-panel">还没有等待中的房间，来开第一桌吧。</div>}</section>}<aside className="roadmap"><strong>下一张游戏桌</strong><span>神秘大地与扩展</span><span className="muted">计划中 · 优先完成大创造时代</span></aside></main>;
+function Auth({ onLogin }: { onLogin: (data: any) => void }) {
+  const [mode, setMode] = useState<"login" | "register" | "recover">("login"),
+    [username, setUsername] = useState(""),
+    [password, setPassword] = useState(""),
+    [recovery, setRecovery] = useState(""),
+    [saved, setSaved] = useState(""),
+    [pendingLogin, setPendingLogin] = useState<any>(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      if (mode === "recover") {
+        const r = await api("/auth/recover", {
+          username,
+          password,
+          recoveryCode: recovery,
+        });
+        setSaved(r.recoveryCode);
+        setMode("login");
+        return;
+      }
+      let code = "";
+      if (mode === "register")
+        code = (await api("/auth/register", { username, password }))
+          .recoveryCode;
+      const data = await api("/auth/login", { username, password });
+      setCsrf(data.csrf);
+      if (code) {
+        setSaved(code);
+        setPendingLogin(data);
+      } else onLogin(data);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <main className="welcome">
+      <section className="welcome-copy">
+        <div className="eyebrow">为慢慢思考的人，留一张桌子</div>
+        <h1>
+          下一回合，
+          <br />
+          随时回来。
+        </h1>
+        <p>
+          与朋友一起开拓版图、研究科技、建造城市。
+          <br />
+          不必约齐整晚，轮到你时再做出下一步。
+        </p>
+        <div className="hero-board" aria-hidden="true">
+          {Array.from({ length: 18 }, (_, i) => (
+            <div key={i} className={"mini-hex h" + (i % 5)}>
+              {[2, 5, 8, 12, 14].includes(i) ? "⌂" : ""}
+            </div>
+          ))}
+        </div>
+        <div className="hero-caption">
+          <span>01 / 大创造时代</span>
+          <span>AGE OF INNOVATION</span>
+        </div>
+        <div className="hero-tags">
+          <span>回合制联机</span>
+          <span>自动保存进度</span>
+          <span>提交前预览</span>
+        </div>
+      </section>
+      <section className="auth-card">
+        <div className="eyebrow">欢迎来到弈间</div>
+        <h2>
+          {mode === "register"
+            ? "从一张新桌开始"
+            : mode === "recover"
+              ? "恢复你的账号"
+              : "老朋友，请落座"}
+        </h2>
+        <p className="muted">先登录，就能创建房间或接着上次的对局。</p>
+        <form onSubmit={submit}>
+          <label>
+            用户名
+            <input
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              placeholder="3–24 位字母、数字或下划线"
+            />
+          </label>
+          <label>
+            密码
+            <input
+              type="password"
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === "login" ? 1 : 12}
+              placeholder={
+                mode === "recover" ? "输入新密码，至少 12 位" : "至少 12 位字符"
+              }
+            />
+          </label>
+          {mode === "recover" && (
+            <label>
+              恢复码
+              <input
+                value={recovery}
+                onChange={(e) => setRecovery(e.target.value)}
+                required
+              />
+            </label>
+          )}
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+          <button className="primary full" disabled={busy}>
+            {busy
+              ? "正在连接…"
+              : mode === "login"
+                ? "登录弈间"
+                : mode === "register"
+                  ? "注册并登录"
+                  : "重置密码"}
+          </button>
+        </form>
+        <div className="auth-links">
+          <button
+            className="text-button"
+            onClick={() => setMode(mode === "login" ? "register" : "login")}
+          >
+            {mode === "login" ? "创建账号" : "返回登录"}
+          </button>
+          <button className="text-button" onClick={() => setMode("recover")}>
+            忘记密码
+          </button>
+        </div>
+        <div className="divider" />
+        <button className="secondary full" onClick={() => go("/demo")}>
+          先看看游戏桌面
+        </button>
+        <p className="small muted">本地演示可切换座位，不会创建联机对局。</p>
+      </section>
+      {saved && (
+        <div className="modal-backdrop">
+          <section className="modal">
+            <h2>请保存恢复码</h2>
+            <p>恢复码只显示这一次。忘记密码时，可以用它恢复账号。</p>
+            <code className="recovery-code">{saved}</code>
+            <button
+              className="primary"
+              onClick={() => {
+                setSaved("");
+                if (pendingLogin) onLogin(pendingLogin);
+              }}
+            >
+              我已保存
+            </button>
+          </section>
+        </div>
+      )}
+    </main>
+  );
 }
-function Room({id,invite,user}:{id:string;invite?:string;user:any}){const [room,setRoom]=useState<any>(null),[error,setError]=useState('');const refresh=()=>api('/rooms/'+id).then(setRoom).catch(e=>setError(e.message));useEffect(()=>{refresh();const t=setInterval(()=>{if(!document.hidden)refresh();},2500);return()=>clearInterval(t);},[id]);useEffect(()=>{if(room?.gameId)go('/game/'+room.gameId);},[room?.gameId]);const act=async(path:string,body={})=>{try{setError('');const r=await api('/rooms/'+id+path,body);if(r.gameId)go('/game/'+r.gameId);else await refresh();}catch(e){setError((e as Error).message);}};const own=room?.seats.find((s:any)=>s.userId===user.id);return <main className="room-page"><a href="#/" className="back-link">← 返回大厅</a><div className="eyebrow">大创造时代 · 三人功能测试</div><h1>等待大家落座</h1><p className="muted">所有玩家准备后，由房主开始。当前使用固定家园与种族组合。</p>{error&&<p className="error">{error}</p>}{room&&<><div className="seats">{Array.from({length:room.capacity},(_,i)=>{const s=room.seats[i];return <div className={'seat '+(s?'occupied':'')} key={i}><div className="avatar">{s?s.displayName.slice(0,1):'＋'}</div><h3>{s?.displayName??'等待加入'}</h3><p>{s?s.ready?'✓ 已准备':'尚未准备':'为朋友留一个位置'}</p>{s?.userId===room.hostId&&<span className="tag">房主</span>}</div>;})}</div><div className="room-controls">{own?<><button className="secondary" onClick={()=>act('/ready',{ready:!own.ready})}>{own.ready?'取消准备':'准备就绪'}</button>{room.hostId===user.id&&<button className="primary" disabled={room.seats.length!==room.capacity||!room.seats.every((s:any)=>s.ready)} onClick={()=>act('/start')}>开始对局</button>}<button className="text-button" onClick={async()=>{await act('/leave');go('/');}}>离开房间</button></>:<button className="primary" onClick={()=>act('/join',{inviteToken:invite})}>加入这个房间</button>}<button className="text-button" onClick={()=>{navigator.clipboard.writeText(location.href).then(()=>setError('邀请链接已复制')).catch(()=>setError('请复制浏览器地址栏中的链接'));}}>复制邀请链接</button></div></>}{!room&&invite&&<button className="primary" onClick={()=>act('/join',{inviteToken:invite})}>加入这个房间</button>}<div className="notice">开发预览目前还缺少部分能力、公共动作和完整开局选择，适合检查联机流程；正式试局前会补齐规则。</div></main>;}
+function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
+  const [rooms, setRooms] = useState<any[]>([]),
+    [games, setGames] = useState<any[]>([]),
+    [visibility, setVisibility] = useState("public"),
+    [error, setError] = useState("");
+  const refresh = async () => {
+    try {
+      const [r, g] = await Promise.all([api("/rooms"), api("/me/games")]);
+      setRooms(r);
+      setGames(g);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  useEffect(() => {
+    refresh();
+    const t = setInterval(() => {
+      if (!document.hidden) refresh();
+    }, 15000);
+    return () => clearInterval(t);
+  }, []);
+  const create = async () => {
+    try {
+      const room = await api("/rooms", { visibility, seats: 3 });
+      go(
+        "/room/" +
+          room.id +
+          (visibility === "private" ? "?invite=" + room.inviteToken : ""),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  return (
+    <main className="lobby">
+      <div className="page-heading">
+        <div>
+          <div className="eyebrow">很高兴又见到你，{user.name}</div>
+          <h1>{onlyGames ? "接着上次的思考" : "今天，玩点什么？"}</h1>
+        </div>
+        <span className="status-pill">
+          <i />
+          {games.filter((g) => g.needAction).length} 局等你行动
+        </span>
+      </div>
+      {error && <p className="error">{error}</p>}
+      {!onlyGames && (
+        <section className="game-feature">
+          <div>
+            <span className="tag">建设 · 策略 · 经济</span>
+            <h2>大创造时代</h2>
+            <div className="english-title">AGE OF INNOVATION</div>
+            <p>
+              让你的文明，从第一座工坊开始。
+              <br />
+              探索地形，精研学科，书写独一无二的创造时代。
+            </p>
+            <div className="feature-meta">
+              <span>三人固定配置预览</span>
+              <span>异步回合</span>
+              <span>进度自动保存</span>
+            </div>
+            <div className="inline">
+              <select
+                aria-label="房间可见性"
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+              >
+                <option value="public">公开房间</option>
+                <option value="private">仅凭邀请加入</option>
+              </select>
+              <button className="primary" onClick={create}>
+                创建房间
+              </button>
+              <button className="text-button" onClick={() => go("/demo")}>
+                试试桌面 →
+              </button>
+            </div>
+          </div>
+          <div className="city-art" aria-hidden="true">
+            <div className="art-sun" />
+            <div className="tower t1" />
+            <div className="tower t2" />
+            <div className="tower t3" />
+            <div className="art-caption">
+              一座城市，
+              <br />
+              无数种可能。
+            </div>
+          </div>
+        </section>
+      )}
+      <section>
+        <div className="section-heading">
+          <h2>我的对局</h2>
+          <span>{games.length} 局</span>
+        </div>
+        {games.length ? (
+          <div className="card-grid">
+            {games.map((g) => (
+              <button
+                className="game-card"
+                key={g.id}
+                onClick={() => go("/game/" + g.id)}
+              >
+                <span className={"tag " + (g.needAction ? "attention" : "")}>
+                  {g.status === "finished"
+                    ? "已结束"
+                    : g.needAction
+                      ? "轮到你了"
+                      : "等待伙伴"}
+                </span>
+                <h3>大创造时代</h3>
+                <p>{g.names.join(" · ")}</p>
+                <span>第 {g.round} / 6 轮 →</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-panel">
+            还没有对局。创建一张桌子，邀请朋友一起开始。
+          </div>
+        )}
+      </section>
+      {!onlyGames && (
+        <section>
+          <div className="section-heading">
+            <h2>可以加入的房间</h2>
+            <button className="text-button" onClick={refresh}>
+              刷新
+            </button>
+          </div>
+          {rooms.length ? (
+            <div className="room-list">
+              {rooms.map((r) => (
+                <button key={r.id} onClick={() => go("/room/" + r.id)}>
+                  <span className="room-icon">⬡</span>
+                  <strong>{r.host} 的游戏桌</strong>
+                  <span>大创造时代</span>
+                  <span>
+                    {r.count} / {r.capacity} 人
+                  </span>
+                  <span className="tag">
+                    {r.visibility === "private" ? "邀请房间" : "公开招募"}
+                  </span>
+                  <span>查看 →</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-panel">
+              还没有等待中的房间，来开第一桌吧。
+            </div>
+          )}
+        </section>
+      )}
+      <aside className="roadmap">
+        <strong>下一张游戏桌</strong>
+        <span>神秘大地与扩展</span>
+        <span className="muted">计划中 · 优先完成大创造时代</span>
+      </aside>
+    </main>
+  );
+}
+function Room({
+  id,
+  invite,
+  user,
+}: {
+  id: string;
+  invite?: string;
+  user: any;
+}) {
+  const [room, setRoom] = useState<any>(null),
+    [error, setError] = useState("");
+  const refresh = () =>
+    api("/rooms/" + id)
+      .then(setRoom)
+      .catch((e) => setError(e.message));
+  useEffect(() => {
+    refresh();
+    const t = setInterval(() => {
+      if (!document.hidden) refresh();
+    }, 2500);
+    return () => clearInterval(t);
+  }, [id]);
+  useEffect(() => {
+    if (room?.gameId) go("/game/" + room.gameId);
+  }, [room?.gameId]);
+  const act = async (path: string, body = {}) => {
+    try {
+      setError("");
+      const r = await api("/rooms/" + id + path, body);
+      if (r.gameId) go("/game/" + r.gameId);
+      else await refresh();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  const own = room?.seats.find((s: any) => s.userId === user.id);
+  return (
+    <main className="room-page">
+      <a href="#/" className="back-link">
+        ← 返回大厅
+      </a>
+      <div className="eyebrow">大创造时代 · 三人功能测试</div>
+      <h1>等待大家落座</h1>
+      <p className="muted">
+        所有玩家准备后，由房主开始。当前使用固定家园与种族组合。
+      </p>
+      {error && <p className="error">{error}</p>}
+      {room && (
+        <>
+          <div className="seats">
+            {Array.from({ length: room.capacity }, (_, i) => {
+              const s = room.seats[i];
+              return (
+                <div className={"seat " + (s ? "occupied" : "")} key={i}>
+                  <div className="avatar">
+                    {s ? s.displayName.slice(0, 1) : "＋"}
+                  </div>
+                  <h3>{s?.displayName ?? "等待加入"}</h3>
+                  <p>
+                    {s
+                      ? s.ready
+                        ? "✓ 已准备"
+                        : "尚未准备"
+                      : "为朋友留一个位置"}
+                  </p>
+                  {s?.userId === room.hostId && (
+                    <span className="tag">房主</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="room-controls">
+            {own ? (
+              <>
+                <button
+                  className="secondary"
+                  onClick={() => act("/ready", { ready: !own.ready })}
+                >
+                  {own.ready ? "取消准备" : "准备就绪"}
+                </button>
+                {room.hostId === user.id && (
+                  <button
+                    className="primary"
+                    disabled={
+                      room.seats.length !== room.capacity ||
+                      !room.seats.every((s: any) => s.ready)
+                    }
+                    onClick={() => act("/start")}
+                  >
+                    开始对局
+                  </button>
+                )}
+                <button
+                  className="text-button"
+                  onClick={async () => {
+                    await act("/leave");
+                    go("/");
+                  }}
+                >
+                  离开房间
+                </button>
+              </>
+            ) : (
+              <button
+                className="primary"
+                onClick={() => act("/join", { inviteToken: invite })}
+              >
+                加入这个房间
+              </button>
+            )}
+            <button
+              className="text-button"
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(location.href)
+                  .then(() => setError("邀请链接已复制"))
+                  .catch(() => setError("请复制浏览器地址栏中的链接"));
+              }}
+            >
+              复制邀请链接
+            </button>
+          </div>
+        </>
+      )}
+      {!room && invite && (
+        <button
+          className="primary"
+          onClick={() => act("/join", { inviteToken: invite })}
+        >
+          加入这个房间
+        </button>
+      )}
+      <div className="notice">
+        开发预览目前还缺少部分能力、公共动作和完整开局选择，适合检查联机流程；正式试局前会补齐规则。
+      </div>
+    </main>
+  );
+}

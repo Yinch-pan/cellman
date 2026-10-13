@@ -1,0 +1,13 @@
+{
+  "sourceRefs": [{"sourceId":"base","page":10},{"sourceId":"base","page":16},{"sourceId":"base","page":17},{"sourceId":"base","page":18},{"sourceId":"base","page":23},{"sourceId":"base","page":24}],
+  "description": "Manually calculated six-round lifecycle baseline. Every player places two workshops, then passes each round. This tests income, bonus rotation, science rewards, power, ranking and final conversion; it is not coverage of a strategic full game.",
+  "placements": [["p1","A1"],["p2","A3"],["p3","A7"],["p3","B10"],["p2","B5"],["p1","B4"]],
+  "bonuses": [["scholar","coins","power"],["guild","scholar","coins"],["power","guild","scholar"],["coins","power","guild"],["scholar","coins","power"]],
+  "resources": {
+    "p1":{"coins":39,"tools":17,"scholars":4,"books":[1,0,0,0],"power":[0,9,3]},
+    "p2":{"coins":31,"tools":15,"scholars":2,"books":[1,0,0,0],"power":[0,5,7]},
+    "p3":{"coins":38,"tools":16,"scholars":1,"books":[0,0,0,0],"power":[0,3,9]}
+  },
+  "totals":{"p1":73,"p2":51,"p3":53},
+  "manualArithmetic": ["All networks have size 1; area tie shares (18+12+6)/3=12 each.","Science awards are 28,8,8. Base score is 20 each.","Final convertible resource totals are 68,58,65, giving 13,11,13 points.","P1 coin total is 15 initial +14 bonus income +5 banking round reward +5 coins from bonus selection."]
+}

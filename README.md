@@ -1,16 +1,23 @@
-# 桌游联机网站
+# 弈间 BoardGame
 
-项目根目录：C:\Users\yinch\Documents\Codex\BoardGame
+开发中的异步联机桌游网站，优先实现《大创造时代》，之后考虑《神秘大地》及扩展。项目位于 `C:\Users\yinch\Documents\Codex\BoardGame`。
 
-与 IndieGame、IndieGame2 同级。先开发《大创造时代》的免费异步联机网站，后续考虑《神秘大地》及扩展，电脑体验优先。
+已可运行：账号与恢复码、公开/邀请房间、三人准备开局、地图与个人板、行动预览和提交、数据库保存、蹭魔响应、自动蹭魔、六轮流程及分项计分。当前界面和内容均标注为开发预览，尚未完成完整本体规则。
 
-## 当前状态
+本机启动：
 
-设计已确认，开发计划已整理；尚未开始编写应用代码，执行方式尚未选择。本次仅整理项目位置，不改变已确认范围。
+```powershell
+.\scripts\start-local.ps1
+```
 
-## 项目文档
+随后打开 <http://127.0.0.1:5173/>；无需注册即可进入本地演示。
 
-- [设计方案](docs/superpowers/specs/2026-10-13-boardgame-design.md)
+- [运行与验证说明](docs/operations/local.md)
+- [已确认设计](docs/superpowers/specs/2026-10-13-boardgame-design.md)
 - [开发计划](docs/superpowers/plans/2026-10-13-boardgame-implementation-plan.md)
+- [官方规则来源](docs/rules/sources.json)
+- [规则覆盖目录](docs/rules/coverage.json)
 
-后续应用工程以本目录为根目录。原聊天输出目录保留迁移说明，正式文档以此处版本为准。
+React / Vite / TypeScript，Fastify API，PostgreSQL 17，独立纯函数规则模块。浏览器不能直接更改权威资源；预览与提交共用规则。数据库事务结合 revision 与 commandId 防止并发覆盖和重复扣费。
+
+未部署公网，未购买服务，未实现 AI、排位、语音或观战。

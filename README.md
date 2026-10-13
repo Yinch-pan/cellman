@@ -13,6 +13,7 @@
 随后打开 <http://127.0.0.1:5173/>；无需注册即可进入本地演示。
 
 - [运行与验证说明](docs/operations/local.md)
+- [预览验证记录与剩余范围](docs/operations/preview-validation.md)
 - [已确认设计](docs/superpowers/specs/2026-10-13-boardgame-design.md)
 - [开发计划](docs/superpowers/plans/2026-10-13-boardgame-implementation-plan.md)
 - [官方规则来源](docs/rules/sources.json)

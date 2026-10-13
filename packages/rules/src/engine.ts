@@ -111,6 +111,14 @@ export function applyAction(
           ),
         "RESOLVE_KEY_FIRST",
       );
+      requireRule(
+        c.kind === "key" ||
+          c.kind === "neutral" ||
+          !s.pending.some(
+            (other) => other.seat === seat && other.kind === "neutral",
+          ),
+        "RESOLVE_NEUTRAL_FIRST",
+      );
       requireRule(c.options.includes(action.option), "INVALID_OPTION");
       if (c.kind === "leech" && action.option === "accept")
         acceptLeech(p, c.amount, events);

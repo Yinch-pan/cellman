@@ -42,9 +42,11 @@ node node_modules/@playwright/test/cli.js test
 node node_modules/tsx/dist/cli.mjs scripts/check-rules.ts --stage=inventory
 ```
 
-浏览器测试需要本地预览运行，并使用已安装的 Chrome。数据库测试必须设置 `TEST_DATABASE_URL`；测试使用随机 schema 隔离并在结束后清理。不能在真实用户数据库上运行测试。
+浏览器测试使用已安装的 Chrome，自动在 5174/3002 启动隔离服务，不需要预先启动试玩网页。所有数据库测试必须设置 `TEST_DATABASE_URL`，且与开发库分开；测试使用随机 schema 隔离并在结束后清理。不能在真实用户数据库上运行测试。
 
 `check:rules --stage=inventory` 只表示来源目录结构合格。`m1`、`m3` 覆盖检查在证据清单补齐前会失败；这不是已经完成本体规则的声明。
+
+实际验证结果与剩余范围见 [预览验证记录](preview-validation.md)。
 
 ## 当前限制
 

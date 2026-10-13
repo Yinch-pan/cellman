@@ -2,6 +2,48 @@ import { it, expect } from "vitest";
 import { applyAction } from "../src/engine";
 import { actionState } from "./fixtures/actions";
 import { queueChoice } from "../src/responses";
+it("immediate tower placement cannot be postponed behind a city reward that could consume its site (p9,24)", () => {
+  const s = actionState();
+  s.players.p1.resources.tools = 8;
+  s.players.p1.resources.coins = 20;
+  s.board.buildings = {
+    A4: { seat: "p1", kind: "school" },
+    B4: { seat: "p1", kind: "guild" },
+    B5: { seat: "p1", kind: "guild" },
+    A3: { seat: "p2", kind: "workshop" },
+    C5: { seat: "p3", kind: "workshop" },
+  };
+  s.board.terrain = { A4: "forest", B5: "forest", B6: "lake" };
+  const up = applyAction(s, "p1", {
+    kind: "upgrade",
+    hex: "A4",
+    to: "university",
+  });
+  if (!up.ok) throw Error(up.error.code);
+  const competence = up.state.pending.find((c) => c.kind === "competency")!;
+  const tower = applyAction(up.state, "p1", {
+    kind: "respond",
+    choiceId: competence.id,
+    option: "tower",
+  });
+  if (!tower.ok) throw Error(tower.error.code);
+  const city = tower.state.pending.find((c) => c.kind === "city")!;
+  expect(
+    applyAction(tower.state, "p1", {
+      kind: "respond",
+      choiceId: city.id,
+      option: "spades",
+    }),
+  ).toMatchObject({ ok: false, error: { code: "RESOLVE_NEUTRAL_FIRST" } });
+  const choice = tower.state.pending.find((c) => c.kind === "neutral")!;
+  expect(choice.options).toEqual(["B6"]);
+  const built = applyAction(tower.state, "p1", {
+    kind: "respond",
+    choiceId: choice.id,
+    option: "B6",
+  });
+  expect(built.ok).toBe(true);
+});
 it("neutral tower transforms terrain with tools, then causes leech as a build (p9,24)", () => {
   let s = actionState();
   s.board.buildings = {

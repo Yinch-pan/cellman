@@ -52,7 +52,7 @@ export function App() {
       {loading ? (
         <div className="empty">正在连接弈间…</div>
       ) : path === "/demo" ? (
-        <GamePage demo />
+        <GamePage key="local-demo" demo />
       ) : !user ? (
         <Auth
           onLogin={(d) => {
@@ -61,7 +61,7 @@ export function App() {
           }}
         />
       ) : path.startsWith("/game/") ? (
-        <GamePage id={path.split("/")[2]} />
+        <GamePage key={path.split("/")[2]} id={path.split("/")[2]} />
       ) : path.startsWith("/room/") ? (
         <Room
           id={path.split("/")[2].split("?")[0]}

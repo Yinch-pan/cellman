@@ -163,6 +163,32 @@ it("preview refuses an unavailable rule version without changing the stored game
     ]);
   }
 });
+it("history defaults to the latest page and retains explicit forward pagination", async () => {
+  await db.query(
+    "INSERT INTO game_events(game_id,revision,actor_id,events) SELECT $1,n,$2,'[]'::jsonb FROM generate_series(2,105)n",
+    [gameId, session.user.id],
+  );
+  try {
+    const latest = await app.inject({
+      url: "/api/games/" + gameId + "/history",
+      headers: headers(),
+    });
+    expect(latest.json()).toHaveLength(100);
+    expect(latest.json()[0].revision).toBe(6);
+    expect(latest.json().at(-1).revision).toBe(105);
+    const next = await app.inject({
+      url: "/api/games/" + gameId + "/history?after=100",
+      headers: headers(),
+    });
+    expect(next.json().map((r: any) => r.revision)).toEqual([
+      101, 102, 103, 104, 105,
+    ]);
+  } finally {
+    await db.query("DELETE FROM game_events WHERE game_id=$1 AND revision>1", [
+      gameId,
+    ]);
+  }
+});
 it("logout immediately closes this session event stream", async () => {
   const live = await login(db, "apiuser0", "test-password-1234");
   const address = await app.listen({ port: 0, host: "127.0.0.1" });

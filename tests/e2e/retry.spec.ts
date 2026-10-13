@@ -6,14 +6,14 @@ for (const failure of ["abort", "gateway"])
   }) => {
     const contexts = await Promise.all(
       [0, 1, 2].map(() =>
-        browser.newContext({ baseURL: "http://127.0.0.1:5173" }),
+        browser.newContext({ baseURL: "http://127.0.0.1:5174" }),
       ),
     );
     const sessions: { csrf: string }[] = [];
     for (let i = 0; i < 3; i++) {
       const username = "retry" + randomUUID().replaceAll("-", "").slice(0, 12);
       const body = { username, password: "retry-test-password" };
-      const headers = { origin: "http://127.0.0.1:5173" };
+      const headers = { origin: "http://127.0.0.1:5174" };
       expect(
         (
           await contexts[i].request.post("/api/auth/register", {
@@ -32,7 +32,7 @@ for (const failure of ["abort", "gateway"])
       contexts[i].request.post("/api" + path, {
         data,
         headers: {
-          origin: "http://127.0.0.1:5173",
+          origin: "http://127.0.0.1:5174",
           "x-csrf-token": sessions[i].csrf,
         },
       });
@@ -48,8 +48,38 @@ for (const failure of ["abort", "gateway"])
     ).json();
     const page = await contexts[0].newPage();
     await page.goto("/#/game/" + gameId);
+    const oldSnapshot = await (
+      await contexts[0].request.get("/api/games/" + gameId)
+    ).json();
     await page.getByRole("button", { name: "A1 森林" }).click();
     await page.getByRole("button", { name: "预览行动", exact: true }).click();
+    if (failure === "abort") {
+      const secondRoom = await (
+        await post(0, "/rooms", { visibility: "public", seats: 3 })
+      ).json();
+      for (let i = 1; i < 3; i++)
+        await post(i, "/rooms/" + secondRoom.id + "/join", {});
+      for (let i = 0; i < 3; i++)
+        await post(i, "/rooms/" + secondRoom.id + "/ready", { ready: true });
+      const second = await (
+        await post(0, "/rooms/" + secondRoom.id + "/start", {})
+      ).json();
+      const secondLoaded = page.waitForResponse((r) =>
+        r.url().endsWith("/api/games/" + second.gameId),
+      );
+      await page.evaluate((id) => {
+        location.hash = "/game/" + id;
+      }, second.gameId);
+      await secondLoaded;
+      await expect(
+        page.getByRole("button", { name: "确认提交", exact: true }),
+      ).toHaveCount(0);
+      await page.evaluate((id) => {
+        location.hash = "/game/" + id;
+      }, gameId);
+      await page.getByRole("button", { name: "A1 森林" }).click();
+      await page.getByRole("button", { name: "预览行动", exact: true }).click();
+    }
     let attempts = 0;
     const ids: string[] = [];
     await page.route("**/api/games/*/commands", async (route) => {
@@ -78,5 +108,26 @@ for (const failure of ["abort", "gateway"])
       await contexts[0].request.get("/api/games/" + gameId + "/history")
     ).json();
     expect(history).toHaveLength(1);
+    if (failure === "gateway") {
+      await page.route(
+        "**/api/games/" + gameId,
+        (route) => route.fulfill({ json: oldSnapshot }),
+        { times: 1 },
+      );
+      const delayed = page.waitForResponse((r) =>
+        r.url().endsWith("/api/games/" + gameId),
+      );
+      await page.evaluate(() =>
+        window.dispatchEvent(new Event("visibilitychange")),
+      );
+      await (await delayed).finished();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          ),
+      );
+      await expect(page.getByText("局面版本 1", { exact: true })).toBeVisible();
+    }
     for (const c of contexts) await c.close();
   });

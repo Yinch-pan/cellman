@@ -39,6 +39,7 @@ const messages: Record<string, string> = {
   NETWORK_ERROR: "连接中断，已保留提交标识，可以安全重试",
   RULESET_UNAVAILABLE: "当前服务无法处理此对局的规则版本，请等待服务更新后继续",
   RESOLVE_KEY_FIRST: "请先决定是否使用城市钥匙",
+  RESOLVE_NEUTRAL_FIRST: "请先立即放置刚获得的中立建筑",
   WAIT_SCIENCE_ORDER: "轮末改造按下一轮的行动顺序处理，请等待前面的玩家",
   NO_CITY_KEY: "没有尚未使用的城市钥匙，可以选择停在 7 级",
 };

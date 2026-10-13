@@ -241,6 +241,13 @@ export function createApp(
     "/api/games/:id/history",
     async (req) => {
       await getGame(db, req.user!.id, req.params.id);
+      if (req.query.after === undefined) {
+        const latest = await db.query(
+          "SELECT revision,events,created_at FROM game_events WHERE game_id=$1 ORDER BY revision DESC LIMIT 100",
+          [req.params.id],
+        );
+        return latest.rows.reverse();
+      }
       const after = z.coerce
         .number()
         .int()

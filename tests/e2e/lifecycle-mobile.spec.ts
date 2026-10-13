@@ -73,5 +73,6 @@ for (const viewport of [
     ).toBe(true);
     await page.reload();
     await expect(page.getByText("局面版本 1", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("演示座位")).toHaveValue("p2");
     await context.close();
   });

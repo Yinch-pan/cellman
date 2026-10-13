@@ -56,7 +56,9 @@ export function GamePage({
   const [state, setState] = useState<GameState | null>(() =>
       demo ? getDemo() : null,
     ),
-    [seat, setSeat] = useState("p1"),
+    [seat, setSeat] = useState(() =>
+      demo && state ? (getWaitingSeats(state)[0] ?? "p1") : "p1",
+    ),
     [selected, setSelected] = useState(""),
     [draft, setDraft] = useState<CommandEnvelope | null>(null),
     [preview, setPreview] = useState<any>(null),
@@ -69,10 +71,19 @@ export function GamePage({
     if (demo) return;
     try {
       const data = await api("/games/" + id);
-      setState(data.state);
+      if (data.state.setup.id !== id) return;
+      setState((current) =>
+        current && current.revision > data.state.revision
+          ? current
+          : data.state,
+      );
       setSeat(data.seat);
       const h = await api("/games/" + id + "/history");
-      setHistory(h);
+      setHistory((current) =>
+        (current.at(-1)?.revision ?? 0) > (h.at(-1)?.revision ?? 0)
+          ? current
+          : h,
+      );
     } catch (e) {
       setError((e as Error).message);
     }
@@ -435,6 +446,12 @@ export function GamePage({
                           c.kind !== "spades" ||
                           state.pending.find((other) => other.kind === "spades")
                             ?.id === c.id) &&
+                        (c.kind === "key" ||
+                          c.kind === "neutral" ||
+                          !state.pending.some(
+                            (other) =>
+                              other.seat === seat && other.kind === "neutral",
+                          )) &&
                         (c.kind === "key" ||
                           !state.pending.some(
                             (other) =>

@@ -14,7 +14,7 @@ export interface SetupConfig {id:string;rulesVersion:string;mapId:string;players
 export interface PendingChoice {id:string;seat:SeatId;kind:'leech'|'city'|'competency'|'book'|'science';amount:number;options:string[];continuation:{kind:'resume-turn'};source:string}
 export interface RuleEvent {kind:string;seat?:SeatId;text:string;details?:Record<string,unknown>}
 export interface ScoreBreakdown {seat:SeatId;items:{reason:string;points:number;sourceRefs:{sourceId:string;page:number}[]}[];total:number}
-export interface GameState {schemaVersion:1;rulesVersion:string;revision:number;setup:SetupConfig;phase:'placement'|'actions'|'finished';round:number;activeSeat:SeatId;players:Record<SeatId,Player>;board:{mapId:string;terrain:Record<HexId,Terrain>;buildings:Record<HexId,Building>;bridges:Bridge[]};shared:{usedActions:string[];scholarSlots:(SeatId|null)[][];cities:Record<string,number>;palaces:string[];innovations:string[];bonusCoins:Record<string,number>};pending:PendingChoice[];status:'active'|'finished';turnOrder:SeatId[];passOrder:SeatId[];placementOrder:SeatId[];placementIndex:number;choiceSerial:number;scores:ScoreBreakdown[]}
+export interface GameState {schemaVersion:1;rulesVersion:string;revision:number;setup:SetupConfig;phase:'placement'|'actions'|'finished';round:number;activeSeat:SeatId;players:Record<SeatId,Player>;board:{mapId:string;terrain:Partial<Record<HexId,Terrain>>;buildings:Record<HexId,Building>;bridges:Bridge[]};shared:{usedActions:string[];scholarSlots:(SeatId|null)[][];cities:Record<string,number>;palaces:string[];innovations:string[];bonusCoins:Record<string,number>};pending:PendingChoice[];status:'active'|'finished';turnOrder:SeatId[];passOrder:SeatId[];placementOrder:SeatId[];placementIndex:number;choiceSerial:number;scores:ScoreBreakdown[]}
 export type GameAction=
  |{kind:'place';hex:HexId}
  |{kind:'terraform';hex:HexId;terrain:Terrain;build:boolean}
@@ -34,3 +34,4 @@ export interface RuleError {code:string;message:string}
 export type Transition={ok:true;state:GameState;events:RuleEvent[]}|{ok:false;error:RuleError};
 export interface RuleSet {createGame:(setup:SetupConfig)=>GameState;getLegalActions:(state:GameState,seat:SeatId)=>ActionOption[];applyAction:(state:GameState,seat:SeatId,action:GameAction)=>Transition;getWaitingSeats:(state:GameState)=>SeatId[]}
 export interface RuleCase {id:string;sourceRefs:{sourceId:string;page:number}[];before:GameState;actor:SeatId;action:GameAction;expectedState:GameState;expectedEvents:RuleEvent[]}
+

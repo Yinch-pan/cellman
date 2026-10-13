@@ -1,0 +1,10 @@
+import {describe,it,expect} from 'vitest';
+import {gainPower,applyAction,getWaitingSeats} from '../src/engine';
+import {actionState} from './fixtures/actions';
+describe('power bowls and responses, rules p8–9',()=>{
+ it('moves bowl I before bowl II and discards impossible excess',()=>{expect(gainPower([2,3,7],4)).toEqual([0,3,9]);expect(gainPower([0,1,11],9)).toEqual([0,0,12]);});
+ it('burns one token to cycle another',()=>{const s=actionState();s.players.p1.resources.power=[0,4,8];const r=applyAction(s,'p1',{kind:'burn',count:2});expect(r.ok).toBe(true);if(r.ok)expect(r.state.players.p1.resources.power).toEqual([0,0,10]);});
+ it('response survives serialization and does not advance actor turn',()=>{const r=applyAction(actionState(),'p1',{kind:'upgrade',hex:'A1',to:'guild'});expect(r.ok).toBe(true);if(!r.ok)return;expect(getWaitingSeats(r.state)).toEqual(['p2']);const s=JSON.parse(JSON.stringify(r.state));const id=s.pending[0].id;expect(applyAction(s,'p1',{kind:'respond',choiceId:id,option:'accept'})).toMatchObject({ok:false,error:{code:'WRONG_RESPONDER'}});const a=applyAction(s,'p2',{kind:'respond',choiceId:id,option:'accept'});expect(a.ok).toBe(true);if(a.ok){expect(a.state.players.p2.vp).toBe(19);expect(a.state.pending).toEqual([]);expect(a.state.activeSeat).toBe('p1');expect(applyAction(a.state,'p2',{kind:'respond',choiceId:id,option:'accept'})).toMatchObject({ok:false,error:{code:'STALE_CHOICE'}});}});
+ it('caps a leech to available VP and capacity before charging',()=>{const s=actionState();s.players.p2.vp=0;const r=applyAction(s,'p1',{kind:'upgrade',hex:'A1',to:'guild'});if(!r.ok)throw Error('upgrade');expect(r.state.pending[0].amount).toBe(1);});
+ it('automatic leech accepts only within per-game threshold',()=>{const s=actionState();s.players.p2.leechPolicy={enabled:true,maxVpCost:1};const r=applyAction(s,'p1',{kind:'upgrade',hex:'A1',to:'guild'});if(!r.ok)throw Error('upgrade');expect(r.state.pending).toEqual([]);expect(r.state.players.p2.vp).toBe(19);});
+});

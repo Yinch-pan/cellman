@@ -3,6 +3,7 @@ import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
 import { z } from "zod";
 import { EventEmitter } from "node:events";
+import { ConnectionBudget, accountLimit } from "./connection-budget";
 import type { Database } from "./db/pool";
 import { ApiError, assertApi } from "./errors";
 import { digest } from "./auth/password";
@@ -67,6 +68,7 @@ export function createApp(
     trustProxy: trustedProxies.length ? trustedProxies : false,
   });
   const events = new EventEmitter();
+  const streams = new ConnectionBudget();
   events.setMaxListeners(1000);
   let stopGames: (() => Promise<void>) | undefined;
   app.addHook("onReady", async () => {
@@ -302,26 +304,34 @@ export function createApp(
         ),
       }));
     });
-    app.post("/api/rooms", async (req) => {
-      const input = z
-        .object({
-          visibility: z.enum(["public", "private"]),
-          seats: z.number().int().min(2).max(5),
-          setupMode: setupModeSchema.optional(),
-          settings: gameSettingsSchema.optional(),
-        })
-        .parse(req.body);
-      return createRoom(db, req.user!.id, input);
-    });
+    app.post(
+      "/api/rooms",
+      accountLimit("create-room", 12, "10 minutes"),
+      async (req) => {
+        const input = z
+          .object({
+            visibility: z.enum(["public", "private"]),
+            seats: z.number().int().min(2).max(5),
+            setupMode: setupModeSchema.optional(),
+            settings: gameSettingsSchema.optional(),
+          })
+          .parse(req.body);
+        return createRoom(db, req.user!.id, input);
+      },
+    );
     app.get<{ Params: { id: string } }>("/api/rooms/:id", async (req) =>
       roomView(db, req.user!.id, req.params.id),
     );
-    app.post<{ Params: { id: string } }>("/api/rooms/:id/join", async (req) => {
-      const { inviteToken } = z
-        .object({ inviteToken: z.string().max(100).optional() })
-        .parse(req.body);
-      return joinRoom(db, req.user!.id, req.params.id, inviteToken);
-    });
+    app.post<{ Params: { id: string } }>(
+      "/api/rooms/:id/join",
+      accountLimit("join-room", 30),
+      async (req) => {
+        const { inviteToken } = z
+          .object({ inviteToken: z.string().max(100).optional() })
+          .parse(req.body);
+        return joinRoom(db, req.user!.id, req.params.id, inviteToken);
+      },
+    );
     app.post<{ Params: { id: string } }>(
       "/api/rooms/:id/settings",
       async (req) => {
@@ -421,7 +431,9 @@ export function createApp(
         ).map((p) => p.name),
       }));
     });
-    app.get("/api/me/stats", async (req) => playerStats(db, req.user!.id));
+    app.get("/api/me/stats", accountLimit("personal-stats", 20), async (req) =>
+      playerStats(db, req.user!.id),
+    );
     app.post<{ Params: { id: string } }>(
       "/api/games/:id/adjudicate",
       async (req) => {
@@ -443,16 +455,20 @@ export function createApp(
         return result;
       },
     );
-    app.get<{ Querystring: { count?: string } }>("/api/stats", async (req) =>
-      siteStats(
-        db,
-        req.query.count === undefined
-          ? undefined
-          : z.coerce.number().int().min(3).max(5).parse(req.query.count),
-      ),
+    app.get<{ Querystring: { count?: string } }>(
+      "/api/stats",
+      accountLimit("site-stats", 20),
+      async (req) =>
+        siteStats(
+          db,
+          req.query.count === undefined
+            ? undefined
+            : z.coerce.number().int().min(3).max(5).parse(req.query.count),
+        ),
     );
     app.post<{ Params: { id: string } }>(
       "/api/games/:id/undo/request",
+      accountLimit("undo-request", 10),
       async (req) => {
         const input = z
           .object({
@@ -506,6 +522,7 @@ export function createApp(
     });
     app.post<{ Params: { id: string } }>(
       "/api/games/:id/preview",
+      accountLimit("preview", 90),
       async (req) => {
         const command = commandSchema.parse(req.body);
         const { state, seat } = await getGame(db, req.user!.id, req.params.id);
@@ -575,13 +592,33 @@ export function createApp(
         )
       ).rows;
     });
-    app.get<{ Params: { id: string } }>("/api/games/:id/replay", async (req) =>
-      getReplay(db, req.user!.id, req.params.id),
+    app.get<{ Params: { id: string } }>(
+      "/api/games/:id/replay",
+      accountLimit("replay", 20),
+      async (req) => getReplay(db, req.user!.id, req.params.id),
     );
     app.get<{ Params: { id: string } }>(
       "/api/games/:id/events",
+      accountLimit("stream-open", 60),
       async (req, reply) => {
-        const { state } = await getGame(db, req.user!.id, req.params.id);
+        const release = streams.acquire(req.user!.id, req.ip);
+        if (!release)
+          return reply
+            .code(429)
+            .header("Retry-After", "15")
+            .send({ error: "RATE_LIMIT" });
+        reply.raw.once("close", release);
+        let state;
+        try {
+          ({ state } = await getGame(db, req.user!.id, req.params.id));
+        } catch (error) {
+          release();
+          throw error;
+        }
+        if (reply.raw.destroyed) {
+          release();
+          return;
+        }
         reply.hijack();
         reply.raw.writeHead(200, {
           "Content-Type": "text/event-stream",
@@ -589,11 +626,15 @@ export function createApp(
           Connection: "keep-alive",
           "X-Accel-Buffering": "no",
         });
-        const send = (revision: number) =>
-          !reply.raw.writableEnded &&
-          reply.raw.write(
-            `data: ${JSON.stringify({ gameId: req.params.id, revision })}\n\n`,
-          );
+        const send = (revision: number) => {
+          if (
+            !reply.raw.writableEnded &&
+            !reply.raw.write(
+              `data: ${JSON.stringify({ gameId: req.params.id, revision })}\n\n`,
+            )
+          )
+            reply.raw.destroy(); // Slow consumers reconnect; never buffer forever.
+        };
         send(state.revision);
         events.on(req.params.id, send);
         const revoke = () => reply.raw.end();
@@ -602,15 +643,21 @@ export function createApp(
         const userChannel = "revoke-user:" + req.user!.id;
         events.on(sessionChannel, revoke);
         events.on(userChannel, revoke);
+        let checking = false;
         const timer = setInterval(async () => {
+          if (checking || reply.raw.destroyed) return;
+          checking = true;
           try {
             if (!(await authenticate(db, req.cookies.session))) {
               reply.raw.end();
               return;
             }
-            if (!reply.raw.writableEnded) reply.raw.write(": heartbeat\n\n");
+            if (!reply.raw.writableEnded && !reply.raw.write(": heartbeat\n\n"))
+              reply.raw.destroy();
           } catch {
             reply.raw.end();
+          } finally {
+            checking = false;
           }
         }, 15000);
         reply.raw.on("close", () => {

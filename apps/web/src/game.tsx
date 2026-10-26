@@ -147,6 +147,7 @@ export function GamePage({
     [tab, setTab] = useState("build"),
     [localCount, setLocalCount] = useState(3);
   const actionInFlight = useRef(false);
+  const historyCursor = useRef<number | null>(null);
   const [viewed, setViewed] = useState<GameState | null>(null);
   const [requests, setRequests] = useState<UndoRequest[]>([]);
   const [sessionSettings, setSessionSettings] =
@@ -354,8 +355,27 @@ export function GamePage({
       const data = await api("/games/" + id);
       const receivedAt = performance.now();
       if (data.state.setup.id !== id) return;
-      const h = await api("/games/" + id + "/history");
+      // Idle polling still refreshes clocks/undo votes, but does not repeatedly
+      // transfer the same 100 log entries. Catch-up is bounded per refresh.
+      let cursor = historyCursor.current;
+      const h: any[] = [];
+      for (
+        let batch = 0;
+        batch < 5 && (cursor === null || cursor < data.state.revision);
+        batch++
+      ) {
+        const rows = await api(
+          "/games/" +
+            id +
+            "/history" +
+            (cursor === null ? "" : "?after=" + cursor),
+        );
+        h.push(...rows);
+        cursor = rows.at(-1)?.revision ?? data.state.revision;
+        if (rows.length < 100) break;
+      }
       if (serial !== refreshSerial.current) return;
+      historyCursor.current = cursor;
       setState((current) =>
         current && current.revision > data.state.revision
           ? current

@@ -1,0 +1,15 @@
+[Unit]
+Description=Check cellman health, memory, disk, backup and certificate
+After=cellman.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/cellman/current/deploy/cellman-health.py
+StateDirectory=cellman-health
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=64M
+TimeoutStartSec=20

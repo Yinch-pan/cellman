@@ -1,5 +1,6 @@
 import { beforeAll, afterAll, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
+import { get, type ClientRequest } from "node:http";
 import { Pool, migrate } from "../src/db/pool";
 import { createApp } from "../src/app";
 import { register, login } from "../src/auth/sessions";
@@ -284,6 +285,71 @@ it("login attempts are rate limited before password verification", async () => {
     expect(blocked.json()).toEqual({ error: "RATE_LIMIT" });
     expect(Number(blocked.headers["retry-after"])).toBeGreaterThan(0);
   } finally {
+    await isolated.close();
+  }
+});
+
+it("room creation budget follows an account across sessions but allows other users", async () => {
+  const isolated = createApp(db);
+  const request = (actor: any) =>
+    isolated.inject({
+      method: "POST",
+      url: "/api/rooms",
+      headers: {
+        origin: "http://127.0.0.1:5173",
+        "x-csrf-token": actor.csrf,
+        cookie: "session=" + actor.session,
+      },
+      payload: { seats: 99, visibility: "public" },
+    });
+  try {
+    for (let i = 0; i < 12; i++)
+      expect((await request(session)).statusCode).toBe(400);
+    const another = await login(db, "apiuser0", "test-password-1234");
+    const blocked = await request(another);
+    expect(blocked.statusCode).toBe(429);
+    expect(Number(blocked.headers["retry-after"])).toBeGreaterThan(0);
+    expect((await request(outsider)).statusCode).toBe(400);
+  } finally {
+    await isolated.close();
+  }
+});
+
+it("SSE admission rejects the ninth stream and recovers after close or denied membership", async () => {
+  const isolated = createApp(db);
+  const address = await isolated.listen({ host: "127.0.0.1", port: 0 });
+  const requests: ClientRequest[] = [];
+  const stream = (id: string) =>
+    new Promise<{ status: number; request: ClientRequest }>(
+      (resolve, reject) => {
+        const request = get(
+          address + "/api/games/" + id + "/events",
+          { headers: { cookie: "session=" + session.session } },
+          (res) => {
+            res.resume();
+            resolve({ status: res.statusCode!, request });
+          },
+        );
+        requests.push(request);
+        request.on("error", reject);
+      },
+    );
+  try {
+    for (let i = 0; i < 10; i++)
+      expect((await stream(randomUUID())).status).toBe(403);
+    const open = [];
+    for (let i = 0; i < 8; i++) {
+      const s = await stream(gameId);
+      expect(s.status).toBe(200);
+      open.push(s);
+    }
+    expect((await stream(gameId)).status).toBe(429);
+    open[0].request.destroy();
+    await expect
+      .poll(async () => (await stream(gameId)).status, { interval: 50 })
+      .toBe(200);
+  } finally {
+    for (const request of requests) request.destroy();
     await isolated.close();
   }
 });

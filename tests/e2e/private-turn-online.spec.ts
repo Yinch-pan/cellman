@@ -130,6 +130,21 @@ test("four clients see no private draft, then receive one atomic turn and identi
     ).json();
     expect(replayRecord(record).state).toEqual(next);
     expect(record.commands.at(-1).action.kind).toBe("turn");
+    // The periodic refresh must update clock/undo state without downloading an
+    // unchanged history page again. No fake server state or disabled limiter.
+    let historyReads = 0;
+    pages[0].on("request", (request) => {
+      if (request.url().includes(`/api/games/${gameId}/history`))
+        historyReads++;
+    });
+    await pages[0].waitForResponse(
+      (response) =>
+        response.url() === `${origin}/api/games/${gameId}` &&
+        response.status() === 200,
+      { timeout: 35000 },
+    );
+    await pages[0].waitForTimeout(500);
+    expect(historyReads).toBe(0);
   } finally {
     await Promise.all(contexts.map((c) => c.close()));
   }

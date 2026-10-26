@@ -6,6 +6,7 @@ for (const failure of ["abort", "gateway"])
   test(`lost ${failure} response after commit retries the same command without a second write`, async ({
     browser,
   }) => {
+    test.setTimeout(180000);
     const contexts = await Promise.all(
       [0, 1, 2].map(() =>
         reviewContext(browser, {
@@ -21,10 +22,22 @@ for (const failure of ["abort", "gateway"])
         origin: `http://127.0.0.1:${process.env.E2E_WEB_PORT ?? "5174"}`,
       };
       await seedAccount(body);
-      const response = await contexts[i].request.post("/api/auth/login", {
-        data: body,
-        headers,
-      });
+      const login = () =>
+        contexts[i].request.post("/api/auth/login", {
+          data: body,
+          headers,
+        });
+      let response = await login();
+      if (response.status() === 429) {
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            (Number(response.headers()["retry-after"]) || 60) * 1000,
+          ),
+        );
+        response = await login();
+      }
+      expect(response.ok(), await response.text()).toBe(true);
       sessions.push(await response.json());
     }
     const post = (i: number, path: string, data: any) =>

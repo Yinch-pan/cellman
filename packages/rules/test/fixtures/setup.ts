@@ -1,7 +1,8 @@
+import { RULES_VERSION } from "../../src/state";
 export function sampleSetup(): any {
   return {
     id: "test-game",
-    rulesVersion: "aoi-1.1+2024-09",
+    rulesVersion: RULES_VERSION,
     mapId: "official-large",
     players: [
       {

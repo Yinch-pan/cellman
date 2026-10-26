@@ -1,3 +1,4 @@
+import { awardPoints } from "../score-events";
 import type { GameState, Player } from "../types";
 import { requireRule } from "../internal";
 import { advanceScience } from "./science";
@@ -22,7 +23,7 @@ export function takeCompetency(s: GameState, p: Player, id: string) {
   if (id === "immediate-resources") {
     p.resources.tools++;
     p.resources.coins += 2;
-    p.vp += 5;
+    awardPoints(s, p, 5, "能力即时得分");
   }
   if (id === "annexes") p.annexes += 2;
   if (id === "tower") queueNeutral(s, p, "tower", "competency");

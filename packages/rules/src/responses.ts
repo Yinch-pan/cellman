@@ -1,4 +1,10 @@
-import type { Building, GameState, Player, RuleEvent } from "./types";
+import type {
+  Building,
+  GameState,
+  Player,
+  RuleEvent,
+  PendingChoice,
+} from "./types";
 import { connected, officialLarge } from "./map";
 import { note, ownBuildings } from "./internal";
 import { gainPower } from "./actions/power";
@@ -15,15 +21,7 @@ export const buildingPower = (b: Building): number =>
 export function queueChoice(
   s: GameState,
   seat: string,
-  kind:
-    | "leech"
-    | "city"
-    | "competency"
-    | "book"
-    | "science"
-    | "spades"
-    | "neutral"
-    | "key",
+  kind: PendingChoice["kind"],
   amount: number,
   options: string[],
   source: string,

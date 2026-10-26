@@ -6,14 +6,15 @@ import { assertApi, ApiError } from "../errors";
 export function validPassword(password: string) {
   assertApi(
     typeof password === "string" &&
-      [...password].length >= 12 &&
+      [...password].length >= 6 &&
       [...password].length <= 128,
     "INVALID_PASSWORD_LENGTH",
   );
 }
 export async function register(
-  db: Database,
+  db: Pick<Database, "query">,
   input: { username: string; password: string; displayName?: string },
+  registrationPending = false,
 ) {
   assertApi(
     typeof input.username === "string" &&
@@ -26,13 +27,14 @@ export async function register(
     hash = await passwordHash(input.password);
   try {
     await db.query(
-      "INSERT INTO accounts(id,username,display_name,password_hash,recovery_hash) VALUES($1,$2,$3,$4,$5)",
+      "INSERT INTO accounts(id,username,display_name,password_hash,recovery_hash,registration_pending) VALUES($1,$2,$3,$4,$5,$6)",
       [
         id,
         input.username.toLowerCase(),
         (input.displayName || input.username).slice(0, 30),
         hash,
         digest(recoveryCode),
+        registrationPending,
       ],
     );
   } catch (e) {
@@ -43,28 +45,32 @@ export async function register(
   return { userId: id, recoveryCode };
 }
 export async function login(db: Database, username: string, password: string) {
-  const { rows } = await db.query("SELECT * FROM accounts WHERE username=$1", [
-    username.toLowerCase(),
-  ]);
-  const user = rows[0];
-  const valid = await passwordMatches(
-    password,
-    user?.password_hash ??
-      "00000000000000000000000000000000:" + "00".repeat(64),
-  );
-  assertApi(user && valid, "INVALID_CREDENTIALS", 401);
-  const session = token(),
-    csrf = token();
-  await db.query(
-    "INSERT INTO sessions(token_hash,user_id,csrf,expires_at) VALUES($1,$2,$3,now()+interval '30 days')",
-    [digest(session), user.id, csrf],
-  );
-  return { session, csrf, user: { id: user.id, name: user.display_name } };
+  return transaction(db, async (c) => {
+    const { rows } = await c.query(
+      "SELECT * FROM accounts WHERE username=$1 OR lower(email)=$1 FOR UPDATE",
+      [username.trim().toLowerCase()],
+    );
+    const user = rows[0];
+    const valid = await passwordMatches(
+      password,
+      user?.password_hash ??
+        "00000000000000000000000000000000:" + "00".repeat(64),
+    );
+    assertApi(user && valid, "INVALID_CREDENTIALS", 401);
+    assertApi(!user.registration_pending, "REGISTRATION_PENDING", 403);
+    const session = token(),
+      csrf = token();
+    await c.query(
+      "INSERT INTO sessions(token_hash,user_id,csrf,expires_at) VALUES($1,$2,$3,now()+interval '30 days')",
+      [digest(session), user.id, csrf],
+    );
+    return { session, csrf, user: { id: user.id, name: user.display_name } };
+  });
 }
 export async function authenticate(db: Database, session?: string) {
   if (!session) return null;
   const { rows } = await db.query(
-    "SELECT a.id,a.display_name AS name,s.csrf FROM sessions s JOIN accounts a ON a.id=s.user_id WHERE token_hash=$1 AND expires_at>now()",
+    "SELECT a.id,a.display_name AS name,s.csrf FROM sessions s JOIN accounts a ON a.id=s.user_id WHERE token_hash=$1 AND expires_at>now() AND NOT a.registration_pending",
     [digest(session)],
   );
   return rows[0] ?? null;
@@ -92,6 +98,7 @@ export async function recover(
       [hash, digest(next), rows[0].id],
     );
     await c.query("DELETE FROM sessions WHERE user_id=$1", [rows[0].id]);
+    await c.query("DELETE FROM email_tokens WHERE user_id=$1", [rows[0].id]);
   });
   return { recoveryCode: next };
 }

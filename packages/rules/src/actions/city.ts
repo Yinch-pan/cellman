@@ -1,3 +1,4 @@
+import { awardPoints } from "../score-events";
 import type { GameState, Player } from "../types";
 import { ownBuildings, requireRule, gainScholar } from "../internal";
 import { connected, officialLarge } from "../map";
@@ -16,7 +17,13 @@ export function findCities(s: GameState, p: Player) {
       for (const [id] of bs)
         if (
           !seen.has(id) &&
-          connected(officialLarge, group[i], id, s.board.bridges, p.seat)
+          (connected(officialLarge, group[i], id, s.board.bridges, p.seat) ||
+            s.board.cityLinks?.some(
+              (link) =>
+                link.seat === p.seat &&
+                officialLarge.neighbors[link.river].includes(group[i]) &&
+                officialLarge.neighbors[link.river].includes(id),
+            ))
         ) {
           seen.add(id);
           group.push(id);
@@ -73,7 +80,7 @@ export function takeCity(s: GameState, p: Player, id: string) {
     scholar: 8,
   };
   requireRule(id in points, "UNSUPPORTED_CITY");
-  p.vp += points[id];
+  awardPoints(s, p, points[id], "城市板块：" + id);
   awardRound(s, p, "city");
   if (id === "spades")
     queueChoice(s, p.seat, "spades", 2, ["terraform", "discard"], "city");
@@ -86,4 +93,23 @@ export function takeCity(s: GameState, p: Player, id: string) {
     for (const t of [0, 1, 2, 3] as const) advanceScience(s, p, t, 1);
   if (id === "power") p.resources.power = gainPower(p.resources.power, 8);
   if (id === "scholar") gainScholar(s, p, 1);
+  if (p.faction === "felines") {
+    for (let i = 0; i < 3; i++)
+      queueChoice(s, p.seat, "science", 1, ["0", "1", "2", "3"], "felines");
+    queueChoice(s, p.seat, "book", 1, ["0", "1", "2", "3"], "felines");
+  }
+  if (p.faction === "lizards") {
+    queueChoice(s, p.seat, "spades", 1, ["terraform", "discard"], "lizards");
+    const first = s.pending.at(-1)!;
+    first.canBuild = false;
+    queueChoice(
+      s,
+      p.seat,
+      "freeWorkshop",
+      1,
+      [...Object.keys(officialLarge.hexes), "discard"],
+      "lizards",
+    );
+    s.pending.at(-1)!.dependsOn = [first.id];
+  }
 }

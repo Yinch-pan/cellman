@@ -1,17 +1,36 @@
+import { t as translate } from "./i18n";
+import { LanguageSelector } from "./i18n/language";
 import React, { useEffect, useState } from "react";
-import { api, setCsrf, label } from "./api";
+import { api, setCsrf, label, RequestError } from "./api";
 import { GamePage } from "./game";
+import { StatisticsPage } from "./statistics-page";
+import { Tutorial } from "./tutorial";
+import { Room } from "./room-page";
+import {
+  RoomOptions,
+  RoomSummary,
+  type RoomOptionsValue,
+} from "./room-settings";
+import { defaultGameSettings } from "../../../packages/contracts/src/room";
+import { AccountEmail, EmailRecovery, EmailLink } from "./email";
 const route = () => location.hash.slice(1) || "/";
 export function go(path: string) {
   location.hash = path;
 }
 export function App() {
   const [path, setPath] = useState(route),
+    [navigation, setNavigation] = useState(0),
     [user, setUser] = useState<any>(null),
     [loading, setLoading] = useState(true),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
-    const onHash = () => setPath(route());
+    const onHash = () => {
+      setPath(route());
+      // Email pages scrub the token from browser history. Reopening that same
+      // original link must still mount a fresh verification page.
+      setNavigation((n) => n + 1);
+    };
     addEventListener("hashchange", onHash);
     api("/auth/me")
       .then((d) => {
@@ -23,34 +42,67 @@ export function App() {
     return () => removeEventListener("hashchange", onHash);
   }, []);
   const logout = async () => {
-    await api("/auth/logout", {});
-    setUser(null);
-    setCsrf("");
-    go("/");
+    setLoggingOut(true);
+    setError("");
+    try {
+      await api("/auth/logout", {});
+      setUser(null);
+      setCsrf("");
+      go("/");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoggingOut(false);
+    }
   };
   return (
     <>
       <header className="site-header">
         <a href="#/" className="brand">
-          <span className="brand-mark">⬡</span>弈间
-          <span className="brand-caption">把好游戏，留给好朋友</span>
+          <span className="brand-mark" aria-hidden="true">
+            ⬡
+          </span>
+          cellman
         </a>
         <nav>
-          <a href="#/">游戏大厅</a>
-          <a href="#/games">我的对局</a>
-          <span className="preview-badge">开发预览</span>
+          <LanguageSelector />
+          <a href="#/">{translate("ui.app.20ae1929b5")}</a>
+          <a href="#/games">{translate("ui.app.1ca69d5606")}</a>
+          <a href="#/stats">{translate("ui.app.497ad856f6")}</a>
+          <a href="#/tutorial">{translate("ui.app.61a2cda8c7")}</a>
+          {user && <a href="#/account">{translate("ui.app.5ce662ac8d")}</a>}
           {user ? (
-            <button className="text-button" onClick={logout}>
-              {user.name} · 退出
+            <button
+              className="text-button"
+              onClick={logout}
+              disabled={loggingOut}
+            >
+              {user.name} {translate("ui.app.8093d32b01")}
             </button>
-          ) : (
-            <span className="muted">免费开房 · 异步回合</span>
-          )}
+          ) : null}
         </nav>
       </header>
       {error && <div className="notice error">{error}</div>}
       {loading ? (
-        <div className="empty">正在连接弈间…</div>
+        <div className="empty">{translate("ui.app.4927a53bcc")}</div>
+      ) : path.startsWith("/email/verify") ||
+        path.startsWith("/email/signup") ||
+        path.startsWith("/email/reset") ? (
+        <EmailLink
+          key={`${path}:${navigation}`}
+          kind={
+            path.startsWith("/email/signup")
+              ? "signup"
+              : path.startsWith("/email/verify")
+                ? "verify"
+                : "reset"
+          }
+          onReset={() => setUser(null)}
+        />
+      ) : path === "/email/forgot" ? (
+        <EmailRecovery />
+      ) : path === "/tutorial" ? (
+        <Tutorial />
       ) : path === "/demo" ? (
         <GamePage key="local-demo" demo />
       ) : !user ? (
@@ -60,10 +112,15 @@ export function App() {
             setCsrf(d.csrf);
           }}
         />
+      ) : path === "/account" ? (
+        <AccountEmail />
+      ) : path === "/stats" ? (
+        <StatisticsPage />
       ) : path.startsWith("/game/") ? (
         <GamePage key={path.split("/")[2]} id={path.split("/")[2]} />
       ) : path.startsWith("/room/") ? (
         <Room
+          key={path.split("/")[2].split("?")[0]}
           id={path.split("/")[2].split("?")[0]}
           invite={
             new URLSearchParams(path.split("?")[1]).get("invite") ?? undefined
@@ -73,127 +130,154 @@ export function App() {
       ) : (
         <Lobby user={user} onlyGames={path === "/games"} />
       )}
-      <footer>
-        弈间开发预览 · 当前仅开放三人固定配置用于功能测试，规则与内容尚未完整。
-      </footer>
+      <footer>{translate("ui.app.888f567269")}</footer>
     </>
   );
 }
 function Auth({ onLogin }: { onLogin: (data: any) => void }) {
-  const [mode, setMode] = useState<"login" | "register" | "recover">("login"),
+  const [email, setEmail] = useState(""),
+    [mailAvailable, setMailAvailable] = useState<boolean | null>(null),
+    [emailNotice, setEmailNotice] = useState("");
+  useEffect(() => {
+    api("/auth/mail-status")
+      .then((s) => setMailAvailable(s.available))
+      .catch(() => setMailAvailable(false));
+  }, []);
+  const [mode, setMode] = useState<"login" | "register" | "pending">("login"),
     [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
-    [recovery, setRecovery] = useState(""),
-    [saved, setSaved] = useState(""),
-    [pendingLogin, setPendingLogin] = useState<any>(null),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [editingEmail, setEditingEmail] = useState(false),
+    [cooldown, setCooldown] = useState(0);
+  useEffect(() => {
+    if (!cooldown) return;
+    const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+  async function sendVerification() {
+    const result = await api(
+      mode === "register" ? "/auth/register" : "/auth/register/resend",
+      {
+        username,
+        password,
+        email,
+      },
+    );
+    setEmail(result.email);
+    setMode("pending");
+    setEditingEmail(false);
+    setCooldown(60);
+    setEmailNotice(translate("ui.app.fc4881d4fa"));
+  }
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError("");
     try {
-      if (mode === "recover") {
-        const r = await api("/auth/recover", {
-          username,
-          password,
-          recoveryCode: recovery,
-        });
-        setSaved(r.recoveryCode);
-        setMode("login");
+      if (mode !== "login") {
+        await sendVerification();
         return;
       }
-      let code = "";
-      if (mode === "register")
-        code = (await api("/auth/register", { username, password }))
-          .recoveryCode;
       const data = await api("/auth/login", { username, password });
       setCsrf(data.csrf);
-      if (code) {
-        setSaved(code);
-        setPendingLogin(data);
-      } else onLogin(data);
+      onLogin(data);
     } catch (e) {
       setError((e as Error).message);
+      if (e instanceof RequestError && e.code === "REGISTRATION_PENDING") {
+        setMode("pending");
+        setEditingEmail(true);
+        setEmailNotice(translate("ui.app.0bd4d01f29"));
+      }
     } finally {
       setBusy(false);
     }
   }
   return (
     <main className="welcome">
-      <section className="welcome-copy">
-        <div className="eyebrow">为慢慢思考的人，留一张桌子</div>
-        <h1>
-          下一回合，
-          <br />
-          随时回来。
-        </h1>
-        <p>
-          与朋友一起开拓版图、研究科技、建造城市。
-          <br />
-          不必约齐整晚，轮到你时再做出下一步。
-        </p>
-        <div className="hero-board" aria-hidden="true">
-          {Array.from({ length: 18 }, (_, i) => (
-            <div key={i} className={"mini-hex h" + (i % 5)}>
-              {[2, 5, 8, 12, 14].includes(i) ? "⌂" : ""}
-            </div>
-          ))}
-        </div>
-        <div className="hero-caption">
-          <span>01 / 大创造时代</span>
-          <span>AGE OF INNOVATION</span>
-        </div>
-        <div className="hero-tags">
-          <span>回合制联机</span>
-          <span>自动保存进度</span>
-          <span>提交前预览</span>
-        </div>
-      </section>
       <section className="auth-card">
-        <div className="eyebrow">欢迎来到弈间</div>
-        <h2>
-          {mode === "register"
-            ? "从一张新桌开始"
-            : mode === "recover"
-              ? "恢复你的账号"
-              : "老朋友，请落座"}
-        </h2>
-        <p className="muted">先登录，就能创建房间或接着上次的对局。</p>
+        <h1>
+          {mode === "pending"
+            ? translate("ui.app.7ccdc52ef3")
+            : mode === "register"
+              ? translate("ui.app.c4fb62202b")
+              : translate("ui.app.1e2df9c307")}
+        </h1>
+        {emailNotice && (
+          <p className="notice" role="status">
+            {emailNotice}
+          </p>
+        )}
+        {mode !== "login" && !mailAvailable && (
+          <p className="notice" role="status">
+            {mailAvailable === null
+              ? translate("ui.app.bc2b09de8c")
+              : translate("ui.app.4ab8340cf6")}
+          </p>
+        )}
         <form onSubmit={submit}>
-          <label>
-            用户名
-            <input
-              autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="3–24 位字母、数字或下划线"
-            />
-          </label>
-          <label>
-            密码
-            <input
-              type="password"
-              autoComplete={
-                mode === "login" ? "current-password" : "new-password"
-              }
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={mode === "login" ? 1 : 12}
-              placeholder={
-                mode === "recover" ? "输入新密码，至少 12 位" : "至少 12 位字符"
-              }
-            />
-          </label>
-          {mode === "recover" && (
+          {mode === "pending" ? (
+            <>
+              <p>
+                {translate("ui.app.3f662b6d5a")}
+                {username}
+              </p>
+              {!editingEmail && (
+                <p>
+                  {translate("ui.app.b647dc9ed5")}
+                  {email}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <label>
+                {mode === "login"
+                  ? translate("ui.app.d5445276c3")
+                  : translate("ui.app.1a3f0617d6")}
+                <input
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  pattern={
+                    mode === "register" ? "[a-zA-Z0-9_]{3,24}" : undefined
+                  }
+                  placeholder={
+                    mode === "login"
+                      ? translate("ui.app.d5445276c3")
+                      : translate("ui.app.6836e3c9f4")
+                  }
+                />
+              </label>
+              <label>
+                {translate("ui.app.a621ab606d")}
+                <input
+                  type="password"
+                  autoComplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={mode === "login" ? 1 : 6}
+                  maxLength={128}
+                  placeholder={translate("ui.app.bff75c65ca")}
+                />
+              </label>
+            </>
+          )}
+          {(mode === "register" || (mode === "pending" && editingEmail)) && (
             <label>
-              恢复码
+              {translate("ui.app.73075237fd")}
               <input
-                value={recovery}
-                onChange={(e) => setRecovery(e.target.value)}
+                type="email"
+                autoComplete="email"
+                maxLength={254}
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={translate("ui.app.bde256979b")}
               />
             </label>
           )}
@@ -202,58 +286,75 @@ function Auth({ onLogin }: { onLogin: (data: any) => void }) {
               {error}
             </p>
           )}
-          <button className="primary full" disabled={busy}>
+          {mode === "register" && (
+            <p className="muted">{translate("ui.app.13e0b7c079")}</p>
+          )}
+          <button
+            className="primary full"
+            disabled={
+              busy ||
+              (mode !== "login" && !mailAvailable) ||
+              (mode === "pending" && cooldown > 0)
+            }
+          >
             {busy
-              ? "正在连接…"
+              ? translate("ui.app.8be0ea36a9")
               : mode === "login"
-                ? "登录弈间"
+                ? translate("ui.app.1e2df9c307")
                 : mode === "register"
-                  ? "注册并登录"
-                  : "重置密码"}
+                  ? translate("ui.app.a2f0554531")
+                  : cooldown > 0
+                    ? translate("ui.app.4f34e37061", { p0: cooldown })
+                    : editingEmail
+                      ? translate("ui.app.94d5bba8d2")
+                      : translate("ui.app.4dd824fd0e")}
           </button>
+          {mode === "pending" && !editingEmail && (
+            <button
+              type="button"
+              className="text-button"
+              disabled={busy}
+              onClick={() => {
+                setEditingEmail(true);
+                setError("");
+              }}
+            >
+              {translate("ui.app.da0f5e37e8")}
+            </button>
+          )}
         </form>
         <div className="auth-links">
           <button
             className="text-button"
-            onClick={() => setMode(mode === "login" ? "register" : "login")}
+            disabled={busy}
+            onClick={() => {
+              setMode(mode === "login" ? "register" : "login");
+              setError("");
+              setEmailNotice("");
+            }}
           >
-            {mode === "login" ? "创建账号" : "返回登录"}
+            {mode === "login"
+              ? translate("ui.app.f48d12cf53")
+              : translate("ui.app.747b0f9082")}
           </button>
-          <button className="text-button" onClick={() => setMode("recover")}>
-            忘记密码
-          </button>
+          <a className="text-button" href="#/email/forgot">
+            {translate("ui.app.d5ae661696")}
+          </a>
         </div>
-        <div className="divider" />
-        <button className="secondary full" onClick={() => go("/demo")}>
-          先看看游戏桌面
-        </button>
-        <p className="small muted">本地演示可切换座位，不会创建联机对局。</p>
       </section>
-      {saved && (
-        <div className="modal-backdrop">
-          <section className="modal">
-            <h2>请保存恢复码</h2>
-            <p>恢复码只显示这一次。忘记密码时，可以用它恢复账号。</p>
-            <code className="recovery-code">{saved}</code>
-            <button
-              className="primary"
-              onClick={() => {
-                setSaved("");
-                if (pendingLogin) onLogin(pendingLogin);
-              }}
-            >
-              我已保存
-            </button>
-          </section>
-        </div>
-      )}
     </main>
   );
 }
 function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
+  const [settings, setSettings] = useState(defaultGameSettings);
+  const [creating, setCreating] = useState(false);
+  const [seats, setSeats] = useState(3),
+    [setupMode, setSetupMode] =
+      useState<RoomOptionsValue["setupMode"]>("snake-reverse");
   const [rooms, setRooms] = useState<any[]>([]),
     [games, setGames] = useState<any[]>([]),
-    [visibility, setVisibility] = useState("public"),
+    [visibility, setVisibility] =
+      useState<RoomOptionsValue["visibility"]>("public"),
     [error, setError] = useState("");
   const refresh = async () => {
     try {
@@ -272,8 +373,17 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
     return () => clearInterval(t);
   }, []);
   const create = async () => {
+    if (creating) return;
+    setCreating(true);
+    setError("");
     try {
-      const room = await api("/rooms", { visibility, seats: 3 });
+      const room = await api("/rooms", {
+        visibility,
+        seats,
+        setupMode,
+        settings,
+      });
+      sessionStorage.setItem("room-invite:" + room.id, room.inviteToken);
       go(
         "/room/" +
           room.id +
@@ -281,71 +391,62 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
       );
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setCreating(false);
     }
   };
   return (
     <main className="lobby">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">很高兴又见到你，{user.name}</div>
-          <h1>{onlyGames ? "接着上次的思考" : "今天，玩点什么？"}</h1>
+          <h1>
+            {onlyGames
+              ? translate("ui.app.1ca69d5606")
+              : translate("ui.app.20ae1929b5")}
+          </h1>
         </div>
         <span className="status-pill">
           <i />
-          {games.filter((g) => g.needAction).length} 局等你行动
+          {games.filter((g) => g.needAction).length}{" "}
+          {translate("ui.app.84c9548de8")}
         </span>
       </div>
       {error && <p className="error">{error}</p>}
       {!onlyGames && (
         <section className="game-feature">
           <div>
-            <span className="tag">建设 · 策略 · 经济</span>
-            <h2>大创造时代</h2>
-            <div className="english-title">AGE OF INNOVATION</div>
-            <p>
-              让你的文明，从第一座工坊开始。
-              <br />
-              探索地形，精研学科，书写独一无二的创造时代。
-            </p>
-            <div className="feature-meta">
-              <span>三人固定配置预览</span>
-              <span>异步回合</span>
-              <span>进度自动保存</span>
-            </div>
+            <h2>{translate("ui.app.bf3a0186fa")}</h2>
+            <fieldset className="settings-fieldset" disabled={creating}>
+              <RoomOptions
+                value={{ visibility, seats, setupMode, settings }}
+                onChange={(next) => {
+                  setVisibility(next.visibility);
+                  setSeats(next.seats);
+                  setSetupMode(next.setupMode);
+                  setSettings(next.settings);
+                }}
+              />
+            </fieldset>
             <div className="inline">
-              <select
-                aria-label="房间可见性"
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
+              <button
+                className="primary"
+                disabled={
+                  creating || !/^[a-zA-Z0-9_-]{0,32}$/.test(settings.seed)
+                }
+                onClick={create}
               >
-                <option value="public">公开房间</option>
-                <option value="private">仅凭邀请加入</option>
-              </select>
-              <button className="primary" onClick={create}>
-                创建房间
+                {translate("ui.app.294e868dd0")}
               </button>
-              <button className="text-button" onClick={() => go("/demo")}>
-                试试桌面 →
-              </button>
-            </div>
-          </div>
-          <div className="city-art" aria-hidden="true">
-            <div className="art-sun" />
-            <div className="tower t1" />
-            <div className="tower t2" />
-            <div className="tower t3" />
-            <div className="art-caption">
-              一座城市，
-              <br />
-              无数种可能。
             </div>
           </div>
         </section>
       )}
       <section>
         <div className="section-heading">
-          <h2>我的对局</h2>
-          <span>{games.length} 局</span>
+          <h2>{translate("ui.app.1ca69d5606")}</h2>
+          <span>
+            {games.length} {translate("ui.app.cd6f79fbed")}
+          </span>
         </div>
         {games.length ? (
           <div className="card-grid">
@@ -357,199 +458,68 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
               >
                 <span className={"tag " + (g.needAction ? "attention" : "")}>
                   {g.status === "finished"
-                    ? "已结束"
+                    ? translate("ui.app.d79b1d0e5c")
                     : g.needAction
-                      ? "轮到你了"
-                      : "等待伙伴"}
+                      ? translate("ui.app.792c11bc85")
+                      : translate("ui.app.db87dc9b7d")}
                 </span>
-                <h3>大创造时代</h3>
+                <h3>{translate("ui.app.bf3a0186fa")}</h3>
                 <p>{g.names.join(" · ")}</p>
-                <span>第 {g.round} / 6 轮 →</span>
+                <span>
+                  {translate("ui.app.9552fe3bd3")}
+                  {g.round} {translate("ui.app.97f8658eeb")}
+                </span>
               </button>
             ))}
           </div>
         ) : (
-          <div className="empty-panel">
-            还没有对局。创建一张桌子，邀请朋友一起开始。
-          </div>
+          <div className="empty-panel">{translate("ui.app.46691788b6")}</div>
         )}
       </section>
       {!onlyGames && (
         <section>
           <div className="section-heading">
-            <h2>可以加入的房间</h2>
+            <h2>{translate("ui.app.1b384a7a97")}</h2>
             <button className="text-button" onClick={refresh}>
-              刷新
+              {translate("ui.app.aee8874341")}
             </button>
           </div>
           {rooms.length ? (
             <div className="room-list">
               {rooms.map((r) => (
-                <button key={r.id} onClick={() => go("/room/" + r.id)}>
-                  <span className="room-icon">⬡</span>
-                  <strong>{r.host} 的游戏桌</strong>
-                  <span>大创造时代</span>
-                  <span>
-                    {r.count} / {r.capacity} 人
+                <button
+                  key={r.id}
+                  className="room-list-card"
+                  onClick={() => go("/room/" + r.id)}
+                >
+                  <span className="room-icon" aria-hidden="true">
+                    ⬡
                   </span>
-                  <span className="tag">
-                    {r.visibility === "private" ? "邀请房间" : "公开招募"}
+                  <span className="room-list-info">
+                    <strong>
+                      {r.host} {translate("ui.app.a09722b422")}
+                    </strong>
+                    <RoomSummary
+                      visibility={r.visibility}
+                      capacity={r.capacity}
+                      setupMode={r.setupMode}
+                      settings={r.settings}
+                    />
                   </span>
-                  <span>查看 →</span>
+                  <span className="room-list-occupancy">
+                    {r.count} / {r.capacity} {translate("ui.app.d63842643d")}
+                  </span>
+                  <span className="room-list-open">
+                    {translate("ui.app.12ab391b1a")}
+                  </span>
                 </button>
               ))}
             </div>
           ) : (
-            <div className="empty-panel">
-              还没有等待中的房间，来开第一桌吧。
-            </div>
+            <div className="empty-panel">{translate("ui.app.34fa00ba5a")}</div>
           )}
         </section>
       )}
-      <aside className="roadmap">
-        <strong>下一张游戏桌</strong>
-        <span>神秘大地与扩展</span>
-        <span className="muted">计划中 · 优先完成大创造时代</span>
-      </aside>
-    </main>
-  );
-}
-function Room({
-  id,
-  invite,
-  user,
-}: {
-  id: string;
-  invite?: string;
-  user: any;
-}) {
-  const [room, setRoom] = useState<any>(null),
-    [error, setError] = useState("");
-  const refresh = () =>
-    api("/rooms/" + id)
-      .then(setRoom)
-      .catch((e) => setError(e.message));
-  useEffect(() => {
-    refresh();
-    const t = setInterval(() => {
-      if (!document.hidden) refresh();
-    }, 2500);
-    return () => clearInterval(t);
-  }, [id]);
-  useEffect(() => {
-    if (room?.gameId) go("/game/" + room.gameId);
-  }, [room?.gameId]);
-  const act = async (path: string, body = {}) => {
-    try {
-      setError("");
-      const r = await api("/rooms/" + id + path, body);
-      if (r.gameId) go("/game/" + r.gameId);
-      else await refresh();
-    } catch (e) {
-      setError((e as Error).message);
-    }
-  };
-  const own = room?.seats.find((s: any) => s.userId === user.id);
-  return (
-    <main className="room-page">
-      <a href="#/" className="back-link">
-        ← 返回大厅
-      </a>
-      <div className="eyebrow">大创造时代 · 三人功能测试</div>
-      <h1>等待大家落座</h1>
-      <p className="muted">
-        所有玩家准备后，由房主开始。当前使用固定家园与种族组合。
-      </p>
-      {error && <p className="error">{error}</p>}
-      {room && (
-        <>
-          <div className="seats">
-            {Array.from({ length: room.capacity }, (_, i) => {
-              const s = room.seats[i];
-              return (
-                <div className={"seat " + (s ? "occupied" : "")} key={i}>
-                  <div className="avatar">
-                    {s ? s.displayName.slice(0, 1) : "＋"}
-                  </div>
-                  <h3>{s?.displayName ?? "等待加入"}</h3>
-                  <p>
-                    {s
-                      ? s.ready
-                        ? "✓ 已准备"
-                        : "尚未准备"
-                      : "为朋友留一个位置"}
-                  </p>
-                  {s?.userId === room.hostId && (
-                    <span className="tag">房主</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <div className="room-controls">
-            {own ? (
-              <>
-                <button
-                  className="secondary"
-                  onClick={() => act("/ready", { ready: !own.ready })}
-                >
-                  {own.ready ? "取消准备" : "准备就绪"}
-                </button>
-                {room.hostId === user.id && (
-                  <button
-                    className="primary"
-                    disabled={
-                      room.seats.length !== room.capacity ||
-                      !room.seats.every((s: any) => s.ready)
-                    }
-                    onClick={() => act("/start")}
-                  >
-                    开始对局
-                  </button>
-                )}
-                <button
-                  className="text-button"
-                  onClick={async () => {
-                    await act("/leave");
-                    go("/");
-                  }}
-                >
-                  离开房间
-                </button>
-              </>
-            ) : (
-              <button
-                className="primary"
-                onClick={() => act("/join", { inviteToken: invite })}
-              >
-                加入这个房间
-              </button>
-            )}
-            <button
-              className="text-button"
-              onClick={() => {
-                navigator.clipboard
-                  .writeText(location.href)
-                  .then(() => setError("邀请链接已复制"))
-                  .catch(() => setError("请复制浏览器地址栏中的链接"));
-              }}
-            >
-              复制邀请链接
-            </button>
-          </div>
-        </>
-      )}
-      {!room && invite && (
-        <button
-          className="primary"
-          onClick={() => act("/join", { inviteToken: invite })}
-        >
-          加入这个房间
-        </button>
-      )}
-      <div className="notice">
-        开发预览目前还缺少部分能力、公共动作和完整开局选择，适合检查联机流程；正式试局前会补齐规则。
-      </div>
     </main>
   );
 }

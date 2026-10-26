@@ -1,3 +1,5 @@
+import { awardPoints } from "./score-events";
+import { advanceDeparted } from "./lifecycle";
 import type {
   GameState,
   GameAction,
@@ -10,9 +12,9 @@ import { RuleViolation, requireRule, pay, note, integer } from "./internal";
 import { burnPower } from "./actions/power";
 import { advanceScience } from "./actions/science";
 import { convert } from "./actions/convert";
-import { terraform, upgrade } from "./actions/build";
-import { acceptLeech, autoLeech, queueChoice } from "./responses";
-import { officialLarge } from "./map";
+import { terraform, upgrade, checkSupply } from "./actions/build";
+import { acceptLeech, autoLeech, queueChoice, offerLeech } from "./responses";
+import { officialLarge, reachable } from "./map";
 import { giveIncome, pass, awardRound, settlePhase } from "./rounds";
 import { findCities, takeCity } from "./actions/city";
 import { publicPower, innovate } from "./actions/public";
@@ -23,22 +25,120 @@ import { placeNeutral } from "./actions/neutral";
 import { competencyMarket } from "./catalog";
 import { gainScholar } from "./internal";
 import { gainPower } from "./actions/power";
-import { RULES_VERSION } from "./state";
+import { RULES_VERSION, supportsTurnPlanning } from "./state";
+import { ledgerEntry } from "./ledger";
+import { applyAction as legacyAction } from "../legacy/v1/engine";
+import {
+  applyAction as v2Action,
+  getAvailableChoices as v2Choices,
+} from "../legacy/v2/engine";
+import {
+  applyAction as v3Action,
+  getAvailableChoices as v3Choices,
+} from "../legacy/v3/engine";
+import {
+  applyAction as v4Action,
+  getAvailableChoices as v4Choices,
+} from "../legacy/v4/engine";
+import { canonicalState } from "./serialization";
+import type {
+  GameAction as LegacyAction,
+  GameState as LegacyState,
+} from "../legacy/v1/types";
+import {
+  chooseSetup,
+  draftPick,
+  finishPlacement,
+  placementOptions,
+} from "./setup";
+import { advanceTechnology } from "./technology";
+import { placeBridge } from "./actions/bridge";
+import { buildingRewards } from "./effects";
+import { ownBuildings } from "./internal";
+import {
+  applyActionRaw as v5Action,
+  getAvailableChoices as v5Choices,
+} from "../legacy/v5/engine";
 export { gainPower } from "./actions/power";
+function palaceRewardsFirst(
+  s: GameState,
+  choice: GameState["pending"][number],
+) {
+  return (
+    choice.kind !== "leech" &&
+    !choice.batch?.startsWith("engineering-palace:") &&
+    s.pending.some(
+      (c) =>
+        c.seat === choice.seat && c.batch?.startsWith("engineering-palace:"),
+    )
+  );
+}
+export function getAvailableChoices(s: GameState) {
+  if (s.rulesVersion.endsWith("engine-5")) return v5Choices(s);
+  if (s.rulesVersion.endsWith("engine-2"))
+    return v2Choices(s as any) as GameState["pending"];
+  if (s.rulesVersion.endsWith("engine-3"))
+    return v3Choices(s as any) as GameState["pending"];
+  if (s.rulesVersion.endsWith("engine-4"))
+    return v4Choices(s as any) as GameState["pending"];
+  return s.pending.filter(
+    (c) =>
+      (!s.activeEffectBatch ||
+        c.batch === s.activeEffectBatch ||
+        c.kind === "leech") &&
+      !palaceRewardsFirst(s, c) &&
+      !c.dependsOn?.some((id) => s.pending.some((other) => other.id === id)) &&
+      (!(["science", "setup"].includes(s.phase) && c.kind === "spades") ||
+        s.pending.find((other) => other.kind === "spades")?.id === c.id) &&
+      (c.kind === "key" ||
+        !s.pending.some(
+          (other) => other.seat === c.seat && other.kind === "key",
+        )) &&
+      (c.kind === "key" ||
+        c.kind === "neutral" ||
+        !s.pending.some(
+          (other) => other.seat === c.seat && other.kind === "neutral",
+        )),
+  );
+}
 export const getWaitingSeats = (s: GameState): SeatId[] =>
   s.status === "finished"
     ? []
     : s.pending.length
-      ? s.phase === "science" && s.pending.some((c) => c.kind === "spades")
-        ? [s.pending.find((c) => c.kind === "spades")!.seat]
-        : [...new Set(s.pending.map((c) => c.seat))]
+      ? [...new Set(getAvailableChoices(s).map((c) => c.seat))]
       : [s.activeSeat];
+export function canConvertDuringChoice(s: GameState, seat: SeatId) {
+  return (
+    supportsTurnPlanning(s.rulesVersion) &&
+    s.status !== "finished" &&
+    s.phase === "actions" &&
+    s.activeSeat === seat &&
+    !s.players[seat]?.passed &&
+    s.pending.some((c) => c.seat === seat)
+  );
+}
 export function getLegalActions(s: GameState, seat: SeatId): ActionOption[] {
+  if (s.matchResult?.loser === seat) return [];
   if (!s.players[seat] || s.status === "finished") return [];
   if (s.phase === "science" && !getWaitingSeats(s).includes(seat)) return [];
   if (s.pending.some((c) => c.seat === seat))
-    return [{ kind: "respond", label: "处理待响应" }];
+    return [
+      { kind: "respond", label: "处理待响应" },
+      ...(canConvertDuringChoice(s, seat)
+        ? [
+            { kind: "convert" as const, label: "资源转换" },
+            { kind: "burn" as const, label: "燃烧魔力" },
+          ]
+        : []),
+    ];
   if (s.pending.length || s.activeSeat !== seat) return [];
+  if (s.phase === "draft")
+    return [
+      {
+        kind: s.setup.draft ? "draftPick" : "chooseSetup",
+        label: "选择开局配置",
+      },
+    ];
   if (s.phase === "placement")
     return [{ kind: "place", label: "放置起始工坊" }];
   const free: ActionOption[] = [
@@ -67,6 +167,114 @@ export function applyAction(
   seat: SeatId,
   action: GameAction,
 ): Transition {
+  if (state.matchResult?.loser === seat)
+    return {
+      ok: false,
+      error: { code: "PLAYER_REMOVED", message: "PLAYER_REMOVED" },
+    };
+  return advanceDeparted(applyActionRaw(state, seat, action));
+}
+export function applyActionRaw(
+  state: GameState,
+  seat: SeatId,
+  action: GameAction,
+): Transition {
+  if (state.rulesVersion === "aoi-1.1+2024-09.engine-5")
+    return v5Action(state, seat, action);
+  if (action.kind === "turn") return applyTurn(state, seat, action.actions);
+  const result =
+    action.kind === "draftPick"
+      ? applyCurrentAction(state, seat, action)
+      : state.rulesVersion === "aoi-1.1+2024-09"
+        ? (legacyAction(
+            state as LegacyState,
+            seat,
+            action as LegacyAction,
+          ) as Transition)
+        : state.rulesVersion === "aoi-1.1+2024-09.engine-2"
+          ? v2Action(state as Parameters<typeof v2Action>[0], seat, action)
+          : state.rulesVersion === "aoi-1.1+2024-09.engine-3"
+            ? v3Action(state as Parameters<typeof v3Action>[0], seat, action)
+            : state.rulesVersion === "aoi-1.1+2024-09.engine-4"
+              ? v4Action(state as Parameters<typeof v4Action>[0], seat, action)
+              : applyCurrentAction(state, seat, action);
+  if (result.ok) {
+    for (const c of result.state.pending)
+      if (!state.pending.some((old) => old.id === c.id))
+        c.triggerRevision = state.revision + 1;
+    // Frozen v2 and v3 emit their own ledger.
+    if (
+      ![
+        "aoi-1.1+2024-09.engine-2",
+        "aoi-1.1+2024-09.engine-3",
+        "aoi-1.1+2024-09.engine-4",
+        "aoi-1.1+2024-09.engine-5",
+      ].includes(state.rulesVersion)
+    )
+      result.events.push(ledgerEntry(state, result.state, seat, action));
+  }
+  return result;
+}
+// One atomic command: intermediate choices remain private until the turn is
+// complete or another player's response is required. Each child is validated.
+export function applyTurn(
+  state: GameState,
+  seat: SeatId,
+  actions: Exclude<GameAction, { kind: "turn" }>[],
+): Transition {
+  const fail = (code: string): Transition => ({
+    ok: false,
+    error: { code, message: code },
+  });
+  if (state.rulesVersion !== RULES_VERSION) return fail("RULESET_UNAVAILABLE");
+  if (
+    state.phase !== "actions" ||
+    state.activeSeat !== seat ||
+    state.players[seat]?.passed ||
+    state.status === "finished"
+  )
+    return fail("NOT_YOUR_TURN");
+  if (!actions.length || actions.length > 100) return fail("INVALID_TURN");
+  let next = state;
+  const events: RuleEvent[] = [];
+  for (let i = 0; i < actions.length; i++) {
+    const action = actions[i];
+    if (
+      ["turn", "setLeech", "place", "chooseSetup", "draftPick"].includes(
+        action.kind,
+      )
+    )
+      return fail("INVALID_TURN");
+    if (next.pending.some((c) => c.seat !== seat && c.kind !== "leech"))
+      return fail("TURN_RESPONSE_REQUIRED");
+    if (
+      i &&
+      (next.activeSeat !== seat ||
+        next.phase !== "actions" ||
+        next.players[seat].passed ||
+        actions[i - 1].kind === "endTurn")
+    )
+      return fail("TURN_ALREADY_ENDED");
+    const result = applyActionRaw(next, seat, action);
+    if (!result.ok) return result;
+    next = result.state;
+    events.push(...result.events);
+  }
+  const last = actions.at(-1)!;
+  if (
+    last.kind !== "endTurn" &&
+    last.kind !== "pass" &&
+    !next.pending.some((c) => c.seat !== seat) &&
+    next.status !== "finished"
+  )
+    return fail("TURN_NOT_FINISHED");
+  return { ok: true, state: next, events };
+}
+function applyCurrentAction(
+  state: GameState,
+  seat: SeatId,
+  action: GameAction,
+): Transition {
   if (state.rulesVersion !== RULES_VERSION)
     return {
       ok: false,
@@ -75,7 +283,7 @@ export function applyAction(
         message: "This rules version is unavailable",
       },
     };
-  const s = structuredClone(state);
+  const s = canonicalState(state);
   s.shared.competencies ??= competencyMarket();
   s.shared.bookActions ??= s.setup.bookActions ?? ["power", "science", "coins"];
   for (const player of Object.values(s.players)) player.annexes ??= 0;
@@ -84,6 +292,18 @@ export function applyAction(
     const p = s.players[seat];
     requireRule(p, "UNKNOWN_SEAT");
     requireRule(s.status !== "finished", "GAME_FINISHED");
+    if (action.kind === "draftPick") {
+      draftPick(s, seat, action.category, action.option);
+      note(events, seat, "draftPick", `${p.name} 选择开局配置`, {
+        category: action.category,
+        option: action.option,
+      });
+      return { ok: true, state: s, events };
+    }
+    if (action.kind === "chooseSetup") {
+      chooseSetup(s, seat, action.offer);
+      return { ok: true, state: s, events };
+    }
     if (action.kind === "setLeech") {
       integer(action.maxVpCost);
       requireRule(
@@ -92,6 +312,12 @@ export function applyAction(
       );
       p.leechPolicy = { enabled: action.enabled, maxVpCost: action.maxVpCost };
       autoLeech(s, events);
+      if (
+        s.activeEffectBatch &&
+        !s.pending.some((c) => c.batch === s.activeEffectBatch)
+      )
+        delete s.activeEffectBatch;
+      settlePhase(s);
       return { ok: true, state: s, events };
     }
     if (action.kind === "respond") {
@@ -99,7 +325,20 @@ export function applyAction(
       requireRule(i >= 0, "STALE_CHOICE");
       const c = s.pending[i];
       requireRule(c.seat === seat, "WRONG_RESPONDER");
-      if (s.phase === "science" && c.kind === "spades")
+      requireRule(
+        !s.activeEffectBatch ||
+          c.batch === s.activeEffectBatch ||
+          c.kind === "leech",
+        "FINISH_EFFECT_BATCH",
+      );
+      requireRule(!palaceRewardsFirst(s, c), "FINISH_PALACE_REWARDS");
+      if (c.batch) s.activeEffectBatch = c.batch;
+      const priorChoices = new Set(s.pending.map((c) => c.id));
+      requireRule(
+        !c.dependsOn?.some((id) => s.pending.some((other) => other.id === id)),
+        "WAIT_DEPENDENCY",
+      );
+      if ((s.phase === "science" || s.phase === "setup") && c.kind === "spades")
         requireRule(
           s.pending.find((other) => other.kind === "spades")?.id === c.id,
           "WAIT_SCIENCE_ORDER",
@@ -120,12 +359,15 @@ export function applyAction(
         "RESOLVE_NEUTRAL_FIRST",
       );
       requireRule(c.options.includes(action.option), "INVALID_OPTION");
+      if (action.terraform?.travel)
+        requireRule(s.phase === "actions", "TRAVEL_ACTION_PHASE_ONLY");
       if (c.kind === "leech" && action.option === "accept")
         acceptLeech(p, c.amount, events);
       else if (c.kind === "spades" && action.option === "terraform") {
         requireRule(action.terraform, "MISSING_TERRAFORM");
         requireRule(
-          c.canBuild !== false || !action.terraform.build,
+          c.canBuild !== false ||
+            (!action.terraform.build && !action.terraform.deferBuild),
           "CANNOT_BUILD_IN_SCIENCE_PHASE",
         );
         const before = p.resources.tools;
@@ -142,8 +384,57 @@ export function applyAction(
           if (result.built) awardRound(s, p, "workshop");
         }
         findCities(s, p);
+      } else if (c.kind === "buildWorkshop" && action.option === "build") {
+        terraform(
+          s,
+          p,
+          {
+            kind: "terraform",
+            hex: c.source,
+            terrain: p.native,
+            build: true,
+          },
+          0,
+          c.travelPaid === true,
+        );
+        awardRound(s, p, "workshop");
+        findCities(s, p);
       } else if (c.kind === "city") takeCity(s, p, action.option);
-      else if (c.kind === "book")
+      else if (c.kind === "bridge" && action.option !== "discard") {
+        const [a, b] = action.option.split(":");
+        placeBridge(s, p, a, b);
+      } else if (
+        (c.kind === "freeGuild" || c.kind === "freeWorkshop") &&
+        action.option !== "discard"
+      ) {
+        const hex = action.option;
+        requireRule(
+          officialLarge.hexes[hex] &&
+            (s.board.terrain[hex] ?? officialLarge.hexes[hex].terrain) ===
+              p.native &&
+            !s.board.buildings[hex],
+          "INVALID_FREE_BUILD",
+        );
+        const kind = c.kind === "freeGuild" ? "guild" : "workshop";
+        checkSupply(s, p, kind);
+        if (c.kind === "freeWorkshop")
+          requireRule(
+            reachable(
+              officialLarge,
+              ownBuildings(s, seat).map(([id]) => id),
+              hex,
+              p.sailing + (p.bonus === "river" ? 1 : 0),
+              s.board.bridges,
+              seat,
+            ),
+            "OUT_OF_REACH",
+          );
+        s.board.buildings[hex] = { seat, kind };
+        offerLeech(s, seat, hex);
+        buildingRewards(s, p, hex);
+        awardRound(s, p, kind);
+        findCities(s, p);
+      } else if (c.kind === "book")
         p.resources.books[Number(action.option) as 0 | 1 | 2 | 3] += c.amount;
       else if (c.kind === "science") {
         const track = Number(action.option) as 0 | 1 | 2 | 3;
@@ -158,26 +449,77 @@ export function applyAction(
         placeNeutral(s, p, c.buildingKind, action.option);
       }
       s.pending.splice(i, 1);
+      if (c.batch)
+        for (const child of s.pending)
+          if (
+            !priorChoices.has(child.id) &&
+            (!c.batch.startsWith("engineering-palace:") ||
+              child.kind === "buildWorkshop")
+          )
+            child.batch = c.batch;
       autoLeech(s, events);
+      if (
+        s.activeEffectBatch &&
+        !s.pending.some((c) => c.batch === s.activeEffectBatch)
+      )
+        delete s.activeEffectBatch;
+      if (s.phase === "setup")
+        for (const pending of s.pending)
+          if (pending.kind === "spades") pending.canBuild = false;
       settlePhase(s);
       note(events, seat, "response", `${p.name} 已处理选择`);
       return { ok: true, state: s, events };
     }
     requireRule(s.activeSeat === seat, "NOT_YOUR_TURN");
-    requireRule(!s.pending.length, "PENDING_CHOICES");
+    requireRule(
+      !s.pending.length ||
+        ((action.kind === "convert" || action.kind === "burn") &&
+          canConvertDuringChoice(s, seat)),
+      "PENDING_CHOICES",
+    );
     if (s.phase === "placement") {
       requireRule(action.kind === "place", "INITIAL_PLACEMENT_REQUIRED");
       const h = officialLarge.hexes[action.hex];
       requireRule(h?.terrain === p.native, "NOT_NATIVE_TERRAIN");
       requireRule(!s.board.buildings[action.hex], "OCCUPIED");
-      s.board.buildings[action.hex] = { seat, kind: "workshop" };
+      const options = placementOptions(s, seat);
+      const kind = action.building ?? options[0];
+      requireRule(options.includes(kind), "INVALID_STARTING_BUILDING");
+      s.board.buildings[action.hex] = {
+        seat,
+        kind,
+        ...(kind === "tower" ? { neutral: true } : {}),
+      };
       s.placementIndex++;
       if (s.placementIndex === s.placementOrder.length) {
-        s.phase = "actions";
-        s.activeSeat = s.turnOrder[0];
-        giveIncome(s);
+        if (s.setup.offers || s.setup.draft) {
+          finishPlacement(s);
+          settlePhase(s);
+        } else {
+          s.phase = "actions";
+          s.activeSeat = s.turnOrder[0];
+          giveIncome(s);
+        }
       } else s.activeSeat = s.placementOrder[s.placementIndex];
-      note(events, seat, "place", `${p.name} 放置起始工坊`);
+      note(events, seat, "place", `${p.name} 放置起始建筑`);
+      return { ok: true, state: s, events };
+    }
+    requireRule(s.phase === "actions", "INVALID_PHASE");
+    if (action.kind === "riverCity") {
+      requireRule(
+        p.palace === "river-city" &&
+          officialLarge.hexes[action.hex]?.terrain === "river",
+        "INVALID_RIVER_CITY",
+      );
+      requireRule(
+        !s.board.cityLinks?.some((l) => l.river === action.hex),
+        "RIVER_CITY_USED",
+      );
+      s.board.cityLinks ??= [];
+      s.board.cityLinks.push({ seat, river: action.hex });
+      const before = s.pending.length;
+      findCities(s, p);
+      requireRule(s.pending.length > before, "NO_CITY_CREATED");
       return { ok: true, state: s, events };
     }
     if (action.kind === "convert") convert(s, p, action);
@@ -206,7 +548,6 @@ export function applyAction(
           p,
           ["palace", "university"].includes(action.to) ? "big" : action.to,
         );
-        if (action.to === "guild" && p.bonus === "guild") p.vp += 3;
         findCities(s, p);
       } else if (action.kind === "scholar") {
         requireRule(
@@ -232,36 +573,23 @@ export function applyAction(
           gain = action.slot === 0 ? 3 : 2;
         }
         advanceScience(s, p, action.track, gain);
-        if (p.bonus === "scholar") p.vp += 2;
-        if (p.competencies.includes("scholar-score")) p.vp += 2;
+        if (p.bonus === "scholar") awardPoints(s, p, 2, "学者奖励板");
+        if (p.competencies.includes("scholar-score"))
+          awardPoints(s, p, 2, "派遣学者能力");
       } else if (action.kind === "advance") {
-        awardRound(s, p, "advance");
-        if (action.track === "sailing") {
-          requireRule(p.sailing < 3, "TRACK_MAX");
-          pay(p, { scholars: 1, coins: 4 });
-          p.sailing++;
-          if (p.sailing === 2)
-            queueChoice(s, seat, "book", 2, ["0", "1", "2", "3"], "sailing");
-          else p.vp += p.sailing === 1 ? 2 : 4;
-        } else {
-          requireRule(p.terraformLevel < 2, "TRACK_MAX");
-          pay(p, {
-            tools: 1,
-            coins: p.native === "plains" ? 1 : 5,
-            scholars: 1,
-          });
-          p.terraformLevel++;
-          if (p.terraformLevel === 1)
-            queueChoice(s, seat, "book", 2, ["0", "1", "2", "3"], "terraform");
-          else p.vp += 6;
-        }
+        advanceTechnology(s, p, action.track);
       } else if (action.kind === "powerAction") publicPower(s, p, action);
       else if (action.kind === "innovation") innovate(s, p, action);
       else if (action.kind === "special") special(s, p, action);
       else if (action.kind === "bookAction") bookAction(s, p, action);
       else if (action.kind === "pass") pass(s, p, action.bonus);
       else requireRule(false, "UNSUPPORTED_ACTION");
-      if (action.kind !== "pass") p.primaryDone = true;
+      if (action.kind !== "pass") {
+        if (p.extraActions) {
+          p.extraActions--;
+          p.primaryDone = false;
+        } else p.primaryDone = true;
+      }
     }
     autoLeech(s, events);
     note(events, seat, action.kind, `${p.name}：${action.kind}`);

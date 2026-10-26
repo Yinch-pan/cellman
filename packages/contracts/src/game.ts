@@ -16,11 +16,36 @@ const terraformInput = z.object({
   hex,
   terrain,
   build: z.boolean(),
+  deferBuild: z.boolean().optional(),
   additional,
+  travel: z.enum(["tunnel", "flight"]).optional(),
 });
-export const actionSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("place"), hex }),
-  z.object({ kind: z.literal("terraform"), hex, terrain, build: z.boolean() }),
+export const atomicActionSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("draftPick"),
+      category: z.enum(["faction", "native", "palace", "bonus"]),
+      option: z.string().min(1).max(80),
+    })
+    .strict(),
+  z.object({ kind: z.literal("riverCity"), hex }),
+  z.object({
+    kind: z.literal("chooseSetup"),
+    offer: z.number().int().min(0).max(6),
+  }),
+  z.object({
+    kind: z.literal("place"),
+    hex,
+    building: z.enum(["workshop", "tower", "university"]).optional(),
+  }),
+  z.object({
+    kind: z.literal("terraform"),
+    hex,
+    terrain,
+    build: z.boolean(),
+    deferBuild: z.boolean().optional(),
+    travel: z.enum(["tunnel", "flight"]).optional(),
+  }),
   z.object({
     kind: z.literal("upgrade"),
     hex,
@@ -54,10 +79,12 @@ export const actionSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("powerAction"),
+    travel: z.enum(["tunnel", "flight"]).optional(),
     id: z.string().max(80),
     hex: hex.optional(),
     terrain: terrain.optional(),
     build: z.boolean().optional(),
+    deferBuild: z.boolean().optional(),
     additional,
     a: hex.optional(),
     b: hex.optional(),
@@ -78,6 +105,9 @@ export const actionSchema = z.discriminatedUnion("kind", [
     kind: z.literal("special"),
     source: z.string().max(80),
     hex: hex.optional(),
+    a: hex.optional(),
+    b: hex.optional(),
+    track: track.optional(),
   }),
   z.object({
     kind: z.literal("bookAction"),
@@ -101,6 +131,13 @@ export const actionSchema = z.discriminatedUnion("kind", [
     kind: z.literal("setLeech"),
     enabled: z.boolean(),
     maxVpCost: z.number().int().min(0).max(999),
+  }),
+]);
+export const actionSchema = z.union([
+  atomicActionSchema,
+  z.object({
+    kind: z.literal("turn"),
+    actions: z.array(atomicActionSchema).min(1).max(100),
   }),
 ]);
 export const commandSchema = z.object({

@@ -1,27 +1,26 @@
+import { reviewContext } from "./review-context";
 import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
+import { seedAccount } from "./account-fixture";
 for (const failure of ["abort", "gateway"])
   test(`lost ${failure} response after commit retries the same command without a second write`, async ({
     browser,
   }) => {
     const contexts = await Promise.all(
       [0, 1, 2].map(() =>
-        browser.newContext({ baseURL: "http://127.0.0.1:5174" }),
+        reviewContext(browser, {
+          baseURL: `http://127.0.0.1:${process.env.E2E_WEB_PORT ?? "5174"}`,
+        }),
       ),
     );
     const sessions: { csrf: string }[] = [];
     for (let i = 0; i < 3; i++) {
       const username = "retry" + randomUUID().replaceAll("-", "").slice(0, 12);
       const body = { username, password: "retry-test-password" };
-      const headers = { origin: "http://127.0.0.1:5174" };
-      expect(
-        (
-          await contexts[i].request.post("/api/auth/register", {
-            data: body,
-            headers,
-          })
-        ).ok(),
-      ).toBe(true);
+      const headers = {
+        origin: `http://127.0.0.1:${process.env.E2E_WEB_PORT ?? "5174"}`,
+      };
+      await seedAccount(body);
       const response = await contexts[i].request.post("/api/auth/login", {
         data: body,
         headers,
@@ -32,12 +31,16 @@ for (const failure of ["abort", "gateway"])
       contexts[i].request.post("/api" + path, {
         data,
         headers: {
-          origin: "http://127.0.0.1:5174",
+          origin: `http://127.0.0.1:${process.env.E2E_WEB_PORT ?? "5174"}`,
           "x-csrf-token": sessions[i].csrf,
         },
       });
     const room = await (
-      await post(0, "/rooms", { visibility: "public", seats: 3 })
+      await post(0, "/rooms", {
+        visibility: "public",
+        seats: 3,
+        setupMode: "training",
+      })
     ).json();
     for (let i = 1; i < 3; i++)
       await post(i, "/rooms/" + room.id + "/join", {});
@@ -52,10 +55,14 @@ for (const failure of ["abort", "gateway"])
       await contexts[0].request.get("/api/games/" + gameId)
     ).json();
     await page.getByRole("button", { name: "A1 森林" }).click();
-    await page.getByRole("button", { name: "预览行动", exact: true }).click();
+    await page.getByRole("button", { name: "执行行动", exact: true }).click();
     if (failure === "abort") {
       const secondRoom = await (
-        await post(0, "/rooms", { visibility: "public", seats: 3 })
+        await post(0, "/rooms", {
+          visibility: "public",
+          seats: 3,
+          setupMode: "training",
+        })
       ).json();
       for (let i = 1; i < 3; i++)
         await post(i, "/rooms/" + secondRoom.id + "/join", {});
@@ -78,7 +85,7 @@ for (const failure of ["abort", "gateway"])
         location.hash = "/game/" + id;
       }, gameId);
       await page.getByRole("button", { name: "A1 森林" }).click();
-      await page.getByRole("button", { name: "预览行动", exact: true }).click();
+      await page.getByRole("button", { name: "执行行动", exact: true }).click();
     }
     let attempts = 0;
     const ids: string[] = [];

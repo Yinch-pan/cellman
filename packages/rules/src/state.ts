@@ -1,8 +1,34 @@
 import type { GameState, Player, SetupConfig } from "./types";
 import { gainPower } from "./actions/power";
 import { competencyMarket } from "./catalog";
-export const RULES_VERSION = "aoi-1.1+2024-09";
+import { factions } from "./content";
+import { createGame as createLegacyGame } from "../legacy/v1/state";
+import { createGame as createV2Game } from "../legacy/v2/state";
+import { createGame as createV3Game } from "../legacy/v3/state";
+import { createGame as createV4Game } from "../legacy/v4/state";
+import { createGame as createV5Game } from "../legacy/v5/state";
+export const RULES_VERSION = "aoi-1.1+2024-09.engine-6";
+export const supportsTurnPlanning = (version: string) =>
+  [RULES_VERSION, "aoi-1.1+2024-09.engine-5"].includes(version);
+export const SUPPORTED_RULES = [
+  RULES_VERSION,
+  "aoi-1.1+2024-09.engine-5",
+  "aoi-1.1+2024-09.engine-4",
+  "aoi-1.1+2024-09.engine-3",
+  "aoi-1.1+2024-09.engine-2",
+  "aoi-1.1+2024-09",
+];
 export function createGame(setup: SetupConfig): GameState {
+  if (setup.rulesVersion === "aoi-1.1+2024-09.engine-5")
+    return createV5Game(setup);
+  if (setup.rulesVersion === "aoi-1.1+2024-09.engine-4")
+    return createV4Game(setup);
+  if (setup.rulesVersion === "aoi-1.1+2024-09.engine-3")
+    return createV3Game(setup);
+  if (setup.rulesVersion === "aoi-1.1+2024-09.engine-2")
+    return createV2Game(setup);
+  if (setup.rulesVersion === "aoi-1.1+2024-09")
+    return createLegacyGame(setup) as GameState;
   if (setup.rulesVersion !== RULES_VERSION)
     throw new Error("RULESET_UNAVAILABLE");
   if (setup.mapId !== "official-large") throw new Error("UNSUPPORTED_MAP");
@@ -20,22 +46,15 @@ export function createGame(setup: SetupConfig): GameState {
   const players: Record<string, Player> = {};
   for (const p of setup.players) {
     const science: [number, number, number, number] = [0, 0, 0, 0];
-    if (p.native === "forest" || p.faction === "blessed") science.fill(1);
-    if (p.native === "forest" && p.faction === "blessed") science.fill(2);
-    const boosts: Record<string, number[]> = {
-      goblins: [1, 0, 1, 0],
-      navigators: [0, 3, 0, 0],
-      omar: [1, 0, 1, 0],
-      philosophers: [2, 0, 0, 0],
-    };
-    boosts[p.faction]?.forEach((n, i) => (science[i] += n));
+    if (p.native === "forest") science.fill(1);
+    factions[p.faction]?.science.forEach((n, i) => (science[i] += n));
     players[p.seat] = {
       ...p,
       resources: {
         coins: 15,
         tools:
           3 +
-          (p.faction === "goblins" ? 1 : 0) +
+          (factions[p.faction]?.tools ?? 0) +
           (p.native === "wasteland" ? 1 : 0),
         scholars: p.native === "swamp" ? 1 : 0,
         books: [0, 0, 0, 0],
@@ -78,15 +97,21 @@ export function createGame(setup: SetupConfig): GameState {
     rulesVersion: RULES_VERSION,
     revision: 0,
     setup: structuredClone(setup),
-    phase: "placement",
+    phase: setup.offers || setup.draft ? "draft" : "placement",
     round: 1,
-    activeSeat: order[0],
+    activeSeat: setup.draft
+      ? setup.draft.direction === "reverse"
+        ? order[order.length - 1]
+        : order[0]
+      : setup.offers
+        ? order[order.length - 1]
+        : order[0],
     players,
     board: { mapId: setup.mapId, terrain: {}, buildings: {}, bridges: [] },
     shared: {
       usedActions: [],
       bookActions: setup.bookActions ?? ["power", "science", "coins"],
-      competencies: competencyMarket(),
+      competencies: competencyMarket(setup.competencyOrder),
       scholarSlots: Array.from({ length: 4 }, () => [null, null, null, null]),
       cities: Object.fromEntries(
         [
@@ -115,6 +140,13 @@ export function createGame(setup: SetupConfig): GameState {
     placementOrder: [...order, ...[...order].reverse()],
     placementIndex: 0,
     choiceSerial: 0,
+    ...(setup.offers ? { draftIndex: 0, chosenOffers: [] } : {}),
+    ...(setup.draft
+      ? {
+          draftIndex: 0,
+          draftPicks: Object.fromEntries(order.map((seat) => [seat, {}])),
+        }
+      : {}),
     scores: [],
   };
 }

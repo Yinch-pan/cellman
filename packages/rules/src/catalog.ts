@@ -12,8 +12,8 @@ export const competencyIds = [
   "city-pass",
   "min-science-pass",
 ] as const;
-export const competencyMarket = () =>
-  competencyIds.map((id, index) => ({
+export const competencyMarket = (order: readonly string[] = competencyIds) =>
+  order.map((id, index) => ({
     id,
     color: (index % 4) as 0 | 1 | 2 | 3,
     row: Math.floor(index / 4),

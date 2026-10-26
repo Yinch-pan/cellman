@@ -2,6 +2,8 @@
 import { createServer } from "vite";
 import { Pool, migrate } from "../../apps/server/src/db/pool";
 import { createApp } from "../../apps/server/src/app";
+import { encryptedMailer } from "../../apps/server/src/mail/transport";
+import { startMailWorker } from "../../apps/server/src/mail/worker";
 const url = process.env.TEST_DATABASE_URL;
 if (!url) throw Error("TEST_DATABASE_URL is required for browser tests");
 const schema = process.env.E2E_SCHEMA;
@@ -16,15 +18,32 @@ const db = new Pool({
 });
 await admin.query(`CREATE SCHEMA ${schema}`);
 await migrate(db);
-const api = createApp(db, "http://127.0.0.1:5174");
-await api.listen({ port: 3002, host: "127.0.0.1" });
+// This sink exists only inside the isolated E2E database. No SMTP or test API route.
+await db.query(
+  "CREATE TABLE test_mail_deliveries(id text PRIMARY KEY,message jsonb NOT NULL,created_at timestamptz DEFAULT now())",
+);
+const mailer = encryptedMailer(
+  Buffer.from(process.env.E2E_MAIL_KEY!, "base64"),
+  async (message, id) => {
+    await db.query(
+      "INSERT INTO test_mail_deliveries(id,message) VALUES($1,$2) ON CONFLICT DO NOTHING",
+      [id, JSON.stringify(message)],
+    );
+  },
+);
+const webPort = Number(process.env.E2E_WEB_PORT ?? 5174);
+const apiPort = Number(process.env.E2E_API_PORT ?? 3002);
+const origin = `http://127.0.0.1:${webPort}`;
+const api = createApp(db, origin, false, [], [], mailer);
+const stopMail = startMailWorker(db, mailer, origin);
+await api.listen({ port: apiPort, host: "127.0.0.1" });
 const web = await createServer({
   configFile: "apps/web/vite.config.ts",
   server: {
     host: "127.0.0.1",
-    port: 5174,
+    port: webPort,
     strictPort: true,
-    proxy: { "/api": "http://127.0.0.1:3002" },
+    proxy: { "/api": `http://127.0.0.1:${apiPort}` },
   },
 });
 await web.listen();
@@ -34,6 +53,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const)
   process.on(signal, async () => {
     if (stopping) return;
     stopping = true;
+    await stopMail();
     await web.close();
     api.server.closeAllConnections();
     await api.close();

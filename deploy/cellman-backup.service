@@ -1,0 +1,7 @@
+[Unit]
+Description=Back up cellman database
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /srv/cellman/current/deploy/backup.sh

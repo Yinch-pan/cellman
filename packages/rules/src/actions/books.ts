@@ -1,3 +1,4 @@
+import { awardPoints } from "../score-events";
 import type { GameState, Player, GameAction } from "../types";
 import { integer, requireRule, ownBuildings } from "../internal";
 import { gainPower } from "./power";
@@ -44,13 +45,16 @@ export function bookAction(
     advanceScience(s, p, a.track, 2);
   }
   if (a.id === "guild-score")
-    p.vp +=
-      ownBuildings(s, p.seat).filter(([, b]) => b.kind === "guild").length * 2;
+    awardPoints(
+      s,
+      p,
+      ownBuildings(s, p.seat).filter(([, b]) => b.kind === "guild").length * 2,
+      "书籍公共行动",
+    );
   if (a.id === "upgrade") {
     requireRule(a.hex, "INVALID_HEX");
     upgrade(s, p, { kind: "upgrade", hex: a.hex, to: "guild" }, true);
     awardRound(s, p, "guild");
-    if (p.bonus === "guild") p.vp += 3;
     findCities(s, p);
   }
   if (a.id === "spades")

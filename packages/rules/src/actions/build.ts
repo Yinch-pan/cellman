@@ -1,9 +1,13 @@
+import { awardPoints } from "../score-events";
 import type { GameState, Player, GameAction, BuildingKind } from "../types";
 import { requireRule, pay, ownBuildings } from "../internal";
 import { officialLarge, reachable, terrainDistance, connected } from "../map";
 import { offerLeech, queueChoice } from "../responses";
 import { competencyOptions } from "./competency";
 import { gainPower } from "./power";
+import { palaces } from "../content";
+import { palaceEffect, buildingRewards } from "../effects";
+import { travelReach } from "../travel";
 const limits: Partial<Record<BuildingKind, number>> = {
   workshop: 9,
   guild: 4,
@@ -23,6 +27,7 @@ export function terraform(
   p: Player,
   a: Extract<GameAction, { kind: "terraform" }>,
   freeSpades = 0,
+  travelPaid = false,
 ) {
   const targets = [{ hex: a.hex, terrain: a.terrain }, ...(a.additional ?? [])];
   requireRule(targets.length <= Math.max(1, freeSpades), "TOO_MANY_TERRAINS");
@@ -37,17 +42,30 @@ export function terraform(
     requireRule(hex && hex.terrain !== "river", "INVALID_HEX");
     requireRule(!s.board.buildings[target.hex], "OCCUPIED");
     requireRule(
-      reachable(
-        officialLarge,
-        ownBuildings(s, p.seat).map(([id]) => id),
-        target.hex,
-        p.sailing + (p.bonus === "river" ? 1 : 0),
-        s.board.bridges,
-        p.seat,
-      ),
+      i === 0 && travelPaid && a.build && a.terrain === p.native
+        ? true
+        : i === 0 && a.travel
+          ? travelReach(s, p, target.hex, a.travel)
+          : reachable(
+              officialLarge,
+              ownBuildings(s, p.seat).map(([id]) => id),
+              target.hex,
+              p.sailing + (p.bonus === "river" ? 1 : 0),
+              s.board.bridges,
+              p.seat,
+            ),
       "OUT_OF_REACH",
     );
     const current = s.board.terrain[target.hex] ?? hex.terrain;
+    if (i === 0 && a.travel) {
+      pay(p, a.travel === "tunnel" ? { tools: 1 } : { scholars: 1 });
+      awardPoints(
+        s,
+        p,
+        a.travel === "tunnel" ? s.turnOrder.length + 2 : 5,
+        a.travel === "tunnel" ? "隧道" : "飞行",
+      );
+    }
     const used = terrainDistance(current, target.terrain);
     requireRule(
       used + terrainDistance(target.terrain, p.native) ===
@@ -57,7 +75,7 @@ export function terraform(
     requireRule(used > 0 || (i === 0 && a.build), "EMPTY_ACTION");
     if (i > 0) {
       requireRule(
-        targets[i - 1].terrain === p.native,
+        s.phase === "science" || targets[i - 1].terrain === p.native,
         "FIRST_TERRAIN_INCOMPLETE",
       );
       requireRule(totalUsed + used <= freeSpades, "NO_SURPLUS_SPADES");
@@ -78,20 +96,18 @@ export function terraform(
     pay(p, { tools: 1, coins: 2 });
     s.board.buildings[a.hex] = { seat: p.seat, kind: "workshop" };
     offerLeech(s, p.seat, a.hex);
-    if (p.palace === "workshop-score") p.vp += 2;
-    const riverside = officialLarge.neighbors[a.hex].some(
-      (n) => officialLarge.hexes[n].terrain === "river",
-    );
-    if (p.faction === "navigators" && riverside) {
-      p.vp += 2;
-      p.resources.coins++;
-    }
-    if (p.bonus === "river" && riverside) p.vp += 2;
-    if (
-      p.competencies.includes("border-score") &&
-      officialLarge.neighbors[a.hex].length < 6
-    )
-      p.vp += 3;
+    buildingRewards(s, p, a.hex);
+  }
+  if (
+    a.deferBuild &&
+    !a.build &&
+    a.terrain === p.native &&
+    s.phase === "actions"
+  ) {
+    queueChoice(s, p.seat, "buildWorkshop", 1, ["build", "discard"], a.hex);
+    // Only the engine-created continuation can reuse paid travel. Commands
+    // cannot supply this flag or obtain a second travel score/payment.
+    if (a.travel) s.pending.at(-1)!.travelPaid = true;
   }
   return { spades: totalUsed, built: a.build };
 }
@@ -124,31 +140,23 @@ export function upgrade(
     university: { tools: 5, coins: 8 },
   };
   if (!free) pay(p, costs[a.to as keyof typeof costs]);
+  b.kind = a.to;
   if (a.to === "palace") {
+    const selected = p.draftPalace ?? a.palace;
     requireRule(
-      !!a.palace && s.shared.palaces.includes(a.palace),
+      !!selected &&
+        (p.draftPalace
+          ? !a.palace || a.palace === p.draftPalace
+          : s.shared.palaces.includes(selected)),
       "INVALID_PALACE",
     );
-    requireRule(
-      [
-        "workshop-score",
-        "city-discount",
-        "school-pass",
-        "power-books",
-        "immediate-score",
-      ].includes(a.palace),
-      "UNSUPPORTED_ABILITY",
-    );
-    p.palace = a.palace;
-    if (a.palace === "immediate-score") p.vp += 10;
-    if (a.palace === "power-books") {
-      p.resources.power = gainPower(p.resources.power, 12);
-      queueChoice(s, p.seat, "book", 2, ["0", "1", "2", "3"], "palace");
-    }
-    s.shared.palaces = s.shared.palaces.filter((id) => id !== a.palace);
+    requireRule(Object.hasOwn(palaces, selected!), "UNSUPPORTED_ABILITY");
+    p.palace = selected!;
+    palaceEffect(s, p, selected!);
+    s.shared.palaces = s.shared.palaces.filter((id) => id !== selected);
   }
-  b.kind = a.to;
   if (a.to === "school" || a.to === "university")
     queueChoice(s, p.seat, "competency", 1, competencyOptions(s, p), "upgrade");
   offerLeech(s, p.seat, a.hex);
+  buildingRewards(s, p, a.hex);
 }

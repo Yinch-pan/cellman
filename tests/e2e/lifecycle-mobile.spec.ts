@@ -1,3 +1,4 @@
+import { reviewContext } from "./review-context";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 const fixture = JSON.parse(
@@ -16,7 +17,7 @@ test("local six-round UI matches the independently calculated scores", async ({
   await page.getByRole("button", { name: "重新开始", exact: true }).click();
   for (const [, hex] of fixture.placements) {
     await page.locator('[role="button"][aria-label^="' + hex + ' "]').click();
-    await page.getByRole("button", { name: "预览行动", exact: true }).click();
+    await page.getByRole("button", { name: "执行行动", exact: true }).click();
     await page.getByRole("button", { name: "确认提交", exact: true }).click();
   }
   for (let round = 1; round <= 6; round++) {
@@ -44,9 +45,17 @@ test("local six-round UI matches the independently calculated scores", async ({
     }
   }
   await expect(page.getByRole("heading", { name: "终局成绩" })).toBeVisible();
-  await expect(page.getByText("你 · 73 分", { exact: true })).toBeVisible();
-  await expect(page.getByText("林间客 · 51 分", { exact: true })).toBeVisible();
-  await expect(page.getByText("远行者 · 53 分", { exact: true })).toBeVisible();
+  await expect(page.locator(".final-scores")).toContainText(/你\s*73\s*分/);
+  await expect(page.locator(".final-scores")).toContainText(/林间客\s*51\s*分/);
+  await expect(page.locator(".final-scores")).toContainText(/远行者\s*53\s*分/);
+  const finalState = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("boardgame-demo-v1")!),
+  );
+  expect(
+    finalState.scores
+      .map((score: { total: number }) => score.total)
+      .sort((a: number, b: number) => a - b),
+  ).toEqual([51, 53, 73]);
 });
 for (const viewport of [
   { width: 390, height: 844 },
@@ -55,7 +64,7 @@ for (const viewport of [
   test(`mobile ${viewport.width} selects, previews and saves without overflow`, async ({
     browser,
   }) => {
-    const context = await browser.newContext({ viewport });
+    const context = await reviewContext(browser, { viewport });
     const page = await context.newPage();
     await page.goto("/#/demo");
     const target = await page
@@ -63,7 +72,7 @@ for (const viewport of [
       .boundingBox();
     expect(target!.width).toBeGreaterThanOrEqual(44);
     await page.getByRole("button", { name: "A1 森林" }).click();
-    await page.getByRole("button", { name: "预览行动", exact: true }).click();
+    await page.getByRole("button", { name: "执行行动", exact: true }).click();
     await page.getByRole("button", { name: "确认提交", exact: true }).click();
     await expect(page.getByText("局面版本 1", { exact: true })).toBeVisible();
     expect(

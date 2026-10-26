@@ -1,3 +1,4 @@
+import { awardPoints } from "./score-events";
 import type { GameState, Player } from "./types";
 export function awardRound(s: GameState, p: Player, event: string, count = 1) {
   if (s.phase !== "actions") return;
@@ -16,11 +17,14 @@ export function awardRound(s: GameState, p: Player, event: string, count = 1) {
     "advance-engineering": ["advance", 3],
     "innovation-law": ["innovation", 5],
   };
-  if (trigger[tile]?.[0] === event) p.vp += trigger[tile][1] * count;
+  if (trigger[tile]?.[0] === event)
+    awardPoints(s, p, trigger[tile][1] * count, `第 ${s.round} 轮计分板`);
   if (s.round === 6) {
     if (s.setup.finalRoundTile === "workshop" && event === "workshop")
-      p.vp += 2;
-    if (s.setup.finalRoundTile === "guild" && event === "guild") p.vp += 3;
-    if (s.setup.finalRoundTile === "school" && event === "school") p.vp += 4;
+      awardPoints(s, p, 2, s.round === 6 ? "第六轮计分奖励" : "轮次计分奖励");
+    if (s.setup.finalRoundTile === "guild" && event === "guild")
+      awardPoints(s, p, 3, s.round === 6 ? "第六轮计分奖励" : "轮次计分奖励");
+    if (s.setup.finalRoundTile === "school" && event === "school")
+      awardPoints(s, p, 4, s.round === 6 ? "第六轮计分奖励" : "轮次计分奖励");
   }
 }

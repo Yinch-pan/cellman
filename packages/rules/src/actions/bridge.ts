@@ -1,10 +1,26 @@
 import type { GameState, Player } from "../types";
 import { requireRule } from "../internal";
-import { bridgeSites } from "../map";
+import { bridgeSites, officialLarge, adjacent } from "../map";
+export function validBridgeGeometry(a: string, b: string, moles = false) {
+  if (bridgeSites.some((pair) => pair.includes(a) && pair.includes(b)))
+    return true;
+  return (
+    moles &&
+    a !== b &&
+    !!officialLarge.hexes[a] &&
+    !!officialLarge.hexes[b] &&
+    officialLarge.hexes[a].terrain !== "river" &&
+    officialLarge.hexes[b].terrain !== "river" &&
+    !adjacent(officialLarge, a, b) &&
+    officialLarge.neighbors[a].filter((id) =>
+      officialLarge.neighbors[b].includes(id),
+    ).length === 2
+  );
+}
 import { findCities } from "./city";
 export function placeBridge(s: GameState, p: Player, a: string, b: string) {
   requireRule(
-    bridgeSites.some((pair) => pair.includes(a) && pair.includes(b)),
+    validBridgeGeometry(a, b, p.faction === "moles"),
     "INVALID_BRIDGE_SITE",
   );
   requireRule(

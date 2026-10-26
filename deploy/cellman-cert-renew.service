@@ -1,0 +1,7 @@
+[Unit]
+Description=Renew cellman IP TLS certificate
+After=network-online.target nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/cellman-tools/certbot/bin/certbot renew --cert-name cellman-ip --quiet --deploy-hook "/usr/sbin/nginx -t && /usr/bin/systemctl reload nginx"

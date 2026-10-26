@@ -60,9 +60,11 @@ export interface Player {
   competencies: string[];
   annexes: number;
   palace: string | null;
+  draftPalace?: string;
   bonus: string;
   passed: boolean;
   primaryDone: boolean;
+  extraActions?: number;
   usedSpecials: string[];
   leechPolicy: { enabled: boolean; maxVpCost: number };
 }
@@ -83,6 +85,18 @@ export interface SetupConfig {
   innovations: string[];
   bonusPool: string[];
   bookActions?: string[];
+  offers?: { native: Terrain; faction: string; bonus: string }[];
+  competencyOrder?: string[];
+  draft?: {
+    direction: "forward" | "reverse";
+    pools: {
+      faction: string[];
+      native: Terrain[];
+      palace: string[];
+      bonus: string[];
+    };
+  };
+  innovationCosts?: Record<string, Four>;
 }
 export interface PendingChoice {
   id: string;
@@ -94,8 +108,12 @@ export interface PendingChoice {
     | "book"
     | "science"
     | "spades"
+    | "bridge"
+    | "freeGuild"
+    | "freeWorkshop"
     | "neutral"
-    | "key";
+    | "key"
+    | "buildWorkshop";
   amount: number;
   options: string[];
   continuation: { kind: "resume-turn" };
@@ -104,6 +122,11 @@ export interface PendingChoice {
   scienceTrack?: Discipline;
   canBuild?: boolean;
   canBuySpades?: boolean;
+  dependsOn?: string[];
+  triggerRevision?: number;
+  batch?: string;
+  freeBuild?: boolean;
+  travelPaid?: boolean;
 }
 export interface RuleEvent {
   kind: string;
@@ -125,7 +148,14 @@ export interface GameState {
   rulesVersion: string;
   revision: number;
   setup: SetupConfig;
-  phase: "placement" | "income" | "actions" | "science" | "finished";
+  phase:
+    | "draft"
+    | "setup"
+    | "placement"
+    | "income"
+    | "actions"
+    | "science"
+    | "finished";
   round: number;
   activeSeat: SeatId;
   players: Record<SeatId, Player>;
@@ -134,6 +164,7 @@ export interface GameState {
     terrain: Partial<Record<HexId, Terrain>>;
     buildings: Record<HexId, Building>;
     bridges: Bridge[];
+    cityLinks?: { seat: SeatId; river: HexId }[];
   };
   shared: {
     usedActions: string[];
@@ -157,16 +188,45 @@ export interface GameState {
   placementOrder: SeatId[];
   placementIndex: number;
   choiceSerial: number;
+  draftIndex?: number;
+  chosenOffers?: number[];
+  draftPicks?: Record<
+    SeatId,
+    Partial<{ faction: string; native: Terrain; palace: string; bonus: string }>
+  >;
+  activeEffectBatch?: string;
+  placementKinds?: BuildingKind[];
   scores: ScoreBreakdown[];
+  matchResult?: {
+    reason: "forfeit" | "inactive";
+    at: string;
+    loser?: SeatId;
+    winners: SeatId[];
+    round: number;
+  };
 }
 export type GameAction =
-  | { kind: "place"; hex: HexId }
+  | {
+      kind: "draftPick";
+      category: "faction" | "native" | "palace" | "bonus";
+      option: string;
+    }
+  | { kind: "turn"; actions: Exclude<GameAction, { kind: "turn" }>[] }
+  | { kind: "riverCity"; hex: HexId }
+  | { kind: "chooseSetup"; offer: number }
+  | {
+      kind: "place";
+      hex: HexId;
+      building?: "workshop" | "tower" | "university";
+    }
   | {
       kind: "terraform";
       hex: HexId;
       terrain: Terrain;
       build: boolean;
+      deferBuild?: boolean;
       additional?: { hex: HexId; terrain: Terrain }[];
+      travel?: "tunnel" | "flight";
     }
   | { kind: "upgrade"; hex: HexId; to: BuildingKind; palace?: string }
   | {
@@ -181,10 +241,12 @@ export type GameAction =
   | { kind: "advance"; track: "sailing" | "terraform" }
   | {
       kind: "powerAction";
+      travel?: "tunnel" | "flight";
       id: string;
       hex?: HexId;
       terrain?: Terrain;
       build?: boolean;
+      deferBuild?: boolean;
       a?: HexId;
       b?: HexId;
       additional?: { hex: HexId; terrain: Terrain }[];
@@ -198,7 +260,14 @@ export type GameAction =
       track?: Discipline;
       hex?: HexId;
     }
-  | { kind: "special"; source: string; hex?: HexId }
+  | {
+      kind: "special";
+      source: string;
+      hex?: HexId;
+      a?: HexId;
+      b?: HexId;
+      track?: Discipline;
+    }
   | { kind: "pass"; bonus?: string }
   | { kind: "endTurn" }
   | {
@@ -209,7 +278,9 @@ export type GameAction =
         hex: HexId;
         terrain: Terrain;
         build: boolean;
+        deferBuild?: boolean;
         additional?: { hex: HexId; terrain: Terrain }[];
+        travel?: "tunnel" | "flight";
       };
     }
   | { kind: "setLeech"; enabled: boolean; maxVpCost: number };

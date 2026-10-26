@@ -1,0 +1,6746 @@
+{
+  "content.bonus.bigbuilding.description": {
+    "text": "收入一工具；结束本轮每座宫殿或大学 +4 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.bridge-bonus.description": {
+    "text": "收入一本书；特殊行动免费建桥",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.coins.description": {
+    "text": "收入 6 金币",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.guild.description": {
+    "text": "收入 3 魔力；建造商会 +3 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.power.description": {
+    "text": "收入 2 金币、4 魔力",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.river.description": {
+    "text": "航运可达范围 +1（不用于终局）；沿河工坊 +2 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.scholar.description": {
+    "text": "收入一学者；派遣学者 +2 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.school.description": {
+    "text": "收入 4 金币；结束本轮每所学校自由推进学科一格",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.science-bonus.description": {
+    "text": "收入两工具；特殊行动自由推进学科一格",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.bonus.spade-bonus.description": {
+    "text": "收入一本书；特殊行动获得一把铲子并可建造",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.blessed.description": {
+    "text": "起始所有学科 +1；轮末学科奖励按高 3 级计算。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.blessed.name": {
+    "text": "受祝福者",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.felines.description": {
+    "text": "起始银行学、医学 +1；建城时自由推进学科共 3 格并获得一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.felines.name": {
+    "text": "猫族",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.goblins.description": {
+    "text": "起始多一工具，银行学、工程学 +1；每使用一把铲子获得 2 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.goblins.name": {
+    "text": "哥布林",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.illusionists.description": {
+    "text": "医学 +2；公共魔力行动少支付 1 魔力，并获得 1 分（4–5 人为 2 分）。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.illusionists.name": {
+    "text": "幻术师",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.inventors.description": {
+    "text": "完成起始建筑放置后，免费选择一块能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.inventors.name": {
+    "text": "发明家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.lizards.description": {
+    "text": "起始自由推进学科 2 格；建城时获得 1 把铲子和一次免费工坊建造。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.lizards.name": {
+    "text": "蜥蜴人",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.moles.description": {
+    "text": "工程学 +2；改造建造时可支付一工具跨过一格，获得人数 +2 分；可支付一工具建桥。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.moles.name": {
+    "text": "鼹鼠",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.monks.description": {
+    "text": "法学 +1；开局最后放置一所大学，代替两座工坊，并获得能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.monks.name": {
+    "text": "修道士",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.navigators.description": {
+    "text": "法学 +3；沿河建造工坊获得 2 分和 1 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.navigators.name": {
+    "text": "航海家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.omar.description": {
+    "text": "银行学、工程学 +1；开局两座工坊与一座中立塔楼可自选放置顺序；每轮收入 2 魔力和 2 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.omar.name": {
+    "text": "奥玛族",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.philosophers.description": {
+    "text": "银行学 +2；领取能力额外获得该颜色的一本书；每轮一次特殊行动获得一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.philosophers.name": {
+    "text": "哲学家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.psychics.description": {
+    "text": "银行学、医学 +1，多一工具；每轮一次获得 5 魔力后继续执行一个主要行动。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.faction.psychics.name": {
+    "text": "灵能者",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.architecture.description": {
+    "text": "立即获得 10 分，并为每种不同外形的建筑自由推进学科一格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.architecture.name": {
+    "text": "建筑学",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.census.description": {
+    "text": "拥有 7–8 / 9–10 / 11+ 座建筑，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.census.name": {
+    "text": "人口普查",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.colleges.description": {
+    "text": "每所学校立即获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.colleges.name": {
+    "text": "学院",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.communications.description": {
+    "text": "拥有 4 / 5 / 6+ 个相邻建筑群，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.communications.name": {
+    "text": "通讯",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.deus-ex-machina.description": {
+    "text": "立即获得一本书并各学科 +1；特殊行动：一把铲子并可建造。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.deus-ex-machina.name": {
+    "text": "机械降神",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.league-of-cities.description": {
+    "text": "每块城市板块立即获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.league-of-cities.name": {
+    "text": "城市联盟",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.libraries.description": {
+    "text": "立即获得最高两项学科等级总和的分数。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.libraries.name": {
+    "text": "图书馆",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-guild.description": {
+    "text": "立即放置中立商会；收入 5 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-guild.name": {
+    "text": "中立商会",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-monument.description": {
+    "text": "立即放置魔力值为 4 的纪念碑并获得 7 分；所在城市只需两座建筑。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-monument.name": {
+    "text": "纪念碑",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-palace.description": {
+    "text": "立即放置中立宫殿并向魔力碗 III 增加两个魔力标记；收入 4 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-palace.name": {
+    "text": "中立宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-school.description": {
+    "text": "立即放置中立学校并获得能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-school.name": {
+    "text": "中立学校",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-university.description": {
+    "text": "立即放置中立大学；收入 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-university.name": {
+    "text": "中立大学",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-workshop.description": {
+    "text": "立即放置中立工坊；收入 3 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.neutral-workshop.name": {
+    "text": "中立工坊",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.professors.description": {
+    "text": "特殊行动：获得一学者和 3 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.professors.name": {
+    "text": "教授",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.sewerage.description": {
+    "text": "每座工坊立即获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.sewerage.name": {
+    "text": "排水系统",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.steam-power.description": {
+    "text": "立即获得一学者，并免费提升改造和航运各一级，照常获得奖励。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.steam-power.name": {
+    "text": "蒸汽动力",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.steel.description": {
+    "text": "拥有 1 / 2 / 3 座桥，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.steel.name": {
+    "text": "钢铁",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.trading-routes.description": {
+    "text": "结束本轮时，每座商会获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.innovation.trading-routes.name": {
+    "text": "贸易路线",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.city-discount.description": {
+    "text": "建城魔力门槛降为 6；收入 2 金币、2 魔力和 1 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.city-discount.name": {
+    "text": "城市宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.city-palace.description": {
+    "text": "建成立即领取一块城市板块；收入一工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.city-palace.name": {
+    "text": "建城宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.competency-palace.description": {
+    "text": "建成获得一块能力板块；收入 4 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.competency-palace.name": {
+    "text": "学术宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.downgrade-special.description": {
+    "text": "收入 2 魔力；特殊行动将学校降为商会，获得 3 分和 1 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.downgrade-special.name": {
+    "text": "回收宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.engineering-palace.description": {
+    "text": "收入 6 魔力；建成获得 2 把铲子、两座免费桥和两本书，可选择各奖励的处理顺序。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.engineering-palace.name": {
+    "text": "工程宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.flight.description": {
+    "text": "收入一学者；改造建造可支付一学者跨越最多两格，获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.flight.name": {
+    "text": "飞行宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.guild-special.description": {
+    "text": "每建造商会获得 3 分；特殊行动获得一本书和 3 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.guild-special.name": {
+    "text": "商业宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.immediate-score.description": {
+    "text": "建成获得 10 分；收入 2 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.immediate-score.name": {
+    "text": "荣耀宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.power-books.description": {
+    "text": "建成获得 12 魔力和两本书；收入 6 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.power-books.name": {
+    "text": "知识宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.remote-guild.description": {
+    "text": "建成立即在任意空置家园放置一座免费商会；收入 2 魔力和一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.remote-guild.name": {
+    "text": "远方商会宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.river-city.description": {
+    "text": "建成免费提升两级航运；收入 6 魔力；建城可连接一个河流格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.river-city.name": {
+    "text": "河港宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.school-pass.description": {
+    "text": "收入 4 魔力；结束本轮时，每所学校获得 3 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.school-pass.name": {
+    "text": "学校计分宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.science-special.description": {
+    "text": "收入 2 魔力和一本书；特殊行动推进同一学科最多 2 格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.science-special.name": {
+    "text": "研究宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.spades-special.description": {
+    "text": "特殊行动：2 把免费铲子并可建造工坊。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.spades-special.name": {
+    "text": "改造宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.tools-special.description": {
+    "text": "收入 5 魔力；特殊行动获得 2 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.tools-special.name": {
+    "text": "工具宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.upgrade-special.description": {
+    "text": "收入 2 魔力；特殊行动免费将工坊升级为商会。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.upgrade-special.name": {
+    "text": "商贸宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.workshop-score.description": {
+    "text": "收入 8 魔力；每建造一座工坊获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "content.palace.workshop-score.name": {
+    "text": "工坊宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "error.ACTION_OCCUPIED": {
+    "text": "这个公共行动本轮已被使用",
+    "file": "apps/web/src/api.ts",
+    "line": 73
+  },
+  "error.ASYNC_TIME_REQUIRED": {
+    "text": "请设置初始时间、每步加时和时间上限",
+    "file": "apps/web/src/api.ts",
+    "line": 27
+  },
+  "error.BONUS_UNAVAILABLE": {
+    "text": "这张奖励板已被其他玩家持有",
+    "file": "apps/web/src/api.ts",
+    "line": 97
+  },
+  "error.BOOK_PAYMENT": {
+    "text": "书籍数量或颜色不满足要求",
+    "file": "apps/web/src/api.ts",
+    "line": 101
+  },
+  "error.BRIDGE_NEEDS_BUILDING": {
+    "text": "桥的一端必须有你的建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 59
+  },
+  "error.BRIDGE_OCCUPIED": {
+    "text": "这里已经有桥",
+    "file": "apps/web/src/api.ts",
+    "line": 58
+  },
+  "error.CANNOT_BUY_PARTIAL_SPADES": {
+    "text": "补付工具时必须完成到家园地形的改造",
+    "file": "apps/web/src/api.ts",
+    "line": 53
+  },
+  "error.CANNOT_BUY_SPADES": {
+    "text": "科学奖励只能使用免费铲子，不能用工具补足",
+    "file": "apps/web/src/api.ts",
+    "line": 52
+  },
+  "error.CLOCK_PAUSED": {
+    "text": "计时已暂停或本局没有计时，不能移除玩家",
+    "file": "apps/web/src/api.ts",
+    "line": 23
+  },
+  "error.COMMAND_REUSE": {
+    "text": "此请求标识已使用，请刷新后重新操作",
+    "file": "apps/web/src/api.ts",
+    "line": 62
+  },
+  "error.DRAFT_PICK_REQUIRED": {
+    "text": "本局需要分别轮抽开局配置",
+    "file": "apps/web/src/api.ts",
+    "line": 28
+  },
+  "error.EMAIL_ALREADY_VERIFIED": {
+    "text": "该邮箱已经完成验证",
+    "file": "apps/web/src/api.ts",
+    "line": 36
+  },
+  "error.EMAIL_LINK_INVALID": {
+    "text": "链接已过期、已使用或已被新请求替换，请重新申请邮件",
+    "file": "apps/web/src/api.ts",
+    "line": 34
+  },
+  "error.EMAIL_UNAVAILABLE": {
+    "text": "该邮箱无法绑定，请使用其他邮箱或找回原账号",
+    "file": "apps/web/src/api.ts",
+    "line": 35
+  },
+  "error.EMAIL_VERIFY_FIRST": {
+    "text": "请先完成邮箱验证，再开启邮件提醒",
+    "file": "apps/web/src/api.ts",
+    "line": 37
+  },
+  "error.EMPTY_ACTION": {
+    "text": "请选择需要改造的地块，或在家园地形建造工坊",
+    "file": "apps/web/src/api.ts",
+    "line": 55
+  },
+  "error.FINISH_EFFECT_BATCH": {
+    "text": "请先完整处理当前这组奖励，再选择其他奖励",
+    "file": "apps/web/src/api.ts",
+    "line": 64
+  },
+  "error.FINISH_PALACE_REWARDS": {
+    "text": "请先完成宫殿的铲子、两座桥和两本书，再领取建城等奖励",
+    "file": "apps/web/src/api.ts",
+    "line": 50
+  },
+  "error.FIRST_TERRAIN_INCOMPLETE": {
+    "text": "请先把前一个地块改造成家园",
+    "file": "apps/web/src/api.ts",
+    "line": 77
+  },
+  "error.FORBIDDEN": {
+    "text": "你没有访问这个房间的权限",
+    "file": "apps/web/src/api.ts",
+    "line": 94
+  },
+  "error.GAME_FINISHED": {
+    "text": "本局已经结束，请查看最终记录",
+    "file": "apps/web/src/api.ts",
+    "line": 25
+  },
+  "error.GAME_INACTIVE": {
+    "text": "本局已连续 10 天无人操作，正在结束",
+    "file": "apps/web/src/api.ts",
+    "line": 26
+  },
+  "error.HOST_REQUIRED": {
+    "text": "只有房主可以修改或开始房间",
+    "file": "apps/web/src/api.ts",
+    "line": 40
+  },
+  "error.INSUFFICIENT_BOOKS": {
+    "text": "持有的书籍不足以支付所选组合",
+    "file": "apps/web/src/api.ts",
+    "line": 74
+  },
+  "error.INSUFFICIENT_POWER": {
+    "text": "可用魔力不足",
+    "file": "apps/web/src/api.ts",
+    "line": 88
+  },
+  "error.INSUFFICIENT_RESOURCES": {
+    "text": "资源不足",
+    "file": "apps/web/src/api.ts",
+    "line": 87
+  },
+  "error.INVALID_BRIDGE_SITE": {
+    "text": "这两块地之间没有可建桥的位置",
+    "file": "apps/web/src/api.ts",
+    "line": 75
+  },
+  "error.INVALID_COUNT": {
+    "text": "请输入有效的正整数数量",
+    "file": "apps/web/src/api.ts",
+    "line": 56
+  },
+  "error.INVALID_CREDENTIALS": {
+    "text": "用户名或密码不正确",
+    "file": "apps/web/src/api.ts",
+    "line": 78
+  },
+  "error.INVALID_FREE_BUILD": {
+    "text": "请选择空置的家园地形，并检查建筑库存及可达范围",
+    "file": "apps/web/src/api.ts",
+    "line": 63
+  },
+  "error.INVALID_HEX": {
+    "text": "请选择陆地地块",
+    "file": "apps/web/src/api.ts",
+    "line": 57
+  },
+  "error.INVALID_INPUT": {
+    "text": "设置无效，请检查人数、时间及种子格式",
+    "file": "apps/web/src/api.ts",
+    "line": 45
+  },
+  "error.INVALID_INVITE": {
+    "text": "邀请链接无效",
+    "file": "apps/web/src/api.ts",
+    "line": 95
+  },
+  "error.INVALID_PASSWORD_LENGTH": {
+    "text": "密码需要 6–128 个字符",
+    "file": "apps/web/src/api.ts",
+    "line": 81
+  },
+  "error.INVALID_PHASE": {
+    "text": "请先完成当前阶段的准备或选择",
+    "file": "apps/web/src/api.ts",
+    "line": 72
+  },
+  "error.INVALID_RIVER_CITY": {
+    "text": "请先选择一个河流格",
+    "file": "apps/web/src/api.ts",
+    "line": 67
+  },
+  "error.INVALID_SEATS": {
+    "text": "座位已变化，请刷新房间后重试",
+    "file": "apps/web/src/api.ts",
+    "line": 43
+  },
+  "error.INVALID_STARTING_BUILDING": {
+    "text": "这种起始建筑已放完，请选择剩余建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 51
+  },
+  "error.INVALID_TERRAFORM": {
+    "text": "只能沿最短路径向家园地形改造",
+    "file": "apps/web/src/api.ts",
+    "line": 54
+  },
+  "error.INVALID_TIMEOUT_TARGET": {
+    "text": "请选择本局中另一位已超时玩家",
+    "file": "apps/web/src/api.ts",
+    "line": 24
+  },
+  "error.INVALID_TURN": {
+    "text": "回合步骤无效，请取消试走后重试",
+    "file": "apps/web/src/api.ts",
+    "line": 49
+  },
+  "error.INVALID_UNDO_TARGET": {
+    "text": "只能申请撤回仍有效的本人行动，请刷新记录后重新选择",
+    "file": "apps/web/src/api.ts",
+    "line": 61
+  },
+  "error.INVALID_UPGRADE": {
+    "text": "不能这样升级建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 98
+  },
+  "error.INVALID_USERNAME": {
+    "text": "用户名需要 3–24 位字母、数字或下划线",
+    "file": "apps/web/src/api.ts",
+    "line": 80
+  },
+  "error.MAIL_DISABLED": {
+    "text": "邮件服务尚未启用，请联系管理员",
+    "file": "apps/web/src/api.ts",
+    "line": 30
+  },
+  "error.MAIL_RATE_LIMIT": {
+    "text": "发送过于频繁，请至少等一分钟；每小时最多申请 5 次",
+    "file": "apps/web/src/api.ts",
+    "line": 33
+  },
+  "error.NETWORK_ERROR": {
+    "text": "连接中断，已保留提交标识，可以安全重试",
+    "file": "apps/web/src/api.ts",
+    "line": 103
+  },
+  "error.NO_BRIDGE_SUPPLY": {
+    "text": "你的三座桥已经全部用完",
+    "file": "apps/web/src/api.ts",
+    "line": 70
+  },
+  "error.NO_BUILDING_SUPPLY": {
+    "text": "个人板上已没有这种建筑，请先升级现有建筑腾出库存",
+    "file": "apps/web/src/api.ts",
+    "line": 69
+  },
+  "error.NO_CITY_CREATED": {
+    "text": "连接这个河流格还不足以建立新城市",
+    "file": "apps/web/src/api.ts",
+    "line": 66
+  },
+  "error.NO_CITY_KEY": {
+    "text": "没有尚未使用的城市钥匙，可以选择停在 7 级",
+    "file": "apps/web/src/api.ts",
+    "line": 108
+  },
+  "error.NO_SURPLUS_SPADES": {
+    "text": "剩余铲子不足",
+    "file": "apps/web/src/api.ts",
+    "line": 76
+  },
+  "error.NOT_NATIVE_TERRAIN": {
+    "text": "请选择自己的家园地形",
+    "file": "apps/web/src/api.ts",
+    "line": 91
+  },
+  "error.NOT_READY": {
+    "text": "请等待所有玩家准备",
+    "file": "apps/web/src/api.ts",
+    "line": 83
+  },
+  "error.NOT_YOUR_TURN": {
+    "text": "现在还没有轮到你",
+    "file": "apps/web/src/api.ts",
+    "line": 86
+  },
+  "error.OCCUPIED": {
+    "text": "这个地块已有建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 90
+  },
+  "error.OUT_OF_REACH": {
+    "text": "这个地块不在你的可达范围内",
+    "file": "apps/web/src/api.ts",
+    "line": 89
+  },
+  "error.OWN_CLOCK_WORSE": {
+    "text": "你的超时时间更长，不能移除这位玩家",
+    "file": "apps/web/src/api.ts",
+    "line": 22
+  },
+  "error.PENDING_CHOICES": {
+    "text": "请先处理待响应选择",
+    "file": "apps/web/src/api.ts",
+    "line": 85
+  },
+  "error.PLAYER_NOT_OVERDUE": {
+    "text": "该玩家当前没有超时，局面已更新",
+    "file": "apps/web/src/api.ts",
+    "line": 21
+  },
+  "error.PLAYER_REMOVED": {
+    "text": "你已因超时被移除，可以继续查看对局",
+    "file": "apps/web/src/api.ts",
+    "line": 18
+  },
+  "error.PRIMARY_ALREADY_USED": {
+    "text": "本回合已完成主要行动，请结束回合",
+    "file": "apps/web/src/api.ts",
+    "line": 92
+  },
+  "error.PRIMARY_REQUIRED": {
+    "text": "请先完成一个主要行动",
+    "file": "apps/web/src/api.ts",
+    "line": 93
+  },
+  "error.RATE_LIMIT": {
+    "text": "操作太频繁，请稍后再试",
+    "file": "apps/web/src/api.ts",
+    "line": 102
+  },
+  "error.REGISTRATION_ALREADY_VERIFIED": {
+    "text": "此账号已完成注册，请返回登录",
+    "file": "apps/web/src/api.ts",
+    "line": 32
+  },
+  "error.REGISTRATION_PENDING": {
+    "text": "请先通过邮件链接确认注册，再登录",
+    "file": "apps/web/src/api.ts",
+    "line": 31
+  },
+  "error.RESOLVE_KEY_FIRST": {
+    "text": "请先决定是否使用城市钥匙",
+    "file": "apps/web/src/api.ts",
+    "line": 105
+  },
+  "error.RESOLVE_NEUTRAL_FIRST": {
+    "text": "请先立即放置刚获得的中立建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 106
+  },
+  "error.RESULT_ALREADY_SETTLED": {
+    "text": "本局战绩已结算，不能撤回或再次改判",
+    "file": "apps/web/src/api.ts",
+    "line": 19
+  },
+  "error.RESULT_NOT_SETTLED": {
+    "text": "本局尚未结算，不能结束余局",
+    "file": "apps/web/src/api.ts",
+    "line": 20
+  },
+  "error.REVISION_CONFLICT": {
+    "text": "局面已更新，已保留你的选择，请重新预览",
+    "file": "apps/web/src/api.ts",
+    "line": 84
+  },
+  "error.ROOM_CLOSED": {
+    "text": "房间已关闭",
+    "file": "apps/web/src/api.ts",
+    "line": 42
+  },
+  "error.ROOM_FULL": {
+    "text": "房间已经满员",
+    "file": "apps/web/src/api.ts",
+    "line": 82
+  },
+  "error.ROOM_PARTICIPATION_LIMIT": {
+    "text": "你已参与 100 个未结束的房间。请先退出等待中的房间，或等待对局结束后再创建或加入。",
+    "file": "apps/web/src/api.ts"
+  },
+  "error.ROOM_REOPEN_LIMIT": {
+    "text": "有玩家已参与 100 个未结束的房间，暂时无法通过撤回恢复此对局。请先腾出房间名额后重试。",
+    "file": "apps/web/src/api.ts"
+  },
+  "error.ROOM_SETTINGS_CHANGED": {
+    "text": "房间刚有变更，已刷新。请核对当前设置后重试",
+    "file": "apps/web/src/api.ts",
+    "line": 38
+  },
+  "error.ROOM_STARTED": {
+    "text": "房间已经开始或关闭，无法再修改",
+    "file": "apps/web/src/api.ts",
+    "line": 41
+  },
+  "error.ROOM_TOO_SMALL": {
+    "text": "人数不能少于当前已加入的玩家",
+    "file": "apps/web/src/api.ts",
+    "line": 39
+  },
+  "error.RULESET_UNAVAILABLE": {
+    "text": "当前服务无法处理此对局的规则版本，请等待服务更新后继续",
+    "file": "apps/web/src/api.ts",
+    "line": 104
+  },
+  "error.SETUP_UNAVAILABLE": {
+    "text": "该选项已被选取，或你已经拥有此类配置",
+    "file": "apps/web/src/api.ts",
+    "line": 29
+  },
+  "error.SPECIAL_USED": {
+    "text": "这项特殊行动本轮已经使用",
+    "file": "apps/web/src/api.ts",
+    "line": 71
+  },
+  "error.TRACK_MAX": {
+    "text": "这项技术已经到达最高等级",
+    "file": "apps/web/src/api.ts",
+    "line": 68
+  },
+  "error.TURN_ALREADY_ENDED": {
+    "text": "回合已经结束，不能再加入动作",
+    "file": "apps/web/src/api.ts",
+    "line": 48
+  },
+  "error.TURN_NOT_FINISHED": {
+    "text": "请先完成主要行动和自己的奖励，再提交回合",
+    "file": "apps/web/src/api.ts",
+    "line": 46
+  },
+  "error.TURN_RESPONSE_REQUIRED": {
+    "text": "需要其他玩家回应，请先提交当前试走",
+    "file": "apps/web/src/api.ts",
+    "line": 47
+  },
+  "error.UNAUTHENTICATED": {
+    "text": "请先登录",
+    "file": "apps/web/src/api.ts",
+    "line": 96
+  },
+  "error.UNDO_DISABLED": {
+    "text": "本局禁止撤回已提交行动；未提交的试走仍可撤销",
+    "file": "apps/web/src/api.ts",
+    "line": 44
+  },
+  "error.UNDO_PENDING": {
+    "text": "正在等待悔棋确认，请先同意、拒绝或取消申请",
+    "file": "apps/web/src/api.ts",
+    "line": 60
+  },
+  "error.UNSUPPORTED_ABILITY": {
+    "text": "这项能力尚未开放",
+    "file": "apps/web/src/api.ts",
+    "line": 99
+  },
+  "error.UNSUPPORTED_ACTION": {
+    "text": "此行动尚未实现",
+    "file": "apps/web/src/api.ts",
+    "line": 100
+  },
+  "error.USERNAME_UNAVAILABLE": {
+    "text": "这个用户名已被使用",
+    "file": "apps/web/src/api.ts",
+    "line": 79
+  },
+  "error.WAIT_DEPENDENCY": {
+    "text": "请先完成这项奖励之前的选择",
+    "file": "apps/web/src/api.ts",
+    "line": 65
+  },
+  "error.WAIT_SCIENCE_ORDER": {
+    "text": "轮末改造按下一轮的行动顺序处理，请等待前面的玩家",
+    "file": "apps/web/src/api.ts",
+    "line": 107
+  },
+  "label.annexes": {
+    "text": "两座附属建筑",
+    "file": "apps/web/src/api.ts",
+    "line": 144
+  },
+  "label.architecture": {
+    "text": "建筑学",
+    "file": "apps/web/src/api.ts",
+    "line": 182
+  },
+  "label.bigbuilding": {
+    "text": "大型建筑奖励",
+    "file": "apps/web/src/api.ts",
+    "line": 169
+  },
+  "label.blessed": {
+    "text": "受祝福者",
+    "file": "apps/web/src/api.ts",
+    "line": 163
+  },
+  "label.books": {
+    "text": "书籍",
+    "file": "apps/web/src/api.ts",
+    "line": 187
+  },
+  "label.border-score": {
+    "text": "边境工坊获得 3 分",
+    "file": "apps/web/src/api.ts",
+    "line": 143
+  },
+  "label.census": {
+    "text": "人口普查",
+    "file": "apps/web/src/api.ts",
+    "line": 179
+  },
+  "label.city-discount": {
+    "text": "城市折扣宫殿",
+    "file": "apps/web/src/api.ts",
+    "line": 171
+  },
+  "label.city-pass": {
+    "text": "结束本轮：每城市 2 分",
+    "file": "apps/web/src/api.ts",
+    "line": 146
+  },
+  "label.coins": {
+    "text": "金币收入",
+    "file": "apps/web/src/api.ts",
+    "line": 166
+  },
+  "label.colleges": {
+    "text": "学院",
+    "file": "apps/web/src/api.ts",
+    "line": 183
+  },
+  "label.communications": {
+    "text": "通讯",
+    "file": "apps/web/src/api.ts",
+    "line": 180
+  },
+  "label.desert": {
+    "text": "沙漠",
+    "file": "apps/web/src/api.ts",
+    "line": 151
+  },
+  "label.discard": {
+    "text": "放弃剩余铲子",
+    "file": "apps/web/src/api.ts",
+    "line": 138
+  },
+  "label.forest": {
+    "text": "森林",
+    "file": "apps/web/src/api.ts",
+    "line": 148
+  },
+  "label.goblins": {
+    "text": "哥布林",
+    "file": "apps/web/src/api.ts",
+    "line": 165
+  },
+  "label.guild": {
+    "text": "商会",
+    "file": "apps/web/src/api.ts",
+    "line": 157
+  },
+  "label.immediate-resources": {
+    "text": "工具、金币与分数",
+    "file": "apps/web/src/api.ts",
+    "line": 174
+  },
+  "label.immediate-score": {
+    "text": "建成获得 10 分",
+    "file": "apps/web/src/api.ts",
+    "line": 175
+  },
+  "label.income-book-power": {
+    "text": "收入：书籍与魔力",
+    "file": "apps/web/src/api.ts",
+    "line": 173
+  },
+  "label.income-tool-science": {
+    "text": "收入：工具与学科",
+    "file": "apps/web/src/api.ts",
+    "line": 140
+  },
+  "label.income-vp-coins": {
+    "text": "收入：3 分与 2 金币",
+    "file": "apps/web/src/api.ts",
+    "line": 172
+  },
+  "label.lake": {
+    "text": "湖泊",
+    "file": "apps/web/src/api.ts",
+    "line": 149
+  },
+  "label.league-of-cities": {
+    "text": "城市联盟",
+    "file": "apps/web/src/api.ts",
+    "line": 185
+  },
+  "label.libraries": {
+    "text": "图书馆",
+    "file": "apps/web/src/api.ts",
+    "line": 178
+  },
+  "label.min-science-pass": {
+    "text": "结束本轮：最低学科计分",
+    "file": "apps/web/src/api.ts",
+    "line": 147
+  },
+  "label.monument": {
+    "text": "纪念碑",
+    "file": "apps/web/src/api.ts",
+    "line": 162
+  },
+  "label.mountain": {
+    "text": "山地",
+    "file": "apps/web/src/api.ts",
+    "line": 150
+  },
+  "label.navigators": {
+    "text": "航海家",
+    "file": "apps/web/src/api.ts",
+    "line": 164
+  },
+  "label.palace": {
+    "text": "宫殿",
+    "file": "apps/web/src/api.ts",
+    "line": 159
+  },
+  "label.plains": {
+    "text": "平原",
+    "file": "apps/web/src/api.ts",
+    "line": 152
+  },
+  "label.power": {
+    "text": "魔力收入",
+    "file": "apps/web/src/api.ts",
+    "line": 167
+  },
+  "label.power-books": {
+    "text": "立即魔力与书籍，收入金币",
+    "file": "apps/web/src/api.ts",
+    "line": 177
+  },
+  "label.power-special": {
+    "text": "特殊行动：4 魔力",
+    "file": "apps/web/src/api.ts",
+    "line": 145
+  },
+  "label.river": {
+    "text": "河流",
+    "file": "apps/web/src/api.ts",
+    "line": 155
+  },
+  "label.scholar": {
+    "text": "学者",
+    "file": "apps/web/src/api.ts",
+    "line": 168
+  },
+  "label.scholar-score": {
+    "text": "派遣学者获得 2 分",
+    "file": "apps/web/src/api.ts",
+    "line": 142
+  },
+  "label.school": {
+    "text": "学校",
+    "file": "apps/web/src/api.ts",
+    "line": 158
+  },
+  "label.school-pass": {
+    "text": "结束本轮：每学校 3 分",
+    "file": "apps/web/src/api.ts",
+    "line": 176
+  },
+  "label.science": {
+    "text": "学科推进",
+    "file": "apps/web/src/api.ts",
+    "line": 188
+  },
+  "label.sewerage": {
+    "text": "排水系统",
+    "file": "apps/web/src/api.ts",
+    "line": 184
+  },
+  "label.spades": {
+    "text": "两把铲子与建造",
+    "file": "apps/web/src/api.ts",
+    "line": 139
+  },
+  "label.steel": {
+    "text": "钢铁",
+    "file": "apps/web/src/api.ts",
+    "line": 181
+  },
+  "label.swamp": {
+    "text": "沼泽",
+    "file": "apps/web/src/api.ts",
+    "line": 153
+  },
+  "label.tools": {
+    "text": "工具",
+    "file": "apps/web/src/api.ts",
+    "line": 186
+  },
+  "label.tower": {
+    "text": "塔楼",
+    "file": "apps/web/src/api.ts",
+    "line": 161
+  },
+  "label.two-spades": {
+    "text": "立即获得两把铲子",
+    "file": "apps/web/src/api.ts",
+    "line": 141
+  },
+  "label.university": {
+    "text": "大学",
+    "file": "apps/web/src/api.ts",
+    "line": 160
+  },
+  "label.wasteland": {
+    "text": "荒地",
+    "file": "apps/web/src/api.ts",
+    "line": 154
+  },
+  "label.workshop": {
+    "text": "工坊",
+    "file": "apps/web/src/api.ts",
+    "line": 156
+  },
+  "label.workshop-score": {
+    "text": "工坊计分宫殿",
+    "file": "apps/web/src/api.ts",
+    "line": 170
+  },
+  "rules.019c9f4a6a": {
+    "text": "鼹鼠：支付一工具建桥",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.01be626f8a": {
+    "text": "工程学 +2；改造建造时可支付一工具跨过一格，获得人数 +2 分；可支付一工具建桥。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.027f89420e": {
+    "text": "特殊行动：获得一学者和 3 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.048f35b383": {
+    "text": "飞行",
+    "file": "packages/rules/src/actions/build.ts"
+  },
+  "rules.04e3a8388c": {
+    "text": "收入 6 金币",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.053ac3d6b0": {
+    "text": "排水系统",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.09e189284c": {
+    "text": "立即放置中立工坊；收入 3 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.0fc4aae8ee": {
+    "text": "{p0} 放置起始建筑",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.1232085ef0": {
+    "text": "钢铁",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.146d1e01d4": {
+    "text": "灵能者：获得 5 魔力并继续行动",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.15f6a4f37f": {
+    "text": "书籍与魔力能力",
+    "file": "packages/rules/src/rounds.ts"
+  },
+  "rules.16788b294f": {
+    "text": "银行学 +2；领取能力额外获得该颜色的一本书；每轮一次特殊行动获得一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.1d35a60885": {
+    "text": "银行学、医学 +1，多一工具；每轮一次获得 5 魔力后继续执行一个主要行动。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.1eff8650fa": {
+    "text": "书籍公共行动",
+    "file": "packages/rules/src/actions/books.ts"
+  },
+  "rules.21435b1681": {
+    "text": "收入两工具；特殊行动自由推进学科一格",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.21ae83d99c": {
+    "text": "边缘工坊能力",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.230cc1d6c8": {
+    "text": "学者",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.266dae2b38": {
+    "text": "工坊宫殿",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.266e6cb770": {
+    "text": "图书馆",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.279f17f467": {
+    "text": "改造宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.284247dd73": {
+    "text": "医学 +2；公共魔力行动少支付 1 魔力，并获得 1 分（4–5 人为 2 分）。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.286613cda2": {
+    "text": "每座工坊立即获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.28c3f08870": {
+    "text": "余局无法自动跳过此步骤，已结束余局；弃局战绩保持不变。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
+  "rules.295093ab7c": {
+    "text": "每块城市板块立即获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.2bb9a591d4": {
+    "text": "结束本轮时，每座商会获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.2be7ed8644": {
+    "text": "城市钥匙",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.2c09c41117": {
+    "text": "中立大学",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.2d74968197": {
+    "text": "航运",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.2eaf60d53b": {
+    "text": "发明家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.33a172fee2": {
+    "text": "学院",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.35e38f0f8f": {
+    "text": "法学 +3；沿河建造工坊获得 2 分和 1 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.360303e21c": {
+    "text": "鼹鼠",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.386255bf5f": {
+    "text": "建城魔力门槛降为 6；收入 2 金币、2 魔力和 1 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.3915c628a7": {
+    "text": "能力：获得 4 魔力",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.39dab7dbf8": {
+    "text": "{p0} 因超时被移除；按末名结算，其余玩家并列第一。余局不再改变战绩。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
+  "rules.39fde6f02b": {
+    "text": "纪念碑创新",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.3adaa856e5": {
+    "text": "蒸汽动力",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.3ce5b4e0bd": {
+    "text": "整局连续 10 天没有有效操作，自动结束；已有弃局结果保留，否则不判胜负。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
+  "rules.3e0d3a0b97": {
+    "text": "回收宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.407aeb94ce": {
+    "text": "工具宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.409095ea5c": {
+    "text": "法学书",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.411df6b7e4": {
+    "text": "机械降神",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.41209628b6": {
+    "text": "河港宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4300e882e0": {
+    "text": "收入一学者；派遣学者 +2 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.44ad253090": {
+    "text": "特殊行动",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.456e01f920": {
+    "text": "教授",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.470f703f10": {
+    "text": "修道士",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4a035a40f7": {
+    "text": "收入 3 魔力；建造商会 +3 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4a10b6a9af": {
+    "text": "远方商会宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4a32b0ddf1": {
+    "text": "立即放置中立商会；收入 5 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4c18923c92": {
+    "text": "改造与建造",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.4c32b2b5c5": {
+    "text": "魔力Ⅲ",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.4c50fe7e12": {
+    "text": "银行学、工程学 +1；开局两座工坊与一座中立塔楼可自选放置顺序；每轮收入 2 魔力和 2 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.4ee4fb9525": {
+    "text": "提交回合",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.4f8d014f02": {
+    "text": "收入 2 魔力；特殊行动免费将工坊升级为商会。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.504deb2473": {
+    "text": "建成立即在任意空置家园放置一座免费商会；收入 2 魔力和一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.50ab9d01a5": {
+    "text": "纪念碑",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.53c08c1df1": {
+    "text": "中立大学创新",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.55d2d31f2a": {
+    "text": "隧道",
+    "file": "packages/rules/src/actions/build.ts"
+  },
+  "rules.5913408bf9": {
+    "text": "收入 5 魔力；特殊行动获得 2 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.5baa394cf6": {
+    "text": "拥有 4 / 5 / 6+ 个相邻建筑群，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.5c5ba9c342": {
+    "text": "完成起始建筑放置后，免费选择一块能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.5c6743e29a": {
+    "text": "轮次计分奖励",
+    "file": "packages/rules/src/round-scoring.ts"
+  },
+  "rules.5ca6730d44": {
+    "text": "工具",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.5d27a5fc45": {
+    "text": "教授：一学者与 3 分",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.5f2504af32": {
+    "text": "建筑学",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.5ffd1ad27f": {
+    "text": "荣耀宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.60e9d92254": {
+    "text": "建成免费提升两级航运；收入 6 魔力；建城可连接一个河流格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.60f010b651": {
+    "text": "受祝福者",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.613085ac89": {
+    "text": "商会",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.61bba121c6": {
+    "text": "选择种族与家园",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.661111dbaa": {
+    "text": "经全体玩家同意，恢复到 #{p0} 的局面",
+    "file": "packages/rules/src/replay.ts"
+  },
+  "rules.6612342cbe": {
+    "text": "工程学书",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.6615faf138": {
+    "text": "{p0} 获得 {p1} 魔力，支付 {p2} 分",
+    "file": "packages/rules/src/responses.ts"
+  },
+  "rules.6790dfe7bd": {
+    "text": "立即放置中立宫殿并向魔力碗 III 增加两个魔力标记；收入 4 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.67b4ce0eff": {
+    "text": "贸易路线",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.69686f68b2": {
+    "text": "起始所有学科 +1；轮末学科奖励按高 3 级计算。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.6989b0df2f": {
+    "text": "收入 2 魔力；特殊行动将学校降为商会，获得 3 分和 1 工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.6df997b13d": {
+    "text": "选择开局配置",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.6ef001bc82": {
+    "text": "学术宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.70a1ebed23": {
+    "text": "拥有 1 / 2 / 3 座桥，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.74dd112aa5": {
+    "text": "处理选择",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.7564f004aa": {
+    "text": "奥玛族",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.763a9d7fbe": {
+    "text": "奖励板：铲子与建造",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.76d5d61166": {
+    "text": "放置起始建筑",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.770a6f6d98": {
+    "text": "第六轮边缘奖励",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.77ea24ff58": {
+    "text": "特殊行动：2 把免费铲子并可建造工坊。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.7b42fc1dd0": {
+    "text": "城市宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.7bcd978053": {
+    "text": "立即放置中立大学；收入 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.7d6025ec50": {
+    "text": "收入 8 魔力；每建造一座工坊获得 2 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.7de153ae90": {
+    "text": "学者奖励板",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.7f4bbdb908": {
+    "text": "航运可达范围 +1（不用于终局）；沿河工坊 +2 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.80a83fdc68": {
+    "text": "处理待响应",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.80ba123dc4": {
+    "text": "学校与大学",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.8217b4898c": {
+    "text": "起始自由推进学科 2 格；建城时获得 1 把铲子和一次免费工坊建造。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.82280268a2": {
+    "text": "能力即时得分",
+    "file": "packages/rules/src/actions/competency.ts"
+  },
+  "rules.8384399649": {
+    "text": "人口普查",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.8440451238": {
+    "text": "建城宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.84aa39fa52": {
+    "text": "医学 9",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.863d15a6b8": {
+    "text": "幻术师",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.864d56e74b": {
+    "text": "中立宫殿创新",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.87cbd15521": {
+    "text": "机械降神：铲子与建造",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.88eed9bc79": {
+    "text": "灵能者",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.89e35e662a": {
+    "text": "分数",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.8a97951e88": {
+    "text": "建成获得 12 魔力和两本书；收入 6 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.8b41c4ee28": {
+    "text": "宫殿即时得分",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.8b671974ca": {
+    "text": "立即获得 10 分，并为每种不同外形的建筑自由推进学科一格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.8cff79bb4f": {
+    "text": "医学",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.8d48a4ba3f": {
+    "text": "通讯",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.8d5a3a0431": {
+    "text": "跨河建城",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.8f70aebf02": {
+    "text": "玩家结束余局，已结算的战绩保持不变。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
+  "rules.9033c23a3e": {
+    "text": "派遣学者能力",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.9061dd6cdd": {
+    "text": "魔力Ⅰ",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.9169d63fb1": {
+    "text": "立即放置魔力值为 4 的纪念碑并获得 7 分；所在城市只需两座建筑。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.93530554d7": {
+    "text": "公共魔力行动",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.9414a520ca": {
+    "text": "收入 2 魔力和一本书；特殊行动推进同一学科最多 2 格。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.94656bc8f2": {
+    "text": "燃烧魔力",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.94ebc443e6": {
+    "text": "建成获得 10 分；收入 2 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.958e34a7ff": {
+    "text": "轮抽开局配置",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.959eff2475": {
+    "text": "设置自动蹭魔",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.95ad8a65f7": {
+    "text": "派遣学者",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.975778d990": {
+    "text": "结束回合",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.9969c666e1": {
+    "text": "商会奖励板",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.9981e92780": {
+    "text": "收入一本书；特殊行动获得一把铲子并可建造",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.9aec0083ea": {
+    "text": "第六轮计分奖励",
+    "file": "packages/rules/src/round-scoring.ts"
+  },
+  "rules.9daa8b54f5": {
+    "text": "城市联盟",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.9dccc4b944": {
+    "text": "技术升级",
+    "file": "packages/rules/src/technology.ts"
+  },
+  "rules.9f6b4df116": {
+    "text": "得分与金币能力",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.a040444d34": {
+    "text": "立即放置中立学校并获得能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.a12a2f3342": {
+    "text": "资源转换",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.a3f770dbab": {
+    "text": "塔楼能力",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.a5f9385c9c": {
+    "text": "改造等级",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.a5fabd14f2": {
+    "text": "升级建筑",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.a68dd64972": {
+    "text": "中立商会创新",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.a7c6dc09f1": {
+    "text": "收入一学者；改造建造可支付一学者跨越最多两格，获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.a8bd53cd55": {
+    "text": "放置起始工坊",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.a941b3460f": {
+    "text": "哲学家：获得一本书",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.a9a0fd4467": {
+    "text": "法学 9",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.ab33d8e51a": {
+    "text": "工具与学科能力",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.acd7e80ac1": {
+    "text": "收入一工具；结束本轮每座宫殿或大学 +4 分",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.ad553bf643": {
+    "text": "立即获得一学者，并免费提升改造和航运各一级，照常获得奖励。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.ad7cb46264": {
+    "text": "{p0} 已退出，自动处理必要步骤或跳过回合。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
+  "rules.ae0e581769": {
+    "text": "{p0} 已处理选择",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.afa08d11a2": {
+    "text": "推进技术",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.b1eff676a2": {
+    "text": "银行学",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.b203996870": {
+    "text": "知识宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b220db3a3a": {
+    "text": "中立工坊",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b237c80398": {
+    "text": "法学",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.b361f9686b": {
+    "text": "蜥蜴人",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b47ad733e0": {
+    "text": "中立宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b50e37546c": {
+    "text": "哥布林",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b737f043bd": {
+    "text": "起始银行学、医学 +1；建城时自由推进学科共 3 格并获得一本书。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b7494ff0c8": {
+    "text": "研究宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.b8e8e46550": {
+    "text": "收入 4 金币；结束本轮每所学校自由推进学科一格",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.bac5627d6e": {
+    "text": "起始多一工具，银行学、工程学 +1；每使用一把铲子获得 2 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.bb90dddbbf": {
+    "text": "猫族",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.bbece6f829": {
+    "text": "金币",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.bee7d569df": {
+    "text": "建成获得一块能力板块；收入 4 魔力。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.bf2074642d": {
+    "text": "法学 +1；开局最后放置一所大学，代替两座工坊，并获得能力板块。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.bfd13b4379": {
+    "text": "中立工坊创新",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.c15ff4d082": {
+    "text": "工程宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.c51d494c81": {
+    "text": "奖励板：学科推进",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.c647c592b7": {
+    "text": "工坊",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.c9649c84e7": {
+    "text": "剩余资源",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.c973416846": {
+    "text": "收入 2 金币、4 魔力",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.c9eff65537": {
+    "text": "中立商会",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.cb610092e4": {
+    "text": "每建造商会获得 3 分；特殊行动获得一本书和 3 金币。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.cbc1193ca8": {
+    "text": "放置附属建筑（余 {p0}）",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.cd4c7aa21d": {
+    "text": "商贸宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.cf660876bf": {
+    "text": "{p0} 选择开局配置",
+    "file": "packages/rules/src/engine.ts"
+  },
+  "rules.d4e0e09cdf": {
+    "text": "城市板块：",
+    "file": "packages/rules/src/actions/city.ts"
+  },
+  "rules.d6423d19d3": {
+    "text": "每所学校立即获得 5 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.d7fb5bfc83": {
+    "text": "奖励板",
+    "file": "packages/rules/src/rounds.ts"
+  },
+  "rules.d84994fca1": {
+    "text": "立即获得一本书并各学科 +1；特殊行动：一把铲子并可建造。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.da5008b395": {
+    "text": "商会宫殿",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.db7c5effcb": {
+    "text": "银行学 9",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.dd47e0a429": {
+    "text": "建成立即领取一块城市板块；收入一工具。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.dda68f4821": {
+    "text": "飞行宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.e221360d7c": {
+    "text": "中立学校",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.e597fd46fa": {
+    "text": "结束本轮",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.e9aeb216ba": {
+    "text": "魔力Ⅱ",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.e9c9ee1df8": {
+    "text": "书籍行动",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.e9f3d305ff": {
+    "text": "工程学",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.eba094bfe4": {
+    "text": "山地家园",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.ed5900e2fd": {
+    "text": "医学书",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.edc97ce9d8": {
+    "text": "工程学 9",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.edec6108a9": {
+    "text": "立即获得最高两项学科等级总和的分数。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.ee13d0011d": {
+    "text": "宫殿与大学奖励板",
+    "file": "packages/rules/src/rounds.ts"
+  },
+  "rules.ef52dd648e": {
+    "text": "奖励板：免费建桥",
+    "file": "packages/rules/src/actions/special.ts"
+  },
+  "rules.efc9b0b697": {
+    "text": "最大连通区域",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.eff4d14c6d": {
+    "text": "学校计分宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.f0f71e1449": {
+    "text": "奥玛",
+    "file": "packages/rules/src/income.ts"
+  },
+  "rules.f224ca8e4c": {
+    "text": "拥有 7–8 / 9–10 / 11+ 座建筑，立即获得 8 / 12 / 18 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.f268439872": {
+    "text": "收入 4 魔力；结束本轮时，每所学校获得 3 分。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.f3ee1bd368": {
+    "text": "对局得分",
+    "file": "packages/rules/src/scoring.ts"
+  },
+  "rules.f4002a20a5": {
+    "text": "航海家沿河工坊",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.f4805a1e59": {
+    "text": "研发创新",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.f574791696": {
+    "text": "哲学家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.f5c67a466c": {
+    "text": "沿河奖励板",
+    "file": "packages/rules/src/effects.ts"
+  },
+  "rules.f9523c6d6d": {
+    "text": "收入 6 魔力；建成获得 2 把铲子、两座免费桥和两本书，可选择各奖励的处理顺序。",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.f9a9707abc": {
+    "text": "商业宫殿",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.fa696f34c1": {
+    "text": "银行学书",
+    "file": "packages/rules/src/ledger.ts"
+  },
+  "rules.fab1a40b9f": {
+    "text": "收入一本书；特殊行动免费建桥",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.fca1b6e60c": {
+    "text": "航海家",
+    "file": "packages/rules/src/content.ts"
+  },
+  "rules.fe61e97d50": {
+    "text": "第 {p0} 轮计分板",
+    "file": "packages/rules/src/round-scoring.ts"
+  },
+  "ui.action-guidance.0b1379fde6": {
+    "text": "分数 {p0} → {p1}",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 184
+  },
+  "ui.action-guidance.0bcd667661": {
+    "text": "5 魔力 → 1 书籍",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 285
+  },
+  "ui.action-guidance.1af3fec2a1": {
+    "text": "；按当前资源最多可兑换 ",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 364
+  },
+  "ui.action-guidance.1ee4e22b2e": {
+    "text": "书籍",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 363
+  },
+  "ui.action-guidance.1f3ff88a6d": {
+    "text": "魔力 {p0}",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 179
+  },
+  "ui.action-guidance.20c475c2ac": {
+    "text": "1 魔力 → 1 金币",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 282
+  },
+  "ui.action-guidance.20e9d79f1a": {
+    "text": "填入最大可兑换数量",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 371
+  },
+  "ui.action-guidance.230cc1d6c8": {
+    "text": "学者",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 362
+  },
+  "ui.action-guidance.319e12f577": {
+    "text": "开局准备",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 228
+  },
+  "ui.action-guidance.3366645622": {
+    "text": "白",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 380
+  },
+  "ui.action-guidance.343568f8aa": {
+    "text": "本次支付 ",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 348
+  },
+  "ui.action-guidance.363a463aab": {
+    "text": "选择空置的",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 257
+  },
+  "ui.action-guidance.36444d2cb0": {
+    "text": "燃烧：碗 Ⅱ 移除 1 枚，另 1 枚移入碗 Ⅲ。",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 403
+  },
+  "ui.action-guidance.3960edc1d7": {
+    "text": "预览行动",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 275
+  },
+  "ui.action-guidance.3ad8b9b631": {
+    "text": "可以执行",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 193
+  },
+  "ui.action-guidance.3b0770bdec": {
+    "text": " 次。",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 364
+  },
+  "ui.action-guidance.3b1cfbbaa9": {
+    "text": "预览转换",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 401
+  },
+  "ui.action-guidance.3eb2456f3b": {
+    "text": "棕",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 380
+  },
+  "ui.action-guidance.496e93ddfa": {
+    "text": "获得数量",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 338
+  },
+  "ui.action-guidance.4e0036c53b": {
+    "text": "燃烧 1 枚魔力标记",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 411
+  },
+  "ui.action-guidance.522148a1fd": {
+    "text": "魔力",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 350
+  },
+  "ui.action-guidance.52f354ecfc": {
+    "text": "蓝",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 380
+  },
+  "ui.action-guidance.5b46860a8e": {
+    "text": "建筑",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 229
+  },
+  "ui.action-guidance.5ca6730d44": {
+    "text": "工具",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 360
+  },
+  "ui.action-guidance.617bcc2296": {
+    "text": "1 工具 → 1 金币",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 287
+  },
+  "ui.action-guidance.6cb3f23879": {
+    "text": "已放置",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 231
+  },
+  "ui.action-guidance.6e7bd1fb47": {
+    "text": "学科 {p0}",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 183
+  },
+  "ui.action-guidance.6ee9346756": {
+    "text": "座 · 剩余",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 236
+  },
+  "ui.action-guidance.751b14a7d7": {
+    "text": "书籍颜色",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 375
+  },
+  "ui.action-guidance.9329a45b33": {
+    "text": "，获得 ",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 356
+  },
+  "ui.action-guidance.9490838286": {
+    "text": "1 学者 → 1 工具",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 286
+  },
+  "ui.action-guidance.9c92c6fe1b": {
+    "text": "放置起始",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 229
+  },
+  "ui.action-guidance.a1699952f9": {
+    "text": "地块。",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 257
+  },
+  "ui.action-guidance.a3cf0766f5": {
+    "text": "自由转换 · 不占主要行动",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 322
+  },
+  "ui.action-guidance.a646285d2d": {
+    "text": "次放置",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 242
+  },
+  "ui.action-guidance.aa21376766": {
+    "text": "转换方式",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 325
+  },
+  "ui.action-guidance.af618a54e7": {
+    "text": "5 魔力 → 1 学者",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 284
+  },
+  "ui.action-guidance.bbece6f829": {
+    "text": "金币",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 358
+  },
+  "ui.action-guidance.c1a9605ce1": {
+    "text": "执行后：{p0}",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 192
+  },
+  "ui.action-guidance.c516865657": {
+    "text": "起始建筑",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 246
+  },
+  "ui.action-guidance.c732e4d7e3": {
+    "text": "黄",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 380
+  },
+  "ui.action-guidance.c82f134d05": {
+    "text": "3 魔力 → 1 工具",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 283
+  },
+  "ui.action-guidance.ccbc05d82e": {
+    "text": "1 书籍 → 1 金币",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 288
+  },
+  "ui.action-guidance.eac9f58187": {
+    "text": "书籍 {p0}",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 181
+  },
+  "ui.action-guidance.ed0618a410": {
+    "text": "两座工坊与一座塔楼的放置顺序由你决定。",
+    "file": "apps/web/src/action-guidance.tsx",
+    "line": 258
+  },
+  "ui.api.1320cde4dd": {
+    "text": "暂时无法完成此操作，请检查选择后重试",
+    "file": "apps/web/src/api.ts",
+    "line": 14
+  },
+  "ui.api.b04245b3f4": {
+    "text": "桥梁与书籍",
+    "file": "apps/web/src/api.ts",
+    "line": 203
+  },
+  "ui.api.c88c0a95c7": {
+    "text": "铲子与书籍",
+    "file": "apps/web/src/api.ts",
+    "line": 202
+  },
+  "ui.api.cdfae298f5": {
+    "text": "学科与工具",
+    "file": "apps/web/src/api.ts",
+    "line": 204
+  },
+  "ui.app.0bd4d01f29": {
+    "text": "请先打开注册邮件中的链接完成验证。需要重新发送或修改邮箱时，请填写邮箱后提交。",
+    "file": "apps/web/src/app.tsx",
+    "line": 190
+  },
+  "ui.app.12ab391b1a": {
+    "text": "查看 →",
+    "file": "apps/web/src/app.tsx",
+    "line": 491
+  },
+  "ui.app.13e0b7c079": {
+    "text": "注册后需通过邮件链接验证邮箱，才能登录游戏。",
+    "file": "apps/web/src/app.tsx",
+    "line": 282
+  },
+  "ui.app.1a3f0617d6": {
+    "text": "用户名",
+    "file": "apps/web/src/app.tsx",
+    "line": 228
+  },
+  "ui.app.1b384a7a97": {
+    "text": "公开房间",
+    "file": "apps/web/src/app.tsx",
+    "line": 463
+  },
+  "ui.app.1ca69d5606": {
+    "text": "我的对局",
+    "file": "apps/web/src/app.tsx",
+    "line": 432
+  },
+  "ui.app.1e2df9c307": {
+    "text": "登录",
+    "file": "apps/web/src/app.tsx",
+    "line": 296
+  },
+  "ui.app.20ae1929b5": {
+    "text": "游戏大厅",
+    "file": "apps/web/src/app.tsx",
+    "line": 393
+  },
+  "ui.app.294e868dd0": {
+    "text": "创建房间",
+    "file": "apps/web/src/app.tsx",
+    "line": 424
+  },
+  "ui.app.34fa00ba5a": {
+    "text": "暂无房间",
+    "file": "apps/web/src/app.tsx",
+    "line": 496
+  },
+  "ui.app.3f662b6d5a": {
+    "text": "账号：",
+    "file": "apps/web/src/app.tsx",
+    "line": 222
+  },
+  "ui.app.46691788b6": {
+    "text": "暂无对局",
+    "file": "apps/web/src/app.tsx",
+    "line": 457
+  },
+  "ui.app.4927a53bcc": {
+    "text": "加载中…",
+    "file": "apps/web/src/app.tsx",
+    "line": 84
+  },
+  "ui.app.497ad856f6": {
+    "text": "战绩统计",
+    "file": "apps/web/src/app.tsx",
+    "line": 68
+  },
+  "ui.app.4ab8340cf6": {
+    "text": "邮件服务尚未启用，暂时无法注册或发送验证邮件，请联系管理员。",
+    "file": "apps/web/src/app.tsx",
+    "line": 216
+  },
+  "ui.app.4dd824fd0e": {
+    "text": "重新发送邮件",
+    "file": "apps/web/src/app.tsx",
+    "line": 303
+  },
+  "ui.app.4f34e37061": {
+    "text": "{p0} 秒后可重新发送",
+    "file": "apps/web/src/app.tsx",
+    "line": 300
+  },
+  "ui.app.5ce662ac8d": {
+    "text": "账号设置",
+    "file": "apps/web/src/app.tsx",
+    "line": 70
+  },
+  "ui.app.61a2cda8c7": {
+    "text": "教学",
+    "file": "apps/web/src/app.tsx",
+    "line": 69
+  },
+  "ui.app.6836e3c9f4": {
+    "text": "3–24 位字母、数字或下划线",
+    "file": "apps/web/src/app.tsx",
+    "line": 240
+  },
+  "ui.app.73075237fd": {
+    "text": "邮箱",
+    "file": "apps/web/src/app.tsx",
+    "line": 263
+  },
+  "ui.app.747b0f9082": {
+    "text": "返回登录",
+    "file": "apps/web/src/app.tsx",
+    "line": 329
+  },
+  "ui.app.792c11bc85": {
+    "text": "轮到你了",
+    "file": "apps/web/src/app.tsx",
+    "line": 447
+  },
+  "ui.app.7ccdc52ef3": {
+    "text": "请验证邮箱",
+    "file": "apps/web/src/app.tsx",
+    "line": 202
+  },
+  "ui.app.8093d32b01": {
+    "text": " · 退出",
+    "file": "apps/web/src/app.tsx",
+    "line": 77
+  },
+  "ui.app.84c9548de8": {
+    "text": " 局等你行动",
+    "file": "apps/web/src/app.tsx",
+    "line": 397
+  },
+  "ui.app.888f567269": {
+    "text": "cellman · 测试版",
+    "file": "apps/web/src/app.tsx",
+    "line": 130
+  },
+  "ui.app.8be0ea36a9": {
+    "text": "正在连接…",
+    "file": "apps/web/src/app.tsx",
+    "line": 294
+  },
+  "ui.app.94d5bba8d2": {
+    "text": "发送验证邮件",
+    "file": "apps/web/src/app.tsx",
+    "line": 302
+  },
+  "ui.app.9552fe3bd3": {
+    "text": "第 ",
+    "file": "apps/web/src/app.tsx",
+    "line": 452
+  },
+  "ui.app.97f8658eeb": {
+    "text": " / 6 轮 →",
+    "file": "apps/web/src/app.tsx",
+    "line": 452
+  },
+  "ui.app.a09722b422": {
+    "text": " 的游戏桌",
+    "file": "apps/web/src/app.tsx",
+    "line": 480
+  },
+  "ui.app.a2f0554531": {
+    "text": "注册并发送验证邮件",
+    "file": "apps/web/src/app.tsx",
+    "line": 298
+  },
+  "ui.app.a621ab606d": {
+    "text": "密码",
+    "file": "apps/web/src/app.tsx",
+    "line": 245
+  },
+  "ui.app.aee8874341": {
+    "text": "刷新",
+    "file": "apps/web/src/app.tsx",
+    "line": 465
+  },
+  "ui.app.b647dc9ed5": {
+    "text": "验证邮箱：",
+    "file": "apps/web/src/app.tsx",
+    "line": 223
+  },
+  "ui.app.bc2b09de8c": {
+    "text": "正在检查邮件服务…",
+    "file": "apps/web/src/app.tsx",
+    "line": 215
+  },
+  "ui.app.bde256979b": {
+    "text": "用于确认注册、登录和找回密码",
+    "file": "apps/web/src/app.tsx",
+    "line": 271
+  },
+  "ui.app.bf3a0186fa": {
+    "text": "大创造时代",
+    "file": "apps/web/src/app.tsx",
+    "line": 450
+  },
+  "ui.app.bff75c65ca": {
+    "text": "至少 6 位字符",
+    "file": "apps/web/src/app.tsx",
+    "line": 256
+  },
+  "ui.app.c4fb62202b": {
+    "text": "注册",
+    "file": "apps/web/src/app.tsx",
+    "line": 204
+  },
+  "ui.app.cd6f79fbed": {
+    "text": " 局",
+    "file": "apps/web/src/app.tsx",
+    "line": 433
+  },
+  "ui.app.d5445276c3": {
+    "text": "用户名或已验证邮箱",
+    "file": "apps/web/src/app.tsx",
+    "line": 239
+  },
+  "ui.app.d5ae661696": {
+    "text": "邮件找回密码",
+    "file": "apps/web/src/app.tsx",
+    "line": 332
+  },
+  "ui.app.d63842643d": {
+    "text": " 人",
+    "file": "apps/web/src/app.tsx",
+    "line": 489
+  },
+  "ui.app.d79b1d0e5c": {
+    "text": "已结束",
+    "file": "apps/web/src/app.tsx",
+    "line": 445
+  },
+  "ui.app.da0f5e37e8": {
+    "text": "修改邮箱",
+    "file": "apps/web/src/app.tsx",
+    "line": 315
+  },
+  "ui.app.db87dc9b7d": {
+    "text": "等待其他玩家",
+    "file": "apps/web/src/app.tsx",
+    "line": 448
+  },
+  "ui.app.f48d12cf53": {
+    "text": "创建账号",
+    "file": "apps/web/src/app.tsx",
+    "line": 329
+  },
+  "ui.app.fc4881d4fa": {
+    "text": "验证邮件已加入发送队列，请查收邮件并点击链接确认注册。链接 20 分钟内有效，重新发送后旧链接失效。若未收到，请检查垃圾邮件文件夹。",
+    "file": "apps/web/src/app.tsx",
+    "line": 169
+  },
+  "ui.board-actions.0b9845024c": {
+    "text": "2 工具",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 56
+  },
+  "ui.board-actions.10429500e2": {
+    "text": "棋盘行动区",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 50
+  },
+  "ui.board-actions.17a96b3917": {
+    "text": "2 本书 → 免费升级商会",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 175
+  },
+  "ui.board-actions.181aed2fe0": {
+    "text": "2 本书 → 每商会 2 分",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 176
+  },
+  "ui.board-actions.1bf02e45b3": {
+    "text": "航行 {p0} → {p1}",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 129
+  },
+  "ui.board-actions.1e5ab81c90": {
+    "text": "学者槽",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 90
+  },
+  "ui.board-actions.29f45413d7": {
+    "text": "创新与书籍行动",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 138
+  },
+  "ui.board-actions.313facfcac": {
+    "text": "槽{p0}推进{p1}",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 114
+  },
+  "ui.board-actions.439f8a5a90": {
+    "text": "改造 {p0} → {p1}",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 133
+  },
+  "ui.board-actions.4aa1a3c674": {
+    "text": "技术",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 127
+  },
+  "ui.board-actions.4d30b0e728": {
+    "text": "1 学者",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 54
+  },
+  "ui.board-actions.538cb7c542": {
+    "text": "1 本书 → 5 魔力",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 172
+  },
+  "ui.board-actions.58e38bac25": {
+    "text": "2 本书 → 6 金币",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 174
+  },
+  "ui.board-actions.598bd5a430": {
+    "text": " · 5 金币",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 154
+  },
+  "ui.board-actions.5f3a0074e0": {
+    "text": "魔力不足，可先燃烧或转换",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 83
+  },
+  "ui.board-actions.683515bf85": {
+    "text": "1 铲",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 58
+  },
+  "ui.board-actions.8689c9b993": {
+    "text": "选择行动",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 84
+  },
+  "ui.board-actions.8cff79bb4f": {
+    "text": "医学",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 92
+  },
+  "ui.board-actions.8dff1dd885": {
+    "text": "本书",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 154
+  },
+  "ui.board-actions.901d6f3c8d": {
+    "text": "2 铲",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 59
+  },
+  "ui.board-actions.93530554d7": {
+    "text": "公共魔力行动",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 51
+  },
+  "ui.board-actions.95ad8a65f7": {
+    "text": "派遣学者",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 110
+  },
+  "ui.board-actions.a628fb195d": {
+    "text": "书籍行动 ·",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 170
+  },
+  "ui.board-actions.b1eff676a2": {
+    "text": "银行学",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 92
+  },
+  "ui.board-actions.b237c80398": {
+    "text": "法学",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 92
+  },
+  "ui.board-actions.b48a468b27": {
+    "text": "3 本书 → 3 铲",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 177
+  },
+  "ui.board-actions.b981de7fa8": {
+    "text": " 魔力 → ",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 77
+  },
+  "ui.board-actions.d803de198c": {
+    "text": "归还学者推进1",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 114
+  },
+  "ui.board-actions.d89e8bb520": {
+    "text": "奖励板与特殊行动",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 188
+  },
+  "ui.board-actions.db71191bc4": {
+    "text": "选择支付书籍与目标",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 183
+  },
+  "ui.board-actions.dcf6c4fe40": {
+    "text": "建桥",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 55
+  },
+  "ui.board-actions.e9f3d305ff": {
+    "text": "工程学",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 92
+  },
+  "ui.board-actions.f2f683d25a": {
+    "text": "本轮已用",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 182
+  },
+  "ui.board-actions.fb411e98fe": {
+    "text": "7 金币",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 57
+  },
+  "ui.board-actions.fd20aa4d0e": {
+    "text": "1 本书 → 2 格学科",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 173
+  },
+  "ui.board-actions.ffe425b271": {
+    "text": "魔力板：{p0}",
+    "file": "apps/web/src/board-actions.tsx",
+    "line": 69
+  },
+  "ui.email.09a3f6278a": {
+    "text": "邮箱验证成功，注册已完成。请返回登录。",
+    "file": "apps/web/src/email.tsx",
+    "line": 327
+  },
+  "ui.email.126b5e2786": {
+    "text": "发送失败，请稍后重新申请",
+    "file": "apps/web/src/email.tsx",
+    "line": 71
+  },
+  "ui.email.19bb3c1b9b": {
+    "text": "如果该邮箱已绑定账号，重置邮件将发送到此邮箱。请检查收件箱及垃圾箱，链接 20 分钟内有效。",
+    "file": "apps/web/src/email.tsx",
+    "line": 248
+  },
+  "ui.email.1bd538643b": {
+    "text": "待验证：",
+    "file": "apps/web/src/email.tsx",
+    "line": 117
+  },
+  "ui.email.1bf207be9b": {
+    "text": "← 返回大厅",
+    "file": "apps/web/src/email.tsx",
+    "line": 90
+  },
+  "ui.email.1cedb9510f": {
+    "text": "返回登录或重新申请验证邮件",
+    "file": "apps/web/src/email.tsx",
+    "line": 427
+  },
+  "ui.email.1e0f1c067e": {
+    "text": "邮件服务已接收，请检查收件箱或垃圾箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 70
+  },
+  "ui.email.20368b2238": {
+    "text": "请先验证邮箱。",
+    "file": "apps/web/src/email.tsx",
+    "line": 213
+  },
+  "ui.email.226db62eac": {
+    "text": "确认重置密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 423
+  },
+  "ui.email.26c8fe2777": {
+    "text": "返回网站",
+    "file": "apps/web/src/email.tsx",
+    "line": 336
+  },
+  "ui.email.2d88d503d0": {
+    "text": "正在发送",
+    "file": "apps/web/src/email.tsx",
+    "line": 69
+  },
+  "ui.email.3b3803d7a3": {
+    "text": "邮件服务尚未启用。管理员配置后即可绑定邮箱和使用邮件找回密码。",
+    "file": "apps/web/src/email.tsx",
+    "line": 112
+  },
+  "ui.email.3c7ac39cde": {
+    "text": "默认关闭。行动提醒等待约 2 分钟后发送；每局同类提醒至少间隔 15 分钟，已处理的行动不再提醒。",
+    "file": "apps/web/src/email.tsx",
+    "line": 180
+  },
+  "ui.email.3d71179840": {
+    "text": "设置新密码后，所有设备需要重新登录。",
+    "file": "apps/web/src/email.tsx",
+    "line": 380
+  },
+  "ui.email.434ee8e7d8": {
+    "text": "取消待验证邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 127
+  },
+  "ui.email.43ab720772": {
+    "text": "已验证邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 258
+  },
+  "ui.email.4927a53bcc": {
+    "text": "加载中…",
+    "file": "apps/web/src/email.tsx",
+    "line": 104
+  },
+  "ui.email.515e9c7cf7": {
+    "text": "新密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 384
+  },
+  "ui.email.52b2863a9b": {
+    "text": "仅在你本人申请绑定时继续。请输入邮件中所列账号的当前密码确认。",
+    "file": "apps/web/src/email.tsx",
+    "line": 379
+  },
+  "ui.email.531a0cc72a": {
+    "text": "尚未绑定邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 109
+  },
+  "ui.email.551b1ca117": {
+    "text": "已取消待验证邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 124
+  },
+  "ui.email.560a2aa63d": {
+    "text": "验证邮件已加入发送队列。请打开邮件中的链接完成验证。",
+    "file": "apps/web/src/email.tsx",
+    "line": 137
+  },
+  "ui.email.5719428128": {
+    "text": "邮箱验证成功，可用于登录和找回密码。",
+    "file": "apps/web/src/email.tsx",
+    "line": 329
+  },
+  "ui.email.5bc3a26905": {
+    "text": "发送重置邮件",
+    "file": "apps/web/src/email.tsx",
+    "line": 270
+  },
+  "ui.email.5ce662ac8d": {
+    "text": "账号设置",
+    "file": "apps/web/src/email.tsx",
+    "line": 92
+  },
+  "ui.email.64eff9d196": {
+    "text": "两次密码不一致",
+    "file": "apps/web/src/email.tsx",
+    "line": 352
+  },
+  "ui.email.6bbff18f20": {
+    "text": "确认绑定邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 422
+  },
+  "ui.email.6d4b7dce1e": {
+    "text": "绑定邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 142
+  },
+  "ui.email.73075237fd": {
+    "text": "邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 108
+  },
+  "ui.email.73f14b1cb6": {
+    "text": "密码已重置，旧登录会话已失效。请使用新密码登录。",
+    "file": "apps/web/src/email.tsx",
+    "line": 330
+  },
+  "ui.email.747b0f9082": {
+    "text": "返回登录",
+    "file": "apps/web/src/email.tsx",
+    "line": 344
+  },
+  "ui.email.7a58a49950": {
+    "text": "确认注册",
+    "file": "apps/web/src/email.tsx",
+    "line": 420
+  },
+  "ui.email.7f98620a54": {
+    "text": "验证邮箱",
+    "file": "apps/web/src/email.tsx",
+    "line": 319
+  },
+  "ui.email.86b3a6478c": {
+    "text": "轮到我行动或响应时提醒",
+    "file": "apps/web/src/email.tsx",
+    "line": 196
+  },
+  "ui.email.8af19f6dd3": {
+    "text": "邮件服务尚未启用，暂时无法找回密码，请联系管理员。",
+    "file": "apps/web/src/email.tsx",
+    "line": 237
+  },
+  "ui.email.8f9bfc66e2": {
+    "text": "链接缺失。请重新打开邮件中的链接，或重新申请邮件。",
+    "file": "apps/web/src/email.tsx",
+    "line": 342
+  },
+  "ui.email.94d5bba8d2": {
+    "text": "发送验证邮件",
+    "file": "apps/web/src/email.tsx",
+    "line": 170
+  },
+  "ui.email.99721a0d0e": {
+    "text": "等待发送或重试",
+    "file": "apps/web/src/email.tsx",
+    "line": 68
+  },
+  "ui.email.a114cfb687": {
+    "text": "当前密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 154
+  },
+  "ui.email.a37778f17c": {
+    "text": "已取消",
+    "file": "apps/web/src/email.tsx",
+    "line": 73
+  },
+  "ui.email.ae0bafc430": {
+    "text": "提醒设置已保存",
+    "file": "apps/web/src/email.tsx",
+    "line": 82
+  },
+  "ui.email.ae1447138c": {
+    "text": "重新发送验证邮件",
+    "file": "apps/web/src/email.tsx",
+    "line": 169
+  },
+  "ui.email.b3c58fe4d4": {
+    "text": "再次输入新密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 401
+  },
+  "ui.email.b8c3d9bf8d": {
+    "text": "邮件提醒",
+    "file": "apps/web/src/email.tsx",
+    "line": 178
+  },
+  "ui.email.bff75c65ca": {
+    "text": "至少 6 位字符",
+    "file": "apps/web/src/email.tsx",
+    "line": 391
+  },
+  "ui.email.c71c1a57ff": {
+    "text": "链接已过期，请重新申请",
+    "file": "apps/web/src/email.tsx",
+    "line": 72
+  },
+  "ui.email.d1f6bfa16c": {
+    "text": "已验证：{p0}",
+    "file": "apps/web/src/email.tsx",
+    "line": 109
+  },
+  "ui.email.d3d21191f3": {
+    "text": "处理中…",
+    "file": "apps/web/src/email.tsx",
+    "line": 167
+  },
+  "ui.email.d5ae661696": {
+    "text": "邮件找回密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 233
+  },
+  "ui.email.d70928debc": {
+    "text": "重置密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 320
+  },
+  "ui.email.d92bfdd9f6": {
+    "text": "当前账号密码",
+    "file": "apps/web/src/email.tsx",
+    "line": 384
+  },
+  "ui.email.dde176a558": {
+    "text": "验证后可用邮箱登录、找回密码。更换邮箱在验证成功后生效。",
+    "file": "apps/web/src/email.tsx",
+    "line": 174
+  },
+  "ui.email.e82e66c009": {
+    "text": "链接 20 分钟内有效；重新发送后旧链接失效。",
+    "file": "apps/web/src/email.tsx",
+    "line": 119
+  },
+  "ui.email.f5c5ffcdcf": {
+    "text": "确认后将激活账号并绑定此邮箱。仅在你本人申请注册时继续。",
+    "file": "apps/web/src/email.tsx",
+    "line": 377
+  },
+  "ui.email.fe97ce28c4": {
+    "text": "对局超时后提醒",
+    "file": "apps/web/src/email.tsx",
+    "line": 211
+  },
+  "ui.game-clock.14acf4a2bb": {
+    "text": "本局设置",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 184
+  },
+  "ui.game-clock.174688c755": {
+    "text": "已移除",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 153
+  },
+  "ui.game-clock.195381874e": {
+    "text": "非活跃时段 · 停钟，可继续操作",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 131
+  },
+  "ui.game-clock.19c62aba23": {
+    "text": "超时弃局 · 战绩已结算",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 78
+  },
+  "ui.game-clock.1fdf48a500": {
+    "text": "取消，继续等待",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 113
+  },
+  "ui.game-clock.251bc40e70": {
+    "text": "等待",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 160
+  },
+  "ui.game-clock.274c953d45": {
+    "text": "超时后其他玩家可移除",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 132
+  },
+  "ui.game-clock.2a332b8c5f": {
+    "text": "余局 · 不再计时",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 125
+  },
+  "ui.game-clock.36f33adaf0": {
+    "text": "确认",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 110
+  },
+  "ui.game-clock.3871ca6802": {
+    "text": "结束余局",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 110
+  },
+  "ui.game-clock.3c03903fbc": {
+    "text": "对局已结束",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 129
+  },
+  "ui.game-clock.444a23b031": {
+    "text": "计时中",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 159
+  },
+  "ui.game-clock.4ca9e4c371": {
+    "text": "当前截止：{p0}（北京时间）。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 203
+  },
+  "ui.game-clock.6135d4159e": {
+    "text": "移除",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 110
+  },
+  "ui.game-clock.6679670c7b": {
+    "text": "移除超时玩家 ",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 176
+  },
+  "ui.game-clock.73ce15fee4": {
+    "text": "已超时",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 155
+  },
+  "ui.game-clock.768ce1b5fc": {
+    "text": "整局连续 10 天无有效操作自动结束。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 201
+  },
+  "ui.game-clock.7793b4c392": {
+    "text": "本局计入对局记录，不判胜负，不计入分数和胜率。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 84
+  },
+  "ui.game-clock.8d12fc0d4e": {
+    "text": "暂停",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 157
+  },
+  "ui.game-clock.917fb33288": {
+    "text": "计时与本局设置",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 73
+  },
+  "ui.game-clock.9660c9314e": {
+    "text": "登录、刷新和查看页面不会延长截止时间。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 205
+  },
+  "ui.game-clock.a2c8b5419d": {
+    "text": "协商中 · 计时暂停",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 127
+  },
+  "ui.game-clock.a60d1a7b35": {
+    "text": "{p0} 的计时",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 147
+  },
+  "ui.game-clock.a7c764e596": {
+    "text": "连续 10 天无人操作 · 对局已结束",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 79
+  },
+  "ui.game-clock.c07b50fb89": {
+    "text": "{p0} 按末名结算，其余玩家并列第一。余局不再改变战绩，退出者的必要步骤会自动处理。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 83
+  },
+  "ui.game-clock.c1a0735382": {
+    "text": "以服务器时间为准；活跃计时期间断线仍会扣时。悔棋暂停期间不扣时，已用时间不会退回。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 196
+  },
+  "ui.game-clock.c44baa3534": {
+    "text": "已超时。可以继续等待；移除前仍可操作。超时会计入记录。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 169
+  },
+  "ui.game-clock.cc724980aa": {
+    "text": "结束余局？已结算的弃局战绩不会改变。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 97
+  },
+  "ui.game-clock.ed25585f87": {
+    "text": "确认移除 {p0}？该玩家按末名结算，其余玩家并列第一，不能通过悔棋撤销。也可以取消并继续等待。",
+    "file": "apps/web/src/game-clock.tsx",
+    "line": 98
+  },
+  "ui.game.0054637815": {
+    "text": "确认提交后生效",
+    "file": "apps/web/src/game.tsx",
+    "line": 1417
+  },
+  "ui.game.0129eae620": {
+    "text": "黄书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2791
+  },
+  "ui.game.019889d261": {
+    "text": "城市 +5 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2722
+  },
+  "ui.game.019db0fa25": {
+    "text": "预览改造与建造",
+    "file": "apps/web/src/game.tsx",
+    "line": 2101
+  },
+  "ui.game.01e1e86d35": {
+    "text": "预览铲子分配",
+    "file": "apps/web/src/game.tsx",
+    "line": 2706
+  },
+  "ui.game.023d7eb45d": {
+    "text": "，改造费用将自动计算。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1133
+  },
+  "ui.game.03baf147a0": {
+    "text": "预览书籍动作",
+    "file": "apps/web/src/game.tsx",
+    "line": 2480
+  },
+  "ui.game.044ad9e1ca": {
+    "text": " 金币",
+    "file": "apps/web/src/game.tsx",
+    "line": 2529
+  },
+  "ui.game.05683e0fba": {
+    "text": "同时建造工坊",
+    "file": "apps/web/src/game.tsx",
+    "line": 2087
+  },
+  "ui.game.07abcabde1": {
+    "text": "铲子",
+    "file": "apps/web/src/game.tsx",
+    "line": 1247
+  },
+  "ui.game.0850f32146": {
+    "text": "请选择一张空闲奖励板",
+    "file": "apps/web/src/game.tsx",
+    "line": 2494
+  },
+  "ui.game.0bf1b46980": {
+    "text": "要塞技能生效",
+    "file": "apps/web/src/game.tsx",
+    "line": 2767
+  },
+  "ui.game.0d474170c7": {
+    "text": "工具 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 856
+  },
+  "ui.game.0e4a037f2f": {
+    "text": "宫殿能力",
+    "file": "apps/web/src/game.tsx",
+    "line": 2123
+  },
+  "ui.game.0feba9b41c": {
+    "text": "操作偏好",
+    "file": "apps/web/src/game.tsx",
+    "line": 1468
+  },
+  "ui.game.105be2c648": {
+    "text": "选择桥位 {p0}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1776
+  },
+  "ui.game.108ef16c8b": {
+    "text": "正常相邻 / 航运",
+    "file": "apps/web/src/game.tsx",
+    "line": 2630
+  },
+  "ui.game.111f29973b": {
+    "text": "放置桥梁",
+    "file": "apps/web/src/game.tsx",
+    "line": 2773
+  },
+  "ui.game.11ff8464a7": {
+    "text": "获得创新",
+    "file": "apps/web/src/game.tsx",
+    "line": 2763
+  },
+  "ui.game.121ee7034d": {
+    "text": "桥梁 {p0} 到 {p1}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1812
+  },
+  "ui.game.124c5815d6": {
+    "text": "← 大厅",
+    "file": "apps/web/src/game.tsx",
+    "line": 663
+  },
+  "ui.game.1347d09243": {
+    "text": "启用自动接受",
+    "file": "apps/web/src/game.tsx",
+    "line": 1525
+  },
+  "ui.game.13495f8f19": {
+    "text": "查看预览",
+    "file": "apps/web/src/game.tsx",
+    "line": 1569
+  },
+  "ui.game.1518bcfff0": {
+    "text": "大创造时代 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 666
+  },
+  "ui.game.15ae8c892f": {
+    "text": "创新 +5 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2724
+  },
+  "ui.game.15cbeeb744": {
+    "text": "使用钥匙并继续",
+    "file": "apps/web/src/game.tsx",
+    "line": 1240
+  },
+  "ui.game.15d671e649": {
+    "text": "棕色书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 1064
+  },
+  "ui.game.1713b08c51": {
+    "text": "请选择空置陆地",
+    "file": "apps/web/src/game.tsx",
+    "line": 2646
+  },
+  "ui.game.1721209593": {
+    "text": "你的个人板",
+    "file": "apps/web/src/game.tsx",
+    "line": 1049
+  },
+  "ui.game.17a96b3917": {
+    "text": "2 本书 → 免费升级商会",
+    "file": "apps/web/src/game.tsx",
+    "line": 2396
+  },
+  "ui.game.17f4039032": {
+    "text": "预览派遣",
+    "file": "apps/web/src/game.tsx",
+    "line": 2188
+  },
+  "ui.game.181aed2fe0": {
+    "text": "2 本书 → 每商会 2 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2397
+  },
+  "ui.game.18eb382c31": {
+    "text": "预览创新",
+    "file": "apps/web/src/game.tsx",
+    "line": 2289
+  },
+  "ui.game.1924ed917f": {
+    "text": "可继续自由转换，完成后结束回合。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1309
+  },
+  "ui.game.196f468730": {
+    "text": "飞行：一学者，跨最多两格",
+    "file": "apps/web/src/game.tsx",
+    "line": 2074
+  },
+  "ui.game.1a58afef9f": {
+    "text": "建设",
+    "file": "apps/web/src/game.tsx",
+    "line": 1316
+  },
+  "ui.game.1afeee986c": {
+    "text": "预览放置 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1150
+  },
+  "ui.game.1b0ac7ded8": {
+    "text": "提交后还有 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2827
+  },
+  "ui.game.1c93f83617": {
+    "text": "填入一组可用书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 2461
+  },
+  "ui.game.1ee4e22b2e": {
+    "text": "书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 1059
+  },
+  "ui.game.1f2307bd52": {
+    "text": " 工具 / 铲",
+    "file": "apps/web/src/game.tsx",
+    "line": 1084
+  },
+  "ui.game.1f7ebcd3a8": {
+    "text": "可使用",
+    "file": "apps/web/src/game.tsx",
+    "line": 1075
+  },
+  "ui.game.20f236b416": {
+    "text": "书籍行动学科",
+    "file": "apps/web/src/game.tsx",
+    "line": 2409
+  },
+  "ui.game.21342d0cfd": {
+    "text": "航行：1 学者、4 金币。改造：1 学者、1 工具、",
+    "file": "apps/web/src/game.tsx",
+    "line": 2192
+  },
+  "ui.game.22b4b042ca": {
+    "text": "改造完成后，再决定是否建造工坊。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2090
+  },
+  "ui.game.22d36c0220": {
+    "text": " 项）",
+    "file": "apps/web/src/game.tsx",
+    "line": 2845
+  },
+  "ui.game.230cc1d6c8": {
+    "text": "学者",
+    "file": "apps/web/src/game.tsx",
+    "line": 2777
+  },
+  "ui.game.23a7807b5e": {
+    "text": "确认步骤",
+    "file": "apps/web/src/game.tsx",
+    "line": 1449
+  },
+  "ui.game.24487ff158": {
+    "text": "将放弃：",
+    "file": "apps/web/src/game.tsx",
+    "line": 1374
+  },
+  "ui.game.251bc40e70": {
+    "text": "等待",
+    "file": "apps/web/src/game.tsx",
+    "line": 843
+  },
+  "ui.game.252b862352": {
+    "text": "最多支付分数",
+    "file": "apps/web/src/game.tsx",
+    "line": 1528
+  },
+  "ui.game.256404af25": {
+    "text": "终局",
+    "file": "apps/web/src/game.tsx",
+    "line": 838
+  },
+  "ui.game.2704be0cde": {
+    "text": "{p0}的{p1}{p2}",
+    "file": "apps/web/src/game.tsx",
+    "line": 529
+  },
+  "ui.game.28ce1db800": {
+    "text": "请先安全重试未确认的提交，再查看历史。",
+    "file": "apps/web/src/game.tsx",
+    "line": 235
+  },
+  "ui.game.29c1ce7270": {
+    "text": "描边地块：可以放置起始建筑。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1631
+  },
+  "ui.game.2bba0b1af3": {
+    "text": "隧道：一工具",
+    "file": "apps/web/src/game.tsx",
+    "line": 2633
+  },
+  "ui.game.2be28b9ae0": {
+    "text": " 金币 / ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1040
+  },
+  "ui.game.2be7ed8644": {
+    "text": "城市钥匙",
+    "file": "apps/web/src/game.tsx",
+    "line": 2759
+  },
+  "ui.game.2c79f93423": {
+    "text": "收益",
+    "file": "apps/web/src/game.tsx",
+    "line": 1247
+  },
+  "ui.game.2cffd620ef": {
+    "text": "预览公共动作",
+    "file": "apps/web/src/game.tsx",
+    "line": 2372
+  },
+  "ui.game.2e52a00cbd": {
+    "text": "先改造，再决定是否支付费用建造；中途可转换资源。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2685
+  },
+  "ui.game.2efc930c74": {
+    "text": "下一轮奖励",
+    "file": "apps/web/src/game.tsx",
+    "line": 2492
+  },
+  "ui.game.310b2ad06b": {
+    "text": "其他玩家更新了局面，本回合试走已取消，请按最新局面重新选择。",
+    "file": "apps/web/src/game.tsx",
+    "line": 167
+  },
+  "ui.game.3160fc9159": {
+    "text": "返回修改",
+    "file": "apps/web/src/game.tsx",
+    "line": 1460
+  },
+  "ui.game.329fcec618": {
+    "text": "接受",
+    "file": "apps/web/src/game.tsx",
+    "line": 1243
+  },
+  "ui.game.331d71b27f": {
+    "text": "第 {p0} → {p1} 轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 2814
+  },
+  "ui.game.3366645622": {
+    "text": "白",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.34822c83e7": {
+    "text": "技术推进 +3 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2723
+  },
+  "ui.game.34b87dc661": {
+    "text": "请选择两岸",
+    "file": "apps/web/src/game.tsx",
+    "line": 2346
+  },
+  "ui.game.34cffa29df": {
+    "text": "需要你的选择",
+    "file": "apps/web/src/game.tsx",
+    "line": 1106
+  },
+  "ui.game.3503f101ce": {
+    "text": "书籍公共动作",
+    "file": "apps/web/src/game.tsx",
+    "line": 2379
+  },
+  "ui.game.35814ebc91": {
+    "text": "安全重试提交",
+    "file": "apps/web/src/game.tsx",
+    "line": 1442
+  },
+  "ui.game.35af3ebaf3": {
+    "text": "提交后可从行动记录申请悔棋，需全体玩家同意。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1428
+  },
+  "ui.game.36cd1e6791": {
+    "text": "依次选择地块；先将第一个改造成家园，才能把剩余铲子分给下一块。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2621
+  },
+  "ui.game.36ed07fd6d": {
+    "text": "尚未选择地块",
+    "file": "apps/web/src/game.tsx",
+    "line": 530
+  },
+  "ui.game.3705b74639": {
+    "text": " · 有",
+    "file": "apps/web/src/game.tsx",
+    "line": 2425
+  },
+  "ui.game.3854a45773": {
+    "text": "（已占用）",
+    "file": "apps/web/src/game.tsx",
+    "line": 2173
+  },
+  "ui.game.394bba8648": {
+    "text": "学者 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 857
+  },
+  "ui.game.39ae735833": {
+    "text": "本轮书籍动作已全部使用",
+    "file": "apps/web/src/game.tsx",
+    "line": 2383
+  },
+  "ui.game.3abeb572f6": {
+    "text": "只改造一块地时可直接预览；分配到多块地时逐块添加。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2669
+  },
+  "ui.game.3dab827ed0": {
+    "text": "开局准备 · 每人选齐四类板块",
+    "file": "apps/web/src/game.tsx",
+    "line": 600
+  },
+  "ui.game.3eb2456f3b": {
+    "text": "棕",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.40af3d3dd3": {
+    "text": "3 魔力 → 桥梁",
+    "file": "apps/web/src/game.tsx",
+    "line": 2306
+  },
+  "ui.game.40f112cd63": {
+    "text": "仅对这局生效。超过阈值仍然等你选择。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1506
+  },
+  "ui.game.41a9919720": {
+    "text": "公共行动",
+    "file": "apps/web/src/game.tsx",
+    "line": 1318
+  },
+  "ui.game.41ab2e0ecb": {
+    "text": "地图",
+    "file": "apps/web/src/game.tsx",
+    "line": 1563
+  },
+  "ui.game.42ebba5ade": {
+    "text": "支付棕书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2253
+  },
+  "ui.game.430c08d298": {
+    "text": " 学者",
+    "file": "apps/web/src/game.tsx",
+    "line": 1040
+  },
+  "ui.game.433a73f801": {
+    "text": "3–5 人地图 · 地形与建筑使用自制图形",
+    "file": "apps/web/src/game.tsx",
+    "line": 1836
+  },
+  "ui.game.43a3d4600c": {
+    "text": " 工具 / ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1040
+  },
+  "ui.game.44c50e9d8b": {
+    "text": "启用回合试走与撤销",
+    "file": "apps/web/src/game.tsx",
+    "line": 1483
+  },
+  "ui.game.44c7110fe4": {
+    "text": "公共动作蓝书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2432
+  },
+  "ui.game.451a9ef2ac": {
+    "text": "待选种族与家园",
+    "file": "apps/web/src/game.tsx",
+    "line": 825
+  },
+  "ui.game.452cb5bc11": {
+    "text": "蓝书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2791
+  },
+  "ui.game.452ec2f811": {
+    "text": "尚未使用的特殊行动（可能需要资源或目标）：",
+    "file": "apps/web/src/game.tsx",
+    "line": 1395
+  },
+  "ui.game.456ffcb111": {
+    "text": "航行 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1081
+  },
+  "ui.game.45f945b8ba": {
+    "text": "待充能",
+    "file": "apps/web/src/game.tsx",
+    "line": 1075
+  },
+  "ui.game.4716d348fe": {
+    "text": "新开随机对局",
+    "file": "apps/web/src/game.tsx",
+    "line": 766
+  },
+  "ui.game.4890584bb5": {
+    "text": "轮次",
+    "file": "apps/web/src/game.tsx",
+    "line": 2814
+  },
+  "ui.game.49801b4d1c": {
+    "text": "。确认后该项剩余收益不再领取。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1383
+  },
+  "ui.game.4a2f6437ee": {
+    "text": " · 书籍 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1043
+  },
+  "ui.game.4a507105ed": {
+    "text": "返回当前对局",
+    "file": "apps/web/src/game.tsx",
+    "line": 700
+  },
+  "ui.game.4afdd6b75a": {
+    "text": "提交后可从行动记录撤回。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1427
+  },
+  "ui.game.4bb17ff691": {
+    "text": "（你）",
+    "file": "apps/web/src/game.tsx",
+    "line": 817
+  },
+  "ui.game.4c0b82be57": {
+    "text": "建造工坊",
+    "file": "apps/web/src/game.tsx",
+    "line": 1236
+  },
+  "ui.game.4de82a21d9": {
+    "text": "改造科技",
+    "file": "apps/web/src/game.tsx",
+    "line": 2758
+  },
+  "ui.game.4e3c82b301": {
+    "text": "（中立）",
+    "file": "apps/web/src/game.tsx",
+    "line": 1680
+  },
+  "ui.game.4e7f7acd3e": {
+    "text": "对局快捷导航",
+    "file": "apps/web/src/game.tsx",
+    "line": 1554
+  },
+  "ui.game.4ee4fb9525": {
+    "text": "提交回合",
+    "file": "apps/web/src/game.tsx",
+    "line": 633
+  },
+  "ui.game.4f64cf3802": {
+    "text": "{p0} +{p1} · {p2}书 +{p3} · 剩余 {p4}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.4f9c08d4e0": {
+    "text": "获得能力",
+    "file": "apps/web/src/game.tsx",
+    "line": 2765
+  },
+  "ui.game.4ff0f1dda8": {
+    "text": "研究",
+    "file": "apps/web/src/game.tsx",
+    "line": 1317
+  },
+  "ui.game.509960a119": {
+    "text": "4 魔力 → 1 铲",
+    "file": "apps/web/src/game.tsx",
+    "line": 2304
+  },
+  "ui.game.51695ad45a": {
+    "text": "地形",
+    "file": "apps/web/src/game.tsx",
+    "line": 2749
+  },
+  "ui.game.52270c6fb7": {
+    "text": "去地图选格",
+    "file": "apps/web/src/game.tsx",
+    "line": 1032
+  },
+  "ui.game.52c963128e": {
+    "text": "已选 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2454
+  },
+  "ui.game.52f354ecfc": {
+    "text": "蓝",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.538cb7c542": {
+    "text": "1 本书 → 5 魔力",
+    "file": "apps/web/src/game.tsx",
+    "line": 2393
+  },
+  "ui.game.53994c91f5": {
+    "text": "不建造",
+    "file": "apps/web/src/game.tsx",
+    "line": 1237
+  },
+  "ui.game.546faf8110": {
+    "text": "保留钥匙，停在 7 级",
+    "file": "apps/web/src/game.tsx",
+    "line": 1241
+  },
+  "ui.game.550378d18a": {
+    "text": "选择桥位 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1802
+  },
+  "ui.game.56541f587b": {
+    "text": "法学 / 蓝",
+    "file": "apps/web/src/game.tsx",
+    "line": 1253
+  },
+  "ui.game.56bf69b861": {
+    "text": "玩家 {p0}",
+    "file": "apps/web/src/game.tsx",
+    "line": 750
+  },
+  "ui.game.58e38bac25": {
+    "text": "2 本书 → 6 金币",
+    "file": "apps/web/src/game.tsx",
+    "line": 2395
+  },
+  "ui.game.59b7f424e3": {
+    "text": "当前对局版本 #",
+    "file": "apps/web/src/game.tsx",
+    "line": 699
+  },
+  "ui.game.5bf7c595b6": {
+    "text": "分步改造不建工坊；改成家园后才可建造。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2092
+  },
+  "ui.game.5c5051a4d1": {
+    "text": "魔力碗",
+    "file": "apps/web/src/game.tsx",
+    "line": 2802
+  },
+  "ui.game.5ca6730d44": {
+    "text": "工具",
+    "file": "apps/web/src/game.tsx",
+    "line": 2776
+  },
+  "ui.game.5f116605ca": {
+    "text": "本地演示",
+    "file": "apps/web/src/game.tsx",
+    "line": 670
+  },
+  "ui.game.60cb5c27f9": {
+    "text": "公共动作黄书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2431
+  },
+  "ui.game.60fa7ec551": {
+    "text": " 本",
+    "file": "apps/web/src/game.tsx",
+    "line": 2454
+  },
+  "ui.game.6135d4159e": {
+    "text": "移除",
+    "file": "apps/web/src/game.tsx",
+    "line": 2679
+  },
+  "ui.game.61e85f6baf": {
+    "text": "银行 / 黄",
+    "file": "apps/web/src/game.tsx",
+    "line": 1252
+  },
+  "ui.game.62ac572279": {
+    "text": "继续转换",
+    "file": "apps/web/src/game.tsx",
+    "line": 652
+  },
+  "ui.game.62be575967": {
+    "text": "（家园）",
+    "file": "apps/web/src/game.tsx",
+    "line": 2057
+  },
+  "ui.game.63f2313788": {
+    "text": "白色书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 1064
+  },
+  "ui.game.64133ba30f": {
+    "text": "本回合获得魔力时提示",
+    "file": "apps/web/src/game.tsx",
+    "line": 1499
+  },
+  "ui.game.6575322492": {
+    "text": "医学 / 白",
+    "file": "apps/web/src/game.tsx",
+    "line": 1255
+  },
+  "ui.game.65ea0261cd": {
+    "text": "提交前转换提示",
+    "file": "apps/web/src/game.tsx",
+    "line": 1487
+  },
+  "ui.game.668eb0ca1f": {
+    "text": "取消本回合",
+    "file": "apps/web/src/game.tsx",
+    "line": 624
+  },
+  "ui.game.6898d29e7d": {
+    "text": "结束本轮后，本轮不能再行动。下一轮的顺序按结束先后决定。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2487
+  },
+  "ui.game.68b4fdcbf0": {
+    "text": "离线 · 已暂停提交，联网后自动恢复",
+    "file": "apps/web/src/game.tsx",
+    "line": 681
+  },
+  "ui.game.691a04889d": {
+    "text": "附带 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2529
+  },
+  "ui.game.6c06e6a581": {
+    "text": "黄色书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 1064
+  },
+  "ui.game.6d1f8ad23e": {
+    "text": " 格",
+    "file": "apps/web/src/game.tsx",
+    "line": 2172
+  },
+  "ui.game.6f4f29521b": {
+    "text": "其他玩家的同步变化（",
+    "file": "apps/web/src/game.tsx",
+    "line": 2845
+  },
+  "ui.game.705b35125d": {
+    "text": "航行",
+    "file": "apps/web/src/game.tsx",
+    "line": 2757
+  },
+  "ui.game.722f3315a9": {
+    "text": "选择你的行动",
+    "file": "apps/web/src/game.tsx",
+    "line": 1304
+  },
+  "ui.game.72d4ebb69e": {
+    "text": " 魔力，接受支付",
+    "file": "apps/web/src/game.tsx",
+    "line": 1115
+  },
+  "ui.game.73338fe506": {
+    "text": "{p0}的{p1}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1697
+  },
+  "ui.game.73a18ad965": {
+    "text": "1 本书 → 2 学科",
+    "file": "apps/web/src/game.tsx",
+    "line": 2394
+  },
+  "ui.game.74139b0130": {
+    "text": " · 只读",
+    "file": "apps/web/src/game.tsx",
+    "line": 698
+  },
+  "ui.game.746605386c": {
+    "text": "公共动作棕书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2433
+  },
+  "ui.game.74e5876c96": {
+    "text": "放大选格",
+    "file": "apps/web/src/game.tsx",
+    "line": 1640
+  },
+  "ui.game.76704a58b1": {
+    "text": "。查看历史不会修改对局。",
+    "file": "apps/web/src/game.tsx",
+    "line": 699
+  },
+  "ui.game.76ea97ed3d": {
+    "text": "获得 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2618
+  },
+  "ui.game.773e0dc408": {
+    "text": "/ 6 轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 672
+  },
+  "ui.game.77fffeb97f": {
+    "text": "预览升级",
+    "file": "apps/web/src/game.tsx",
+    "line": 2144
+  },
+  "ui.game.7a8c788571": {
+    "text": "本轮魔力动作已全部使用",
+    "file": "apps/web/src/game.tsx",
+    "line": 2299
+  },
+  "ui.game.7ada721791": {
+    "text": "只读历史 #{p0}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1557
+  },
+  "ui.game.815a2af276": {
+    "text": "改造目标",
+    "file": "apps/web/src/game.tsx",
+    "line": 2640
+  },
+  "ui.game.819b05a67d": {
+    "text": "结束本轮 · 本轮不再执行主行动",
+    "file": "apps/web/src/game.tsx",
+    "line": 1391
+  },
+  "ui.game.8351691754": {
+    "text": "3 魔力 → 1 学者",
+    "file": "apps/web/src/game.tsx",
+    "line": 2303
+  },
+  "ui.game.83a69757de": {
+    "text": "（已使用）",
+    "file": "apps/web/src/game.tsx",
+    "line": 2316
+  },
+  "ui.game.840c7c7418": {
+    "text": "已选 {p0} / 4 项",
+    "file": "apps/web/src/game.tsx",
+    "line": 821
+  },
+  "ui.game.85c1e36bb5": {
+    "text": "推进航行",
+    "file": "apps/web/src/game.tsx",
+    "line": 2202
+  },
+  "ui.game.85d56bf4d4": {
+    "text": "工程",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.86dc53393e": {
+    "text": "正在恢复对局…",
+    "file": "apps/web/src/game.tsx",
+    "line": 522
+  },
+  "ui.game.88d52c81cb": {
+    "text": "工坊 +2 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2714
+  },
+  "ui.game.89236446d4": {
+    "text": "我的资源 · ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1040
+  },
+  "ui.game.89e35e662a": {
+    "text": "分数",
+    "file": "apps/web/src/game.tsx",
+    "line": 2787
+  },
+  "ui.game.8af2350cfd": {
+    "text": "的",
+    "file": "apps/web/src/game.tsx",
+    "line": 2033
+  },
+  "ui.game.8cf2791007": {
+    "text": " · 空地",
+    "file": "apps/web/src/game.tsx",
+    "line": 1681
+  },
+  "ui.game.8cff79bb4f": {
+    "text": "医学",
+    "file": "apps/web/src/game.tsx",
+    "line": 2796
+  },
+  "ui.game.8da7ebed00": {
+    "text": "桥梁",
+    "file": "apps/web/src/game.tsx",
+    "line": 1247
+  },
+  "ui.game.901d1623fc": {
+    "text": "放置",
+    "file": "apps/web/src/game.tsx",
+    "line": 1125
+  },
+  "ui.game.91456873df": {
+    "text": "对局结束",
+    "file": "apps/web/src/game.tsx",
+    "line": 591
+  },
+  "ui.game.920e88c5a6": {
+    "text": "银行",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.92991858d5": {
+    "text": "学科进展",
+    "file": "apps/web/src/game.tsx",
+    "line": 943
+  },
+  "ui.game.9450e5a313": {
+    "text": "地图预览 · 完成轮抽后放置建筑",
+    "file": "apps/web/src/game.tsx",
+    "line": 883
+  },
+  "ui.game.94ae518126": {
+    "text": "飞行：一学者",
+    "file": "apps/web/src/game.tsx",
+    "line": 2633
+  },
+  "ui.game.950a3ac361": {
+    "text": "历史回看 · #",
+    "file": "apps/web/src/game.tsx",
+    "line": 698
+  },
+  "ui.game.95363b47e8": {
+    "text": "支付蓝书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2253
+  },
+  "ui.game.9552fe3bd3": {
+    "text": "第 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 890
+  },
+  "ui.game.95ad8a65f7": {
+    "text": "派遣学者",
+    "file": "apps/web/src/game.tsx",
+    "line": 2152
+  },
+  "ui.game.97175b020b": {
+    "text": "描边地块：本次收益的目标或对应城市建筑群。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1633
+  },
+  "ui.game.975778d990": {
+    "text": "结束回合",
+    "file": "apps/web/src/game.tsx",
+    "line": 1356
+  },
+  "ui.game.98348a8d5d": {
+    "text": "此建筑已无法继续升级。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2041
+  },
+  "ui.game.98f46c9652": {
+    "text": "中立建筑不能升级。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2038
+  },
+  "ui.game.99797e1140": {
+    "text": "主要行动已完成",
+    "file": "apps/web/src/game.tsx",
+    "line": 1304
+  },
+  "ui.game.9983fa8700": {
+    "text": " · {p0}的{p1}{p2}{p3}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1680
+  },
+  "ui.game.9b69738ae8": {
+    "text": "宫殿 / 大学 +5 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2719
+  },
+  "ui.game.9c90061b92": {
+    "text": "已完成改造。可以先转换资源，再决定是否支付 1 工具、2 金币建造。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1196
+  },
+  "ui.game.9eafaa2881": {
+    "text": "棕书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2791
+  },
+  "ui.game.9ebe36f8cf": {
+    "text": "确认提交",
+    "file": "apps/web/src/game.tsx",
+    "line": 1450
+  },
+  "ui.game.9f2da771a5": {
+    "text": "升级为",
+    "file": "apps/web/src/game.tsx",
+    "line": 2105
+  },
+  "ui.game.9fad24e2c3": {
+    "text": "记录",
+    "file": "apps/web/src/game.tsx",
+    "line": 1579
+  },
+  "ui.game.9fb0d52f93": {
+    "text": "工程 / 棕",
+    "file": "apps/web/src/game.tsx",
+    "line": 1254
+  },
+  "ui.game.a082304076": {
+    "text": "＋附属建筑",
+    "file": "apps/web/src/game.tsx",
+    "line": 2811
+  },
+  "ui.game.a0c7716669": {
+    "text": "你",
+    "file": "apps/web/src/game.tsx",
+    "line": 105
+  },
+  "ui.game.a36dd3e1ce": {
+    "text": "4 魔力 → 7 金币",
+    "file": "apps/web/src/game.tsx",
+    "line": 2301
+  },
+  "ui.game.a386240a3f": {
+    "text": "桥梁位置",
+    "file": "apps/web/src/game.tsx",
+    "line": 2341
+  },
+  "ui.game.a3b26551c1": {
+    "text": " 项奖励或蹭魔选择。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2827
+  },
+  "ui.game.a49049744f": {
+    "text": "本地游玩人数",
+    "file": "apps/web/src/game.tsx",
+    "line": 732
+  },
+  "ui.game.a60165e865": {
+    "text": "最后一轮 · 结束后参与终局结算",
+    "file": "apps/web/src/game.tsx",
+    "line": 1390
+  },
+  "ui.game.a6a480146c": {
+    "text": "不能升级其他玩家的建筑。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2036
+  },
+  "ui.game.a6c160d88d": {
+    "text": "尚未提交，可撤销",
+    "file": "apps/web/src/game.tsx",
+    "line": 598
+  },
+  "ui.game.aab0b437e3": {
+    "text": "永久位置 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2172
+  },
+  "ui.game.af11d4eeea": {
+    "text": "在第一个地块建造工坊",
+    "file": "apps/web/src/game.tsx",
+    "line": 2696
+  },
+  "ui.game.af1ab71067": {
+    "text": "这里已有",
+    "file": "apps/web/src/game.tsx",
+    "line": 2033
+  },
+  "ui.game.b08e587d5d": {
+    "text": "实时同步已连接",
+    "file": "apps/web/src/game.tsx",
+    "line": 683
+  },
+  "ui.game.b1ad507761": {
+    "text": "已结束本轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 842
+  },
+  "ui.game.b1eff676a2": {
+    "text": "银行学",
+    "file": "apps/web/src/game.tsx",
+    "line": 2796
+  },
+  "ui.game.b237c80398": {
+    "text": "法学",
+    "file": "apps/web/src/game.tsx",
+    "line": 2796
+  },
+  "ui.game.b2c391591c": {
+    "text": "本回合试走 · {p0} 步",
+    "file": "apps/web/src/game.tsx",
+    "line": 589
+  },
+  "ui.game.b48a468b27": {
+    "text": "3 本书 → 3 铲",
+    "file": "apps/web/src/game.tsx",
+    "line": 2398
+  },
+  "ui.game.b49377b38c": {
+    "text": "种族",
+    "file": "apps/web/src/game.tsx",
+    "line": 2748
+  },
+  "ui.game.b734d31487": {
+    "text": "：推进 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2172
+  },
+  "ui.game.b75a03ace7": {
+    "text": " 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 834
+  },
+  "ui.game.b9e0e5b01a": {
+    "text": "本轮奖励：",
+    "file": "apps/web/src/game.tsx",
+    "line": 1052
+  },
+  "ui.game.b9fb040247": {
+    "text": "大创造时代地图",
+    "file": "apps/web/src/game.tsx",
+    "line": 1644
+  },
+  "ui.game.baa9ece62f": {
+    "text": "推进改造",
+    "file": "apps/web/src/game.tsx",
+    "line": 2211
+  },
+  "ui.game.bac8a62c6c": {
+    "text": "继续提交",
+    "file": "apps/web/src/game.tsx",
+    "line": 655
+  },
+  "ui.game.bbece6f829": {
+    "text": "金币",
+    "file": "apps/web/src/game.tsx",
+    "line": 2775
+  },
+  "ui.game.bbfc246ecb": {
+    "text": "可升级为：",
+    "file": "apps/web/src/game.tsx",
+    "line": 2040
+  },
+  "ui.game.be41b95875": {
+    "text": "确认步骤后继续试走，提交回合后同步给其他玩家。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1416
+  },
+  "ui.game.bf3c4cc0f4": {
+    "text": "可以继续结束，或返回修改。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1401
+  },
+  "ui.game.bfc00be234": {
+    "text": "抵达方式",
+    "file": "apps/web/src/game.tsx",
+    "line": 2625
+  },
+  "ui.game.c0bb4ba199": {
+    "text": "改造 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1084
+  },
+  "ui.game.c0d24bce23": {
+    "text": "请先完成主要行动及自己的奖励选择。",
+    "file": "apps/web/src/game.tsx",
+    "line": 638
+  },
+  "ui.game.c11330b852": {
+    "text": "选择",
+    "file": "apps/web/src/game.tsx",
+    "line": 2746
+  },
+  "ui.game.c199965e92": {
+    "text": " · 展开个人板",
+    "file": "apps/web/src/game.tsx",
+    "line": 1043
+  },
+  "ui.game.c1a6e94ba1": {
+    "text": "提交并等待回应",
+    "file": "apps/web/src/game.tsx",
+    "line": 632
+  },
+  "ui.game.c1ddffa2e6": {
+    "text": "撤销上一步",
+    "file": "apps/web/src/game.tsx",
+    "line": 618
+  },
+  "ui.game.c263dac326": {
+    "text": "待激活",
+    "file": "apps/web/src/game.tsx",
+    "line": 1075
+  },
+  "ui.game.c2d7746e9e": {
+    "text": "请先提交或取消本回合试走，再查看历史。",
+    "file": "apps/web/src/game.tsx",
+    "line": 231
+  },
+  "ui.game.c31f14b604": {
+    "text": "公共魔力动作",
+    "file": "apps/web/src/game.tsx",
+    "line": 2297
+  },
+  "ui.game.c332015814": {
+    "text": "查看所有玩家资源",
+    "file": "apps/web/src/game.tsx",
+    "line": 850
+  },
+  "ui.game.c3af8aafb1": {
+    "text": " 轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 890
+  },
+  "ui.game.c42220e17c": {
+    "text": " +{p0} 金币",
+    "file": "apps/web/src/game.tsx",
+    "line": 2504
+  },
+  "ui.game.c51b321967": {
+    "text": "本次可获得 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1115
+  },
+  "ui.game.c59cf7d31e": {
+    "text": "书籍 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 858
+  },
+  "ui.game.c5dde2b957": {
+    "text": "先在地图上选择一个地块，再进行建设或升级。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2028
+  },
+  "ui.game.c5f803c2fe": {
+    "text": "白书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2791
+  },
+  "ui.game.c732e4d7e3": {
+    "text": "黄",
+    "file": "apps/web/src/game.tsx",
+    "line": 1273
+  },
+  "ui.game.c78ebb35e2": {
+    "text": " 分。魔力按 Ⅰ → Ⅱ → Ⅲ 充能。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1116
+  },
+  "ui.game.c8279b05e5": {
+    "text": "放弃剩余{p0}",
+    "file": "apps/web/src/game.tsx",
+    "line": 1247
+  },
+  "ui.game.c837854a57": {
+    "text": "要塞技能",
+    "file": "apps/web/src/game.tsx",
+    "line": 2750
+  },
+  "ui.game.c8d75c5db1": {
+    "text": "商会 +3 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2716
+  },
+  "ui.game.c98f62b9bc": {
+    "text": "自动蹭魔设置",
+    "file": "apps/web/src/game.tsx",
+    "line": 1505
+  },
+  "ui.game.c9b39e706b": {
+    "text": "下一轮第 {p0} 位行动。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1406
+  },
+  "ui.game.c9c1abba38": {
+    "text": "魔力 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1043
+  },
+  "ui.game.cb557c76d0": {
+    "text": "空地",
+    "file": "apps/web/src/game.tsx",
+    "line": 1698
+  },
+  "ui.game.cb97f81e15": {
+    "text": "城市钥匙 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 945
+  },
+  "ui.game.cc182c3389": {
+    "text": "联机开发预览",
+    "file": "apps/web/src/game.tsx",
+    "line": 670
+  },
+  "ui.game.cc92cb4b89": {
+    "text": "重新开始",
+    "file": "apps/web/src/game.tsx",
+    "line": 798
+  },
+  "ui.game.cf63dbc24d": {
+    "text": " · 已建城",
+    "file": "apps/web/src/game.tsx",
+    "line": 1680
+  },
+  "ui.game.d03d3b10f9": {
+    "text": "待行动",
+    "file": "apps/web/src/game.tsx",
+    "line": 840
+  },
+  "ui.game.d0c788951a": {
+    "text": "不再领取新的奖励板。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1407
+  },
+  "ui.game.d17154b026": {
+    "text": " 到 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 1776
+  },
+  "ui.game.d1ca89547f": {
+    "text": "不额外提示",
+    "file": "apps/web/src/game.tsx",
+    "line": 1500
+  },
+  "ui.game.d568447147": {
+    "text": "有可转换资源时总是提示",
+    "file": "apps/web/src/game.tsx",
+    "line": 1498
+  },
+  "ui.game.d5a8d22971": {
+    "text": "刷新局面",
+    "file": "apps/web/src/game.tsx",
+    "line": 690
+  },
+  "ui.game.d63842643d": {
+    "text": " 人",
+    "file": "apps/web/src/game.tsx",
+    "line": 738
+  },
+  "ui.game.d65ceb4aeb": {
+    "text": "共需",
+    "file": "apps/web/src/game.tsx",
+    "line": 2231
+  },
+  "ui.game.d688b49ba6": {
+    "text": "描边地块：当前资源可执行建设或升级。特殊行动另选。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1634
+  },
+  "ui.game.d75cdd59c0": {
+    "text": "添加地块 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 2665
+  },
+  "ui.game.d7fb5bfc83": {
+    "text": "奖励板",
+    "file": "apps/web/src/game.tsx",
+    "line": 2769
+  },
+  "ui.game.d909d78ffc": {
+    "text": "历史只读",
+    "file": "apps/web/src/game.tsx",
+    "line": 587
+  },
+  "ui.game.d9d9427396": {
+    "text": " 金币。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2193
+  },
+  "ui.game.da8dd23005": {
+    "text": "请选择可升级的本人建筑",
+    "file": "apps/web/src/game.tsx",
+    "line": 2112
+  },
+  "ui.game.db51313720": {
+    "text": "行动预览",
+    "file": "apps/web/src/game.tsx",
+    "line": 1370
+  },
+  "ui.game.dc4df2a898": {
+    "text": "支付白书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2253
+  },
+  "ui.game.dfd0a54dad": {
+    "text": "返回供应：推进 1 格",
+    "file": "apps/web/src/game.tsx",
+    "line": 2169
+  },
+  "ui.game.e0d2c7380c": {
+    "text": "本书；最低颜色要求（黄 / 蓝 / 棕 / 白）：",
+    "file": "apps/web/src/game.tsx",
+    "line": 2236
+  },
+  "ui.game.e35841f60f": {
+    "text": "另需 5 金币。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2243
+  },
+  "ui.game.e597fd46fa": {
+    "text": "结束本轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 2540
+  },
+  "ui.game.e602d38d33": {
+    "text": "远行者",
+    "file": "apps/web/src/game.tsx",
+    "line": 107
+  },
+  "ui.game.e7f51b070e": {
+    "text": "放弃",
+    "file": "apps/web/src/game.tsx",
+    "line": 1245
+  },
+  "ui.game.e8edae9acc": {
+    "text": "林间客",
+    "file": "apps/web/src/game.tsx",
+    "line": 106
+  },
+  "ui.game.e945511f3d": {
+    "text": "学校 +4 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2717
+  },
+  "ui.game.e959b869d2": {
+    "text": "实时更新重连中 · 已显示最近保存的局面",
+    "file": "apps/web/src/game.tsx",
+    "line": 685
+  },
+  "ui.game.e9f3d305ff": {
+    "text": "工程学",
+    "file": "apps/web/src/game.tsx",
+    "line": 2796
+  },
+  "ui.game.eab53b90b2": {
+    "text": " 把铲子。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2618
+  },
+  "ui.game.ec2b0dfbf7": {
+    "text": "地形改造目标",
+    "file": "apps/web/src/game.tsx",
+    "line": 2045
+  },
+  "ui.game.ecb1a2e4ba": {
+    "text": "缩小总览",
+    "file": "apps/web/src/game.tsx",
+    "line": 1640
+  },
+  "ui.game.ecbba994ba": {
+    "text": "6 魔力 → 2 铲",
+    "file": "apps/web/src/game.tsx",
+    "line": 2305
+  },
+  "ui.game.ed189de955": {
+    "text": "蓝色书籍",
+    "file": "apps/web/src/game.tsx",
+    "line": 1064
+  },
+  "ui.game.ed1a91890a": {
+    "text": "第 {p0} / 6 轮",
+    "file": "apps/web/src/game.tsx",
+    "line": 603
+  },
+  "ui.game.ed31fbb483": {
+    "text": "操作",
+    "file": "apps/web/src/game.tsx",
+    "line": 1569
+  },
+  "ui.game.ee093150dc": {
+    "text": "每铲 +2 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2720
+  },
+  "ui.game.eef45edf9d": {
+    "text": "可选奖励板",
+    "file": "apps/web/src/game.tsx",
+    "line": 2510
+  },
+  "ui.game.ef26096871": {
+    "text": "当前行动",
+    "file": "apps/web/src/game.tsx",
+    "line": 584
+  },
+  "ui.game.f047e07042": {
+    "text": "左右滑动地图选择地块",
+    "file": "apps/web/src/game.tsx",
+    "line": 1638
+  },
+  "ui.game.f19d1c0c5b": {
+    "text": "这局还没有提交记录；请先完成一个行动。",
+    "file": "apps/web/src/game.tsx",
+    "line": 247
+  },
+  "ui.game.f1ac9351c7": {
+    "text": "局面版本 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 674
+  },
+  "ui.game.f246e0be48": {
+    "text": "还有资源可以转换。",
+    "file": "apps/web/src/game.tsx",
+    "line": 642
+  },
+  "ui.game.f309a5a067": {
+    "text": "同屏游玩 · 提交后自动切换座位 · 自动保存到本机",
+    "file": "apps/web/src/game.tsx",
+    "line": 730
+  },
+  "ui.game.f34374f220": {
+    "text": "正在连接实时更新…",
+    "file": "apps/web/src/game.tsx",
+    "line": 686
+  },
+  "ui.game.f34e4daa0c": {
+    "text": "金币 ",
+    "file": "apps/web/src/game.tsx",
+    "line": 855
+  },
+  "ui.game.f362481f9e": {
+    "text": "支付黄书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2253
+  },
+  "ui.game.f3a68bfb56": {
+    "text": "学者位置",
+    "file": "apps/web/src/game.tsx",
+    "line": 2165
+  },
+  "ui.game.f3d3462f8d": {
+    "text": "点击地图选择地块",
+    "file": "apps/web/src/game.tsx",
+    "line": 884
+  },
+  "ui.game.f4c6f2f13b": {
+    "text": "科学奖励可分配到多个地块，不能额外购买铲子或建造。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2620
+  },
+  "ui.game.f52322b95e": {
+    "text": "局面已更新，请保留选择并重新预览。",
+    "file": "apps/web/src/game.tsx",
+    "line": 1431
+  },
+  "ui.game.f5bb9b1066": {
+    "text": "隧道：一工具，跨一格",
+    "file": "apps/web/src/game.tsx",
+    "line": 2071
+  },
+  "ui.game.f694d01cb5": {
+    "text": "4 魔力 → 2 工具",
+    "file": "apps/web/src/game.tsx",
+    "line": 2302
+  },
+  "ui.game.fce4bcc21d": {
+    "text": "学科每格 +1 分",
+    "file": "apps/web/src/game.tsx",
+    "line": 2721
+  },
+  "ui.game.fd2cd0221d": {
+    "text": "演示座位",
+    "file": "apps/web/src/game.tsx",
+    "line": 769
+  },
+  "ui.game.ff29019c5d": {
+    "text": "公共动作白书",
+    "file": "apps/web/src/game.tsx",
+    "line": 2434
+  },
+  "ui.game.ff2bbc3662": {
+    "text": "全图总览",
+    "file": "apps/web/src/game.tsx",
+    "line": 1638
+  },
+  "ui.game.fff03000af": {
+    "text": "已建宫殿，免金币费用。",
+    "file": "apps/web/src/game.tsx",
+    "line": 2243
+  },
+  "ui.i18n.content.155cd6f5cb": {
+    "text": "每轮一次特殊行动：获得 4 能量。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 25
+  },
+  "ui.i18n.content.2bcde18e20": {
+    "text": "立即获得两座附属建筑，可放到自己的建筑上。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 26
+  },
+  "ui.i18n.content.3447ec36ed": {
+    "text": "立即获得 1 工具、2 金币和 5 分。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 27
+  },
+  "ui.i18n.content.3fd701a776": {
+    "text": "结束本轮时，按最低科学等级获得分数。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 29
+  },
+  "ui.i18n.content.53bc1cc734": {
+    "text": "立即放置中立灯塔；收入 2 金币和 2 能量。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 23
+  },
+  "ui.i18n.content.60a9bf3e6d": {
+    "text": "派遣学者获得 2 分。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 31
+  },
+  "ui.i18n.content.829a0658f0": {
+    "text": "在地图边缘建造工坊获得 3 分。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 30
+  },
+  "ui.i18n.content.93fc8eb4a5": {
+    "text": "收入 1 工具和一格任选科学。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 21
+  },
+  "ui.i18n.content.9ca039ce08": {
+    "text": "收入一本任选书和 1 能量。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 20
+  },
+  "ui.i18n.content.c2dcd02183": {
+    "text": "收入 3 分和 2 金币。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 22
+  },
+  "ui.i18n.content.d0a15e6a7a": {
+    "text": "结束本轮时，每块城市板块获得 2 分。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 28
+  },
+  "ui.i18n.content.ff3280fdb3": {
+    "text": "立即获得两把铲子。",
+    "file": "apps/web/src/i18n/content.ts",
+    "line": 24
+  },
+  "ui.i18n.time.2d6c57c639": {
+    "text": " · 活跃 {p0}:00–{p1}:00（北京时间）",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 13
+  },
+  "ui.i18n.time.402b837b8c": {
+    "text": "每人总思考时间 {p0} 分钟",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 15
+  },
+  "ui.i18n.time.40e0240cab": {
+    "text": "{p0} 天",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 3
+  },
+  "ui.i18n.time.532873fd3c": {
+    "text": "旧版固定入门局",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 6
+  },
+  "ui.i18n.time.667561eac3": {
+    "text": "不限时",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 15
+  },
+  "ui.i18n.time.68135c58fd": {
+    "text": "旧版组合选配",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 6
+  },
+  "ui.i18n.time.685f85bfc5": {
+    "text": "每天 {p0} 步",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 11
+  },
+  "ui.i18n.time.79a20960b3": {
+    "text": "初始 {p0} · 每步 +{p1} · 上限 {p2}",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 9
+  },
+  "ui.i18n.time.81dc8bf7f7": {
+    "text": "顺蛇轮抽",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 6
+  },
+  "ui.i18n.time.a0f59c549a": {
+    "text": "每次轮到响应 {p0} 小时",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 15
+  },
+  "ui.i18n.time.e1e8017dd3": {
+    "text": "逆蛇轮抽",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 6
+  },
+  "ui.i18n.time.f34c8f0bb4": {
+    "text": "{p0} 小时",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 3
+  },
+  "ui.i18n.time.f7118396c9": {
+    "text": "每 2 天 1 步",
+    "file": "apps/web/src/i18n/time.ts",
+    "line": 11
+  },
+  "ui.personal-board.117d8f914d": {
+    "text": "收入",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 71
+  },
+  "ui.personal-board.230cc1d6c8": {
+    "text": "学者",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 11
+  },
+  "ui.personal-board.522148a1fd": {
+    "text": "魔力",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 12
+  },
+  "ui.personal-board.5ca6730d44": {
+    "text": "工具",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 10
+  },
+  "ui.personal-board.649247e731": {
+    "text": "按当前建筑、奖励板和能力计算；换奖励板或升级后会更新。魔力受盘内容量限制，学者受七枚总供应限制。",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 65
+  },
+  "ui.personal-board.7f4368129c": {
+    "text": "当前收入结构（本局不再收入）",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 55
+  },
+  "ui.personal-board.875aee3adb": {
+    "text": " 剩余",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 38
+  },
+  "ui.personal-board.944a6ce847": {
+    "text": "任选书",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 13
+  },
+  "ui.personal-board.a16183206a": {
+    "text": "学者储备 ",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 50
+  },
+  "ui.personal-board.a1e218ec8e": {
+    "text": "桥",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 42
+  },
+  "ui.personal-board.a488e93d69": {
+    "text": "来源",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 70
+  },
+  "ui.personal-board.b6a993c256": {
+    "text": "分",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 15
+  },
+  "ui.personal-board.bbece6f829": {
+    "text": "金币",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 9
+  },
+  "ui.personal-board.bd3189ae34": {
+    "text": "建筑库存与收入",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 33
+  },
+  "ui.personal-board.c994aa3e93": {
+    "text": "下轮收入预览",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 55
+  },
+  "ui.personal-board.e5112278cb": {
+    "text": "任选学科",
+    "file": "apps/web/src/personal-board.tsx",
+    "line": 14
+  },
+  "ui.review.036d65598b": {
+    "text": "开局",
+    "file": "apps/web/src/review.tsx",
+    "line": 360
+  },
+  "ui.review.07bf4488cb": {
+    "text": "条。资源展示净变化；轮末自动效果归入触发行动所在轮次。",
+    "file": "apps/web/src/review.tsx",
+    "line": 335
+  },
+  "ui.review.07f60e0e25": {
+    "text": "分数变化",
+    "file": "apps/web/src/review.tsx",
+    "line": 351
+  },
+  "ui.review.0db77c1bf2": {
+    "text": " 至 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 332
+  },
+  "ui.review.16a9695264": {
+    "text": "拒绝悔棋",
+    "file": "apps/web/src/review.tsx",
+    "line": 80
+  },
+  "ui.review.1db8db68d1": {
+    "text": "同意悔棋",
+    "file": "apps/web/src/review.tsx",
+    "line": 67
+  },
+  "ui.review.21a1533f34": {
+    "text": "悔棋申请记录",
+    "file": "apps/web/src/review.tsx",
+    "line": 420
+  },
+  "ui.review.230cc1d6c8": {
+    "text": "学者",
+    "file": "apps/web/src/review.tsx",
+    "line": 354
+  },
+  "ui.review.243615862a": {
+    "text": "新记录按奖励来源拆分；旧记录未保存来源的部分按触发行动归类。",
+    "file": "apps/web/src/review.tsx",
+    "line": 388
+  },
+  "ui.review.2cd0f3be87": {
+    "text": "取消",
+    "file": "apps/web/src/review.tsx",
+    "line": 294
+  },
+  "ui.review.348c17c8f9": {
+    "text": "悔棋原因",
+    "file": "apps/web/src/review.tsx",
+    "line": 270
+  },
+  "ui.review.3546e80e2a": {
+    "text": " 条 · 含撤回的记录 ",
+    "file": "apps/web/src/review.tsx",
+    "line": 334
+  },
+  "ui.review.3617f737f4": {
+    "text": "已恢复",
+    "file": "apps/web/src/review.tsx",
+    "line": 25
+  },
+  "ui.review.39400ac272": {
+    "text": "同屏撤回",
+    "file": "apps/web/src/review.tsx",
+    "line": 258
+  },
+  "ui.review.4397434ffa": {
+    "text": "局面已更新，请重新选择撤回位置。",
+    "file": "apps/web/src/review.tsx",
+    "line": 168
+  },
+  "ui.review.4890584bb5": {
+    "text": "轮次",
+    "file": "apps/web/src/review.tsx",
+    "line": 350
+  },
+  "ui.review.53453a636e": {
+    "text": " 轮：",
+    "file": "apps/web/src/review.tsx",
+    "line": 403
+  },
+  "ui.review.5961a7938f": {
+    "text": "已同意",
+    "file": "apps/web/src/review.tsx",
+    "line": 60
+  },
+  "ui.review.5ca6730d44": {
+    "text": "工具",
+    "file": "apps/web/src/review.tsx",
+    "line": 353
+  },
+  "ui.review.5d1bfe12f4": {
+    "text": "确认同屏撤回",
+    "file": "apps/web/src/review.tsx",
+    "line": 287
+  },
+  "ui.review.61b464ad94": {
+    "text": "悔棋申请",
+    "file": "apps/web/src/review.tsx",
+    "line": 257
+  },
+  "ui.review.6543a8c878": {
+    "text": "本局数据统计",
+    "file": "apps/web/src/review.tsx",
+    "line": 315
+  },
+  "ui.review.668da6a8d2": {
+    "text": "此旧对局只保存了较晚的回放起点。",
+    "file": "apps/web/src/review.tsx",
+    "line": 152
+  },
+  "ui.review.681e6d641e": {
+    "text": "取消申请",
+    "file": "apps/web/src/review.tsx",
+    "line": 80
+  },
+  "ui.review.6b4a81082c": {
+    "text": " 的行动及关联选择。",
+    "file": "apps/web/src/review.tsx",
+    "line": 54
+  },
+  "ui.review.6d81dbf37d": {
+    "text": "恢复到 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 260
+  },
+  "ui.review.73cd445f38": {
+    "text": "预览恢复后的局面",
+    "file": "apps/web/src/review.tsx",
+    "line": 267
+  },
+  "ui.review.74ed1b217c": {
+    "text": " · 终局 {p0} 分",
+    "file": "apps/web/src/review.tsx",
+    "line": 342
+  },
+  "ui.review.7ccbeca704": {
+    "text": "申请悔棋 · 对局暂停",
+    "file": "apps/web/src/review.tsx",
+    "line": 50
+  },
+  "ui.review.7fd7554a4e": {
+    "text": " · 有效行动",
+    "file": "apps/web/src/review.tsx",
+    "line": 333
+  },
+  "ui.review.8786384a43": {
+    "text": "载入最新统计",
+    "file": "apps/web/src/review.tsx",
+    "line": 327
+  },
+  "ui.review.8f72c457bd": {
+    "text": "从 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 332
+  },
+  "ui.review.9552fe3bd3": {
+    "text": "第 ",
+    "file": "apps/web/src/review.tsx",
+    "line": 403
+  },
+  "ui.review.9949e36afb": {
+    "text": "记录起点：",
+    "file": "apps/web/src/review.tsx",
+    "line": 380
+  },
+  "ui.review.9b861805c4": {
+    "text": "得分明细与来源",
+    "file": "apps/web/src/review.tsx",
+    "line": 379
+  },
+  "ui.review.a37778f17c": {
+    "text": "已取消",
+    "file": "apps/web/src/review.tsx",
+    "line": 27
+  },
+  "ui.review.a8b0bd9c65": {
+    "text": "待确认",
+    "file": "apps/web/src/review.tsx",
+    "line": 60
+  },
+  "ui.review.aaf3fadbc6": {
+    "text": "由同屏玩家共同确认。",
+    "file": "apps/web/src/review.tsx",
+    "line": 263
+  },
+  "ui.review.acfc4e74a6": {
+    "text": "下一步",
+    "file": "apps/web/src/review.tsx",
+    "line": 231
+  },
+  "ui.review.adb32d1530": {
+    "text": "发送悔棋申请",
+    "file": "apps/web/src/review.tsx",
+    "line": 287
+  },
+  "ui.review.b75a03ace7": {
+    "text": " 分",
+    "file": "apps/web/src/review.tsx",
+    "line": 380
+  },
+  "ui.review.b9fbb8ede4": {
+    "text": "原因：",
+    "file": "apps/web/src/review.tsx",
+    "line": 56
+  },
+  "ui.review.bbece6f829": {
+    "text": "金币",
+    "file": "apps/web/src/review.tsx",
+    "line": 352
+  },
+  "ui.review.d59a1ef2b2": {
+    "text": "所有玩家同意后生效；等待期间暂停行动。",
+    "file": "apps/web/src/review.tsx",
+    "line": 264
+  },
+  "ui.review.d5d7d2b098": {
+    "text": "每轮分数与资源净变化",
+    "file": "apps/web/src/review.tsx",
+    "line": 347
+  },
+  "ui.review.d609c36f4a": {
+    "text": "历史 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 224
+  },
+  "ui.review.d6be1a3b80": {
+    "text": " · 当前 ",
+    "file": "apps/web/src/review.tsx",
+    "line": 340
+  },
+  "ui.review.da336fdc0d": {
+    "text": "上一步",
+    "file": "apps/web/src/review.tsx",
+    "line": 222
+  },
+  "ui.review.dcf8136635": {
+    "text": "终局 · ",
+    "file": "apps/web/src/review.tsx",
+    "line": 395
+  },
+  "ui.review.e3ba7e43f6": {
+    "text": "；撤销 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 53
+  },
+  "ui.review.e5b39064de": {
+    "text": "行动次数",
+    "file": "apps/web/src/review.tsx",
+    "line": 371
+  },
+  "ui.review.e5d2184f2f": {
+    "text": "等待确认",
+    "file": "apps/web/src/review.tsx",
+    "line": 24
+  },
+  "ui.review.ec67f5582c": {
+    "text": "，撤销 #",
+    "file": "apps/web/src/review.tsx",
+    "line": 260
+  },
+  "ui.review.edbfd2c1ed": {
+    "text": " 的行动和关联选择。",
+    "file": "apps/web/src/review.tsx",
+    "line": 261
+  },
+  "ui.review.f098218a30": {
+    "text": "已拒绝",
+    "file": "apps/web/src/review.tsx",
+    "line": 26
+  },
+  "ui.review.f3ee1bd368": {
+    "text": "对局得分",
+    "file": "apps/web/src/review.tsx",
+    "line": 392
+  },
+  "ui.review.f8fd741876": {
+    "text": "各轮全部资源变化",
+    "file": "apps/web/src/review.tsx",
+    "line": 400
+  },
+  "ui.review.fb87e5ff16": {
+    "text": "申请悔棋",
+    "file": "apps/web/src/review.tsx",
+    "line": 258
+  },
+  "ui.review.fd0a5ab431": {
+    "text": "历史导航",
+    "file": "apps/web/src/review.tsx",
+    "line": 217
+  },
+  "ui.room-page.0b2bbc498d": {
+    "text": " 人 · ",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 228
+  },
+  "ui.room-page.0d59bcf83d": {
+    "text": "载入最新设置",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 194
+  },
+  "ui.room-page.16b16e2e3c": {
+    "text": "复制邀请链接",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 378
+  },
+  "ui.room-page.178ad0425c": {
+    "text": "联机房间",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 154
+  },
+  "ui.room-page.18462cf70b": {
+    "text": "确认成员变更",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 415
+  },
+  "ui.room-page.184f051427": {
+    "text": "房间设置或成员已更新，请查看后重新准备。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 75
+  },
+  "ui.room-page.19f9e72de5": {
+    "text": "尚未准备",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 249
+  },
+  "ui.room-page.1b384a7a97": {
+    "text": "公开房间",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 227
+  },
+  "ui.room-page.1bd1893c09": {
+    "text": "准备就绪",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 319
+  },
+  "ui.room-page.1bf207be9b": {
+    "text": "← 返回大厅",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 150
+  },
+  "ui.room-page.2365b16513": {
+    "text": "移出玩家",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 417
+  },
+  "ui.room-page.2bda31821d": {
+    "text": "保存后所有玩家需重新准备，开局后不可修改。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 205
+  },
+  "ui.room-page.2cd0f3be87": {
+    "text": "取消",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 444
+  },
+  "ui.room-page.2d7d80778c": {
+    "text": "房间已更新，本次编辑尚未保存。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 192
+  },
+  "ui.room-page.3485bff12f": {
+    "text": "房间设置",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 172
+  },
+  "ui.room-page.36f33adaf0": {
+    "text": "确认",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 437
+  },
+  "ui.room-page.39746cc4a0": {
+    "text": "将 {p0} 移出房间？",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 420
+  },
+  "ui.room-page.3cb73759ea": {
+    "text": "重置邀请链接",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 392
+  },
+  "ui.room-page.445c066ad6": {
+    "text": "将房主转让给 {p0}？",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 421
+  },
+  "ui.room-page.4b3c6e4c5e": {
+    "text": "✓ 已准备",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 249
+  },
+  "ui.room-page.5ff0612e5c": {
+    "text": "等待大家落座",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 156
+  },
+  "ui.room-page.708c9687c7": {
+    "text": "前移",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 266
+  },
+  "ui.room-page.732982c52a": {
+    "text": "离开房间",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 344
+  },
+  "ui.room-page.80b10403a4": {
+    "text": "请选择上方链接并复制",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 375
+  },
+  "ui.room-page.818a3c15b6": {
+    "text": "所有玩家准备后，由房主开始。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 157
+  },
+  "ui.room-page.8e6833487c": {
+    "text": "大创造时代 ·",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 153
+  },
+  "ui.room-page.9121e106e6": {
+    "text": "房间已关闭",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 156
+  },
+  "ui.room-page.95861c4b5c": {
+    "text": "移出",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 295
+  },
+  "ui.room-page.a451c6435e": {
+    "text": "开始对局",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 336
+  },
+  "ui.room-page.bacb0f7e2f": {
+    "text": "其他玩家将取消准备。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 423
+  },
+  "ui.room-page.bc35a81898": {
+    "text": "房主",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 251
+  },
+  "ui.room-page.bd85d0c054": {
+    "text": "生成邀请链接",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 392
+  },
+  "ui.room-page.c2ecf9ccae": {
+    "text": "邀请链接已复制",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 374
+  },
+  "ui.room-page.c74c00c311": {
+    "text": "前移 {p0}",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 259
+  },
+  "ui.room-page.c8550237ba": {
+    "text": "保存设置",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 212
+  },
+  "ui.room-page.cf98b1208c": {
+    "text": "取消准备",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 319
+  },
+  "ui.room-page.d1a1fdff92": {
+    "text": "仅凭邀请加入",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 227
+  },
+  "ui.room-page.d5b164f945": {
+    "text": "邀请朋友",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 360
+  },
+  "ui.room-page.d7ec1bcd2b": {
+    "text": "转让房主",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 417
+  },
+  "ui.room-page.dc4641eaff": {
+    "text": "空位",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 249
+  },
+  "ui.room-page.e0ea3ce0e4": {
+    "text": "等待加入",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 248
+  },
+  "ui.room-page.e15dd29bea": {
+    "text": "加入这个房间",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 406
+  },
+  "ui.room-page.e844bc2fa5": {
+    "text": "{p0} 人{p1}",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 154
+  },
+  "ui.room-page.ee50f5516f": {
+    "text": "邀请链接",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 364
+  },
+  "ui.room-page.f2defd70ad": {
+    "text": "重置后旧邀请失效，已加入的玩家不受影响。",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 385
+  },
+  "ui.room-page.f797b44cfd": {
+    "text": "修改设置",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 179
+  },
+  "ui.room-page.fada4dfc38": {
+    "text": "取消修改",
+    "file": "apps/web/src/room-page.tsx",
+    "line": 219
+  },
+  "ui.room-settings.041a2836b2": {
+    "text": "房间可见性",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 34
+  },
+  "ui.room-settings.05475d6b50": {
+    "text": "开房设置摘要",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 85
+  },
+  "ui.room-settings.114c417677": {
+    "text": "。只在轮到你行动或响应时扣时，全天计时；刷新和连续资源转换不加时。 超时后其他玩家可移除；移除前仍可操作。整局连续 10 天无人操作自动结束。",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 154
+  },
+  "ui.room-settings.14acf4a2bb": {
+    "text": "本局设置",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 269
+  },
+  "ui.room-settings.1b384a7a97": {
+    "text": "公开房间",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 242
+  },
+  "ui.room-settings.27ddd214b2": {
+    "text": "禁止撤回",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 250
+  },
+  "ui.room-settings.2d82491823": {
+    "text": "撤回须全员同意",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 274
+  },
+  "ui.room-settings.2e241e7b12": {
+    "text": "留空随机生成",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 211
+  },
+  "ui.room-settings.33e9b1fcbd": {
+    "text": "时间上限",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 129
+  },
+  "ui.room-settings.3bf88bdf8e": {
+    "text": "相同人数与种子可复现开局选配。种子限 32 位字母、数字、下划线或连字符。轮抽方向由开局方式决定。",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 216
+  },
+  "ui.room-settings.44455611b9": {
+    "text": "高级设置",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 173
+  },
+  "ui.room-settings.4958570bb2": {
+    "text": "每步加时",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 128
+  },
+  "ui.room-settings.4b2e05d718": {
+    "text": "房间人数",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 49
+  },
+  "ui.room-settings.4d983d179c": {
+    "text": "完局计入战绩",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 276
+  },
+  "ui.room-settings.599bad1cff": {
+    "text": "实时 · {p0}",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 245
+  },
+  "ui.room-settings.59d6c49925": {
+    "text": "，每完成一步加",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 151
+  },
+  "ui.room-settings.5cf1743517": {
+    "text": "开局种子（选填）",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 206
+  },
+  "ui.room-settings.5eefc83a49": {
+    "text": "未提交的试走可随时撤销。免费蹭魔和转换确认由每位玩家在局内单独设置。",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 222
+  },
+  "ui.room-settings.5f5d9f4039": {
+    "text": "首轮行动顺序",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 193
+  },
+  "ui.room-settings.689dae8ef9": {
+    "text": "已提交行动的撤回",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 178
+  },
+  "ui.room-settings.6d708937de": {
+    "text": "，最多累计",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 152
+  },
+  "ui.room-settings.724d36d7ec": {
+    "text": "每人初始 ",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 151
+  },
+  "ui.room-settings.75ca4f9214": {
+    "text": "随机",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 201
+  },
+  "ui.room-settings.81dc8bf7f7": {
+    "text": "顺蛇轮抽",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 71
+  },
+  "ui.room-settings.87518ac0b1": {
+    "text": "当前房间设置",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 269
+  },
+  "ui.room-settings.8818fed3c2": {
+    "text": "开局方式",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 63
+  },
+  "ui.room-settings.8b6ff49851": {
+    "text": "时间",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 123
+  },
+  "ui.room-settings.96976c1cc2": {
+    "text": "全员同意后撤回",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 184
+  },
+  "ui.room-settings.a3c78968f0": {
+    "text": "按房间座位",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 202
+  },
+  "ui.room-settings.a5ce714648": {
+    "text": "异步 · {p0}",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 247
+  },
+  "ui.room-settings.b784f3f920": {
+    "text": "首轮随机顺序",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 278
+  },
+  "ui.room-settings.b7d7c219f0": {
+    "text": "种子：",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 280
+  },
+  "ui.room-settings.d1a1fdff92": {
+    "text": "仅凭邀请加入",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 242
+  },
+  "ui.room-settings.d617f69c27": {
+    "text": "开局设置已锁定",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 281
+  },
+  "ui.room-settings.d63842643d": {
+    "text": " 人",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 55
+  },
+  "ui.room-settings.e1e8017dd3": {
+    "text": "逆蛇轮抽",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 72
+  },
+  "ui.room-settings.e46c2e065f": {
+    "text": "初始时间",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 127
+  },
+  "ui.room-settings.e78bbfff79": {
+    "text": "禁止撤回已提交行动",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 274
+  },
+  "ui.room-settings.f95da63d4e": {
+    "text": "首轮按座位顺序",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 278
+  },
+  "ui.room-settings.fa1142a258": {
+    "text": "{p0} 人",
+    "file": "apps/web/src/room-settings.tsx",
+    "line": 243
+  },
+  "ui.statistics-page.092b5766db": {
+    "text": "胜率",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 25
+  },
+  "ui.statistics-page.0e7fa8bab4": {
+    "text": " 局 · 胜率 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 113
+  },
+  "ui.statistics-page.14a2b2c8c8": {
+    "text": "全部人数",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 153
+  },
+  "ui.statistics-page.1639126da9": {
+    "text": "起始顺位表现",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 171
+  },
+  "ui.statistics-page.1c5586836c": {
+    "text": "战绩与统计",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 97
+  },
+  "ui.statistics-page.21bd738e0d": {
+    "text": "正在加载…",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 179
+  },
+  "ui.statistics-page.26d75e1d32": {
+    "text": "% · 平均",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 113
+  },
+  "ui.statistics-page.2b6d4ff9b5": {
+    "text": "对局人数",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 151
+  },
+  "ui.statistics-page.307d597263": {
+    "text": "已完成 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 163
+  },
+  "ui.statistics-page.31fce2b03f": {
+    "text": "超时 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 117
+  },
+  "ui.statistics-page.36793e1c45": {
+    "text": "{p0} · {p1} 分 · 第 {p2} 名",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 134
+  },
+  "ui.statistics-page.37f4a3829d": {
+    "text": "全站统计",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 149
+  },
+  "ui.statistics-page.3d5c9de29d": {
+    "text": "选择具体人数后可比较起始顺位。",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 175
+  },
+  "ui.statistics-page.43f825c4af": {
+    "text": "所有已完成对局均计入战绩，包括入门局和自定义开局。悔棋待确认的对局暂不计入，确认后按最终结果统计。并列第一平分胜场权重。 超时弃局在移除时结算；10 天无人操作结束计入局数，但不判胜负、不影响胜率。特殊结算不纳入分数、种族和顺位表现统计。",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 99
+  },
+  "ui.statistics-page.45d8b78ca2": {
+    "text": "并列第一",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 133
+  },
+  "ui.statistics-page.484620936e": {
+    "text": "超时弃局 · {p0}",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 133
+  },
+  "ui.statistics-page.62a878c582": {
+    "text": "平均分",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 26
+  },
+  "ui.statistics-page.6ba51a5291": {
+    "text": "样本数",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 24
+  },
+  "ui.statistics-page.866e992787": {
+    "text": "最高分",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 27
+  },
+  "ui.statistics-page.93573861b1": {
+    "text": "起始顺位",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 23
+  },
+  "ui.statistics-page.98b77da468": {
+    "text": "第 {p0} 位",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 33
+  },
+  "ui.statistics-page.9cb1b5a7e8": {
+    "text": "还没有已完成的对局。",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 141
+  },
+  "ui.statistics-page.9cbc8e710a": {
+    "text": " 局 · 长期无操作结束 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 117
+  },
+  "ui.statistics-page.a017f70a75": {
+    "text": " 局。",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 166
+  },
+  "ui.statistics-page.a2eeed8c98": {
+    "text": " 分 · 最高 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 114
+  },
+  "ui.statistics-page.b49377b38c": {
+    "text": "种族",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 23
+  },
+  "ui.statistics-page.b61e16a817": {
+    "text": " 局。样本少时，胜率仅供参考。",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 163
+  },
+  "ui.statistics-page.b72db29618": {
+    "text": " 局，长期无操作结束",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 165
+  },
+  "ui.statistics-page.b75a03ace7": {
+    "text": " 分",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 114
+  },
+  "ui.statistics-page.c24443f60e": {
+    "text": "我的战绩",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 109
+  },
+  "ui.statistics-page.ca776a16a6": {
+    "text": " 局 · 被移除弃局 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 117
+  },
+  "ui.statistics-page.cd6f79fbed": {
+    "text": " 局",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 118
+  },
+  "ui.statistics-page.d63842643d": {
+    "text": " 人",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 156
+  },
+  "ui.statistics-page.dbc3a8dfd7": {
+    "text": " 人局 ·",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 129
+  },
+  "ui.statistics-page.dc8e0f337f": {
+    "text": "其中超时弃局 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 165
+  },
+  "ui.statistics-page.e385daaa2b": {
+    "text": "最近完成的对局（最多 100 局）",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 124
+  },
+  "ui.statistics-page.e5f1a31a8e": {
+    "text": "10 天无人操作结束 · 不判胜负",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 131
+  },
+  "ui.statistics-page.e80bc913c0": {
+    "text": "被移除 · 末名",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 133
+  },
+  "ui.statistics-page.fcdb6e3b04": {
+    "text": "完成 ",
+    "file": "apps/web/src/statistics-page.tsx",
+    "line": 113
+  },
+  "ui.table-experience.03f418b976": {
+    "text": "资源换分：金币 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 244
+  },
+  "ui.table-experience.06a82b6a57": {
+    "text": "执行一个主要行动 · 点击地图或行动板块",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 105
+  },
+  "ui.table-experience.0d60b8d5b0": {
+    "text": "选择学科 · 剩余 {p0} 格",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 62
+  },
+  "ui.table-experience.1882c9e9f5": {
+    "text": "5 分 · 2 本任选书 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 152
+  },
+  "ui.table-experience.1af0ab601d": {
+    "text": "来自 {p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 77
+  },
+  "ui.table-experience.1b0fdf4790": {
+    "text": "8 分 · 8 魔力 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 155
+  },
+  "ui.table-experience.1d02857b7d": {
+    "text": "{p0}的资源",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 161
+  },
+  "ui.table-experience.1e2a4e8aa3": {
+    "text": "选择书籍 · 剩余 {p0} 本",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 61
+  },
+  "ui.table-experience.2160848bdf": {
+    "text": "改造完成 · 是否建造工坊",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 70
+  },
+  "ui.table-experience.220708f94c": {
+    "text": "魔力碗 {p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 178
+  },
+  "ui.table-experience.230cc1d6c8": {
+    "text": "学者",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 172
+  },
+  "ui.table-experience.2702331389": {
+    "text": "15 金币、3 工具；改造科技金币费用优惠；魔力 5 / 7 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 49
+  },
+  "ui.table-experience.2ca0069ec3": {
+    "text": "终局成绩",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 204
+  },
+  "ui.table-experience.2d9d54c8fd": {
+    "text": "免费放置工坊",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 69
+  },
+  "ui.table-experience.2e34d13599": {
+    "text": "选择种族与家园组合",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 100
+  },
+  "ui.table-experience.3366645622": {
+    "text": "白",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 191
+  },
+  "ui.table-experience.34460f3876": {
+    "text": "15 金币、3 工具；四门学科各 +1；魔力 4 / 8 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 24
+  },
+  "ui.table-experience.39797a1a0e": {
+    "text": "15 金币、3 工具；魔力 5 / 7 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 44
+  },
+  "ui.table-experience.3a70f74d86": {
+    "text": "，胜负以上方对局结果为准。余局分数仅供参考。",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 211
+  },
+  "ui.table-experience.3bea6f921d": {
+    "text": "查看我的战绩",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 252
+  },
+  "ui.table-experience.3eb2456f3b": {
+    "text": "棕",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 191
+  },
+  "ui.table-experience.4801ccb5e0": {
+    "text": "来源：{p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 87
+  },
+  "ui.table-experience.4b86e2c09c": {
+    "text": "选择开局板块",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 95
+  },
+  "ui.table-experience.518b1e7736": {
+    "text": "中立",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 80
+  },
+  "ui.table-experience.52f354ecfc": {
+    "text": "蓝",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 191
+  },
+  "ui.table-experience.5461d7d317": {
+    "text": "＋书籍",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 244
+  },
+  "ui.table-experience.59c0cd80bc": {
+    "text": "，每 5 换 1 分，余 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 246
+  },
+  "ui.table-experience.5ca6730d44": {
+    "text": "工具",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 168
+  },
+  "ui.table-experience.661671469f": {
+    "text": "前序完成后处理",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 141
+  },
+  "ui.table-experience.6b6cacca64": {
+    "text": "本局为",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 207
+  },
+  "ui.table-experience.6d0276414a": {
+    "text": "8 分 · 1 学者 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 156
+  },
+  "ui.table-experience.6d132744a9": {
+    "text": "钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 176
+  },
+  "ui.table-experience.76c3e5d4f0": {
+    "text": "轮末学科奖励",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 125
+  },
+  "ui.table-experience.76d5d61166": {
+    "text": "放置起始建筑",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 95
+  },
+  "ui.table-experience.76e15680ae": {
+    "text": "5 分 · 2 铲子 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 151
+  },
+  "ui.table-experience.7f640c2049": {
+    "text": "弃局结束",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 210
+  },
+  "ui.table-experience.85f5161056": {
+    "text": "已达到建城条件",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 85
+  },
+  "ui.table-experience.86d7db6c80": {
+    "text": "现在处理",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 139
+  },
+  "ui.table-experience.87e8858095": {
+    "text": "决定是否获得 {p0} 魔力",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 60
+  },
+  "ui.table-experience.8a31fd1d83": {
+    "text": "15 金币、3 工具、1 学者；魔力 3 / 9 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 34
+  },
+  "ui.table-experience.8cff79bb4f": {
+    "text": "医学",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 71
+  },
+  "ui.table-experience.94b70b7dc1": {
+    "text": "执行行动",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 95
+  },
+  "ui.table-experience.9552fe3bd3": {
+    "text": "第 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 231
+  },
+  "ui.table-experience.96739aa233": {
+    "text": "对局记录",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 204
+  },
+  "ui.table-experience.999667a6ff": {
+    "text": "放置起始{p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 102
+  },
+  "ui.table-experience.9e6899848a": {
+    "text": "使用城市钥匙？{p0}继续推进 {p1} 格",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 71
+  },
+  "ui.table-experience.a740356fa4": {
+    "text": "＋学者 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 244
+  },
+  "ui.table-experience.a92dc72a86": {
+    "text": "本次行动的后续事项",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 126
+  },
+  "ui.table-experience.ab82999718": {
+    "text": "来自 {p0} · {p1} {p2}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 80
+  },
+  "ui.table-experience.b1eff676a2": {
+    "text": "银行学",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 71
+  },
+  "ui.table-experience.b214cf9558": {
+    "text": "15 金币、3 工具；起始航行 1 级；魔力 5 / 7 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 29
+  },
+  "ui.table-experience.b237c80398": {
+    "text": "法学",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 71
+  },
+  "ui.table-experience.b350e2b996": {
+    "text": "对局结束 · 查看成绩与终局盘面",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 90
+  },
+  "ui.table-experience.b360102bce": {
+    "text": "＋可燃烧魔力 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 246
+  },
+  "ui.table-experience.b4ad0574a6": {
+    "text": "＋工具 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 244
+  },
+  "ui.table-experience.b75a03ace7": {
+    "text": " 分",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 239
+  },
+  "ui.table-experience.bb42760d71": {
+    "text": "城市建筑群：{p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 85
+  },
+  "ui.table-experience.bbece6f829": {
+    "text": "金币",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 164
+  },
+  "ui.table-experience.bc7bb8d451": {
+    "text": "六轮已完成。展开玩家成绩查看每项来源；地图保留最终局面。",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 214
+  },
+  "ui.table-experience.bfe8aa1cd9": {
+    "text": "选择能力板块",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 66
+  },
+  "ui.table-experience.c732e4d7e3": {
+    "text": "黄",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 191
+  },
+  "ui.table-experience.c9ef7e0eb2": {
+    "text": "长期无操作结束",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 209
+  },
+  "ui.table-experience.cb6833fbc0": {
+    "text": "等待对方",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 140
+  },
+  "ui.table-experience.cd37495031": {
+    "text": "主要行动已完成 · 可自由转换，然后结束回合",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 104
+  },
+  "ui.table-experience.d122efe9ee": {
+    "text": "6 分 · 6 金币 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 153
+  },
+  "ui.table-experience.d5d47a2859": {
+    "text": "免费放置公会",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 68
+  },
+  "ui.table-experience.d5e323f41c": {
+    "text": "待处理事项",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 120
+  },
+  "ui.table-experience.da0aab587d": {
+    "text": "选择一块尚未拥有类别的板块",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 99
+  },
+  "ui.table-experience.dd83c3346a": {
+    "text": "分配铲子 · {p0} 把",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 63
+  },
+  "ui.table-experience.dffc39f38f": {
+    "text": "未使用的城市钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 174
+  },
+  "ui.table-experience.e2ce919bd8": {
+    "text": "处理收益与响应",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 95
+  },
+  "ui.table-experience.e804d84983": {
+    "text": "放置中立{p0}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 67
+  },
+  "ui.table-experience.e9f3d305ff": {
+    "text": "工程学",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 71
+  },
+  "ui.table-experience.ecad82034e": {
+    "text": "选择桥梁位置",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 64
+  },
+  "ui.table-experience.eeb837dfb8": {
+    "text": "选择城市奖励",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 65
+  },
+  "ui.table-experience.f12c920101": {
+    "text": "7 分 · 四门学科各 +1 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 154
+  },
+  "ui.table-experience.f281b0f439": {
+    "text": "＋可用魔力 ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 245
+  },
+  "ui.table-experience.f3ddfbdb51": {
+    "text": " 名 · ",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 231
+  },
+  "ui.table-experience.f64911d17b": {
+    "text": "4 分 · 3 工具 · 1 钥匙",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 150
+  },
+  "ui.table-experience.f729ac0040": {
+    "text": "对局结算",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 203
+  },
+  "ui.table-experience.f741ab42be": {
+    "text": "{p0}书 {p1}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 191
+  },
+  "ui.table-experience.f81f262091": {
+    "text": "15 金币、4 工具；第二块创新不增加书籍总费用；魔力 5 / 7 / 0",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 54
+  },
+  "ui.table-experience.f9d529eacd": {
+    "text": " 项",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 127
+  },
+  "ui.table-experience.fe52799bb8": {
+    "text": "收入待领取",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 123
+  },
+  "ui.table-experience.fed0d64172": {
+    "text": "等待 {p0} · {p1}",
+    "file": "apps/web/src/table-experience.tsx",
+    "line": 95
+  },
+  "ui.table-help.0a3942dfc7": {
+    "text": "选择行动与目标 → 查看预览 → 确认提交 → 处理奖励或蹭魔 → 结束回合。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 19
+  },
+  "ui.table-help.31f2a1ba43": {
+    "text": "轮到你时，选择一组种族、家园与奖励板，预览后确认。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 16
+  },
+  "ui.table-help.36278c7bd4": {
+    "text": "怎么玩 · 操作与规则速查",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 12
+  },
+  "ui.table-help.3b6e17291f": {
+    "text": "建设：先点地图。空地可改造与建造，本人的建筑可按升级路线升级；具体费用和结果在预览中确认。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 23
+  },
+  "ui.table-help.3bd61a1ef9": {
+    "text": "当前是开局阶段",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 14
+  },
+  "ui.table-help.400c84dcad": {
+    "text": "魔力按 Ⅰ → Ⅱ → Ⅲ 充能，只有碗 Ⅲ 可支付。蹭魔可能扣分，请查看选择提示。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 32
+  },
+  "ui.table-help.416b156d70": {
+    "text": "公共魔力和书籍行动每轮只能被领取一次。书籍支付需要满足总量和颜色要求。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 29
+  },
+  "ui.table-help.4df37ef8ef": {
+    "text": "先在地图选择地块，再到操作区预览放置。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 18
+  },
+  "ui.table-help.82d3dd2876": {
+    "text": "每回合的操作顺序",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 14
+  },
+  "ui.table-help.8a9ce64113": {
+    "text": "每回合一个主要行动，前后可以转换资源。“结束回合”让下一位玩家行动；“结束本轮”会退出本轮，下一轮才能继续。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 26
+  },
+  "ui.table-help.9399178758": {
+    "text": "终局比较最大连通区域、四个学科，再折算剩余资源；每 5 金币计 1 分。并列的排名奖励按官方规则平分向下取整。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 39
+  },
+  "ui.table-help.947855855b": {
+    "text": "行动日志可回看历史、筛选玩家与轮次；联机悔棋需要全员同意。历史查看是只读的。手机底部可直接跳到地图、操作与记录。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 43
+  },
+  "ui.table-help.d62ac326a3": {
+    "text": "查看官方英文规则（1.1） ↗",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 51
+  },
+  "ui.table-help.f3f32ee4d9": {
+    "text": "全员结束本轮后自动结算轮末奖励与下一轮收入；第六轮结束进行终局计分。",
+    "file": "apps/web/src/table-help.tsx",
+    "line": 35
+  },
+  "ui.table-panels.036d65598b": {
+    "text": "开局",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 435
+  },
+  "ui.table-panels.04fbe1f842": {
+    "text": "待选择",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 55
+  },
+  "ui.table-panels.1f4d1daca2": {
+    "text": "轮到 ",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 72
+  },
+  "ui.table-panels.2669e7a740": {
+    "text": "已轮抽的要塞技能：",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 308
+  },
+  "ui.table-panels.337208fe00": {
+    "text": "桥的两端",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 525
+  },
+  "ui.table-panels.406fe23bc7": {
+    "text": "导出对局记录",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 372
+  },
+  "ui.table-panels.4405178eae": {
+    "text": "行动记录 · ",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 369
+  },
+  "ui.table-panels.44ad253090": {
+    "text": "特殊行动",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 227
+  },
+  "ui.table-panels.4720a4e4dc": {
+    "text": "免费桥位置",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 527
+  },
+  "ui.table-panels.4890584bb5": {
+    "text": "轮次",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 396
+  },
+  "ui.table-panels.51695ad45a": {
+    "text": "地形",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 37
+  },
+  "ui.table-panels.527b840b81": {
+    "text": "全部玩家",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 387
+  },
+  "ui.table-panels.544859e784": {
+    "text": "取得有橙色行动标记的能力后，会显示在这里。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 269
+  },
+  "ui.table-panels.571096246e": {
+    "text": "种族 · 家园 · 奖励板",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 185
+  },
+  "ui.table-panels.58ee85ad27": {
+    "text": "开局轮抽",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 64
+  },
+  "ui.table-panels.6226662e37": {
+    "text": "连接所选河流格建城（附加操作）",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 278
+  },
+  "ui.table-panels.643bc1effc": {
+    "text": "自我上次行动以后",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 416
+  },
+  "ui.table-panels.64e6f93032": {
+    "text": "撤回此步及后续行动",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 455
+  },
+  "ui.table-panels.6fb2840d56": {
+    "text": " 条",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 369
+  },
+  "ui.table-panels.7c8a63e57a": {
+    "text": "本类别已选",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 171
+  },
+  "ui.table-panels.7cbebfd6e2": {
+    "text": " / 4 轮",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 68
+  },
+  "ui.table-panels.7ea86a6b29": {
+    "text": "已加载记录中没有符合筛选条件的行动。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 505
+  },
+  "ui.table-panels.81b269215e": {
+    "text": "。每次任选一项尚未拥有的类别，最终每人各选一项。要塞技能在宫殿建成后生效。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 73
+  },
+  "ui.table-panels.81dc8bf7f7": {
+    "text": "顺蛇轮抽",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 66
+  },
+  "ui.table-panels.86254abd1f": {
+    "text": "请选择桥位",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 531
+  },
+  "ui.table-panels.8cff79bb4f": {
+    "text": "医学",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 235
+  },
+  "ui.table-panels.8efafeff8f": {
+    "text": " · 本轮已用",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 264
+  },
+  "ui.table-panels.920d5a203f": {
+    "text": "预览建桥",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 547
+  },
+  "ui.table-panels.923a212d0d": {
+    "text": "从末位玩家开始逆序选择一组，之后顺序和逆序放置起始建筑。灰色组合已被选取。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 187
+  },
+  "ui.table-panels.92b6003dc9": {
+    "text": "轮抽结果",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 88
+  },
+  "ui.table-panels.991e63fe29": {
+    "text": "玩家",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 382
+  },
+  "ui.table-panels.9db1804608": {
+    "text": "第 {p0} 轮",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 436
+  },
+  "ui.table-panels.a54084ef9e": {
+    "text": "选择你的文明",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 184
+  },
+  "ui.table-panels.adf7811bd5": {
+    "text": " · 建成宫殿后生效：",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 308
+  },
+  "ui.table-panels.b1eff676a2": {
+    "text": "银行学",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 235
+  },
+  "ui.table-panels.b237c80398": {
+    "text": "法学",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 235
+  },
+  "ui.table-panels.b49377b38c": {
+    "text": "种族",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 36
+  },
+  "ui.table-panels.b75a03ace7": {
+    "text": " 分",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 478
+  },
+  "ui.table-panels.c259fa9a3b": {
+    "text": "正在选择",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 102
+  },
+  "ui.table-panels.c776c00186": {
+    "text": "；另加种族修正",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 52
+  },
+  "ui.table-panels.c837854a57": {
+    "text": "要塞技能",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 38
+  },
+  "ui.table-panels.c9d10cdecb": {
+    "text": "学科目标",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 230
+  },
+  "ui.table-panels.ca0b53cf6f": {
+    "text": "· 第",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 67
+  },
+  "ui.table-panels.ca68775942": {
+    "text": "查看此时局面",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 445
+  },
+  "ui.table-panels.d1a640246f": {
+    "text": "载入更早记录",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 376
+  },
+  "ui.table-panels.d7fb5bfc83": {
+    "text": "奖励板",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 39
+  },
+  "ui.table-panels.e1e8017dd3": {
+    "text": "逆蛇轮抽",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 66
+  },
+  "ui.table-panels.e3236b0e27": {
+    "text": "魔力按 Ⅰ → Ⅱ → Ⅲ 流转；只有碗 Ⅲ 的魔力能用于支付。主要行动前后均可进行资源转换。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 318
+  },
+  "ui.table-panels.e420312962": {
+    "text": "第一步提交后，行动与资源变化会记录在这里。",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 508
+  },
+  "ui.table-panels.e9f3d305ff": {
+    "text": "工程学",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 235
+  },
+  "ui.table-panels.eb0ca1c8f6": {
+    "text": " 已选择",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 168
+  },
+  "ui.table-panels.ee302df5db": {
+    "text": "全部轮次",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 401
+  },
+  "ui.table-panels.f4466bda52": {
+    "text": "我的能力与收入说明",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 294
+  },
+  "ui.table-panels.f4ef706e0b": {
+    "text": " · 已撤销",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 425
+  },
+  "ui.table-panels.f6209664ad": {
+    "text": "本轮顺序：",
+    "file": "apps/web/src/table-panels.tsx",
+    "line": 76
+  },
+  "ui.tutorial.094047ce4d": {
+    "text": "选择改造地块",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 35
+  },
+  "ui.tutorial.1066bb68ee": {
+    "text": "重新开始教学",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 153
+  },
+  "ui.tutorial.13903ed28c": {
+    "text": "回应邻居",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 51
+  },
+  "ui.tutorial.18a6aaa5c5": {
+    "text": "练习邻居建设",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 130
+  },
+  "ui.tutorial.238501d48e": {
+    "text": "上手教学",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 152
+  },
+  "ui.tutorial.23a7807b5e": {
+    "text": "确认步骤",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 215
+  },
+  "ui.tutorial.25c22b003e": {
+    "text": "三名玩家都结束本轮后，结算科学奖励并进入下一轮收入。点击完成最后一人的结束本轮，观察资源和轮次变化。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 56
+  },
+  "ui.tutorial.29380c7983": {
+    "text": "拒绝蹭魔",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 190
+  },
+  "ui.tutorial.2a45ec27e5": {
+    "text": "步骤 ",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 158
+  },
+  "ui.tutorial.2ea968f6ab": {
+    "text": " 轮 · 金币 ",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 240
+  },
+  "ui.tutorial.3160fc9159": {
+    "text": "返回修改",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 236
+  },
+  "ui.tutorial.39230df1b8": {
+    "text": "预览起始放置",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 172
+  },
+  "ui.tutorial.40778fd0fb": {
+    "text": "练习完成",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 59
+  },
+  "ui.tutorial.4a18f25a04": {
+    "text": "点击绿色轮廓的 B4，在自己的森林家园放置工坊。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 29
+  },
+  "ui.tutorial.4c313fdeff": {
+    "text": " · 魔力",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 241
+  },
+  "ui.tutorial.5fad1469e4": {
+    "text": "选择起始位置",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 29
+  },
+  "ui.tutorial.645bb6b871": {
+    "text": "预览地形改造",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 174
+  },
+  "ui.tutorial.6a4b0d1c89": {
+    "text": " · 分数",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 222
+  },
+  "ui.tutorial.826f70c6da": {
+    "text": "转换资源",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 39
+  },
+  "ui.tutorial.861b1c1017": {
+    "text": "接下来使用预设练习局面：你有一把奖励铲，但没有工具。点击奖励板，开始一次主要行动。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 32
+  },
+  "ui.tutorial.8d1be30da4": {
+    "text": " · 工具",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 240
+  },
+  "ui.tutorial.915c1ca155": {
+    "text": "预览建造",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 176
+  },
+  "ui.tutorial.9552fe3bd3": {
+    "text": "第 ",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 240
+  },
+  "ui.tutorial.963017c523": {
+    "text": "主要行动完成后仍可以转换资源。结束回合把行动权交给下一位玩家；结束本轮则表示本轮不再行动，两者不同。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 48
+  },
+  "ui.tutorial.975778d990": {
+    "text": "结束回合",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 47
+  },
+  "ui.tutorial.984c84c07d": {
+    "text": "决定是否建造",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 43
+  },
+  "ui.tutorial.9a2f7c0b80": {
+    "text": "你已完成选位、改造、转换、建造、结束回合、蹭魔与轮次收入。正式对局可启用回合试走，在提交前撤销步骤。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 60
+  },
+  "ui.tutorial.9db57eae70": {
+    "text": "轮末与收入",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 55
+  },
+  "ui.tutorial.a0af810d75": {
+    "text": "工坊还需要 1 工具和 2 金币。将 3 魔力转换成 1 工具；这不占用主要行动。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 40
+  },
+  "ui.tutorial.a0c7716669": {
+    "text": "你",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 13
+  },
+  "ui.tutorial.a26208b2fc": {
+    "text": "预览结束本轮",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 179
+  },
+  "ui.tutorial.a9948ff014": {
+    "text": "返回上一步",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 209
+  },
+  "ui.tutorial.b099df2117": {
+    "text": "预览资源转换",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 175
+  },
+  "ui.tutorial.b9dbe24762": {
+    "text": "预览结束回合",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 177
+  },
+  "ui.tutorial.bc635dad44": {
+    "text": "练习对手甲",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 14
+  },
+  "ui.tutorial.be49eb9147": {
+    "text": "现在可以建工坊，也可以放弃建造。此次练习选择建造，先查看费用，再确认。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 44
+  },
+  "ui.tutorial.c871f4ee57": {
+    "text": "教学进度",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 156
+  },
+  "ui.tutorial.c8f123b7da": {
+    "text": "点击 C5，使用免费铲改造成森林。铲子必须立即使用，不能储存。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 36
+  },
+  "ui.tutorial.d0062e2417": {
+    "text": "确认教学步骤",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 226
+  },
+  "ui.tutorial.d7723b5be8": {
+    "text": "独立练习，不使用你的线上账号或对局。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 155
+  },
+  "ui.tutorial.d9301d3642": {
+    "text": "练习对手乙",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 15
+  },
+  "ui.tutorial.e370ab2196": {
+    "text": "返回游戏大厅",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 195
+  },
+  "ui.tutorial.eb11f6369a": {
+    "text": "点击奖励铲",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 173
+  },
+  "ui.tutorial.ee1fa28f95": {
+    "text": "使用奖励板",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 31
+  },
+  "ui.tutorial.ee993c45db": {
+    "text": "这是单独的蹭魔练习：邻居建设让你可获得 2 魔力，代价为 1 分。你可以接受，也可以拒绝。",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 52
+  },
+  "ui.tutorial.f18391a1ee": {
+    "text": "接受 2 魔力，支付 1 分",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 178
+  },
+  "ui.tutorial.f34e4daa0c": {
+    "text": "金币 ",
+    "file": "apps/web/src/tutorial.tsx",
+    "line": 219
+  }
+}

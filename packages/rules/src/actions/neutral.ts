@@ -4,6 +4,7 @@ import { officialLarge, reachable, terrainDistance } from "../map";
 import { pay, requireRule, ownBuildings } from "../internal";
 import { awardRound } from "../round-scoring";
 import { findCities } from "./city";
+import { buildingRewards } from "../effects";
 export function neutralSites(s: GameState, p: Player) {
   return Object.values(officialLarge.hexes)
     .filter(
@@ -56,6 +57,7 @@ export function placeNeutral(
   s.board.terrain[hex] = p.native;
   s.board.buildings[hex] = { seat: p.seat, kind, neutral: true };
   offerLeech(s, p.seat, hex);
+  buildingRewards(s, p, hex);
   awardRound(s, p, "spade", spades);
   awardRound(s, p, kind === "palace" || kind === "university" ? "big" : kind);
   findCities(s, p);

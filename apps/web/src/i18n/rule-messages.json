@@ -1,0 +1,822 @@
+[
+  {
+    "source": "书籍公共行动",
+    "key": "rules.1eff8650fa"
+  },
+  {
+    "source": "隧道",
+    "key": "rules.55d2d31f2a"
+  },
+  {
+    "source": "飞行",
+    "key": "rules.048f35b383"
+  },
+  {
+    "source": "城市板块：",
+    "key": "rules.d4e0e09cdf"
+  },
+  {
+    "source": "能力即时得分",
+    "key": "rules.82280268a2"
+  },
+  {
+    "source": "幻术师",
+    "key": "rules.863d15a6b8"
+  },
+  {
+    "source": "放置附属建筑（余 {p0}）",
+    "key": "rules.cbc1193ca8"
+  },
+  {
+    "source": "能力：获得 4 魔力",
+    "key": "rules.3915c628a7"
+  },
+  {
+    "source": "哲学家：获得一本书",
+    "key": "rules.a941b3460f"
+  },
+  {
+    "source": "灵能者：获得 5 魔力并继续行动",
+    "key": "rules.146d1e01d4"
+  },
+  {
+    "source": "鼹鼠：支付一工具建桥",
+    "key": "rules.019c9f4a6a"
+  },
+  {
+    "source": "机械降神：铲子与建造",
+    "key": "rules.87cbd15521"
+  },
+  {
+    "source": "教授：一学者与 3 分",
+    "key": "rules.5d27a5fc45"
+  },
+  {
+    "source": "奖励板：铲子与建造",
+    "key": "rules.763a9d7fbe"
+  },
+  {
+    "source": "奖励板：免费建桥",
+    "key": "rules.ef52dd648e"
+  },
+  {
+    "source": "奖励板：学科推进",
+    "key": "rules.c51d494c81"
+  },
+  {
+    "source": "受祝福者",
+    "key": "rules.60f010b651"
+  },
+  {
+    "source": "起始所有学科 +1；轮末学科奖励按高 3 级计算。",
+    "key": "rules.69686f68b2"
+  },
+  {
+    "source": "猫族",
+    "key": "rules.bb90dddbbf"
+  },
+  {
+    "source": "起始银行学、医学 +1；建城时自由推进学科共 3 格并获得一本书。",
+    "key": "rules.b737f043bd"
+  },
+  {
+    "source": "哥布林",
+    "key": "rules.b50e37546c"
+  },
+  {
+    "source": "起始多一工具，银行学、工程学 +1；每使用一把铲子获得 2 金币。",
+    "key": "rules.bac5627d6e"
+  },
+  {
+    "source": "医学 +2；公共魔力行动少支付 1 魔力，并获得 1 分（4–5 人为 2 分）。",
+    "key": "rules.284247dd73"
+  },
+  {
+    "source": "发明家",
+    "key": "rules.2eaf60d53b"
+  },
+  {
+    "source": "完成起始建筑放置后，免费选择一块能力板块。",
+    "key": "rules.5c5ba9c342"
+  },
+  {
+    "source": "蜥蜴人",
+    "key": "rules.b361f9686b"
+  },
+  {
+    "source": "起始自由推进学科 2 格；建城时获得 1 把铲子和一次免费工坊建造。",
+    "key": "rules.8217b4898c"
+  },
+  {
+    "source": "鼹鼠",
+    "key": "rules.360303e21c"
+  },
+  {
+    "source": "工程学 +2；改造建造时可支付一工具跨过一格，获得人数 +2 分；可支付一工具建桥。",
+    "key": "rules.01be626f8a"
+  },
+  {
+    "source": "修道士",
+    "key": "rules.470f703f10"
+  },
+  {
+    "source": "法学 +1；开局最后放置一所大学，代替两座工坊，并获得能力板块。",
+    "key": "rules.bf2074642d"
+  },
+  {
+    "source": "航海家",
+    "key": "rules.fca1b6e60c"
+  },
+  {
+    "source": "法学 +3；沿河建造工坊获得 2 分和 1 金币。",
+    "key": "rules.35e38f0f8f"
+  },
+  {
+    "source": "奥玛族",
+    "key": "rules.7564f004aa"
+  },
+  {
+    "source": "银行学、工程学 +1；开局两座工坊与一座中立塔楼可自选放置顺序；每轮收入 2 魔力和 2 金币。",
+    "key": "rules.4c50fe7e12"
+  },
+  {
+    "source": "哲学家",
+    "key": "rules.f574791696"
+  },
+  {
+    "source": "银行学 +2；领取能力额外获得该颜色的一本书；每轮一次特殊行动获得一本书。",
+    "key": "rules.16788b294f"
+  },
+  {
+    "source": "灵能者",
+    "key": "rules.88eed9bc79"
+  },
+  {
+    "source": "银行学、医学 +1，多一工具；每轮一次获得 5 魔力后继续执行一个主要行动。",
+    "key": "rules.1d35a60885"
+  },
+  {
+    "source": "工具宫殿",
+    "key": "rules.407aeb94ce"
+  },
+  {
+    "source": "收入 5 魔力；特殊行动获得 2 工具。",
+    "key": "rules.5913408bf9"
+  },
+  {
+    "source": "改造宫殿",
+    "key": "rules.279f17f467"
+  },
+  {
+    "source": "特殊行动：2 把免费铲子并可建造工坊。",
+    "key": "rules.77ea24ff58"
+  },
+  {
+    "source": "回收宫殿",
+    "key": "rules.3e0d3a0b97"
+  },
+  {
+    "source": "收入 2 魔力；特殊行动将学校降为商会，获得 3 分和 1 工具。",
+    "key": "rules.6989b0df2f"
+  },
+  {
+    "source": "商贸宫殿",
+    "key": "rules.cd4c7aa21d"
+  },
+  {
+    "source": "收入 2 魔力；特殊行动免费将工坊升级为商会。",
+    "key": "rules.4f8d014f02"
+  },
+  {
+    "source": "学术宫殿",
+    "key": "rules.6ef001bc82"
+  },
+  {
+    "source": "建成获得一块能力板块；收入 4 魔力。",
+    "key": "rules.bee7d569df"
+  },
+  {
+    "source": "研究宫殿",
+    "key": "rules.b7494ff0c8"
+  },
+  {
+    "source": "收入 2 魔力和一本书；特殊行动推进同一学科最多 2 格。",
+    "key": "rules.9414a520ca"
+  },
+  {
+    "source": "学校计分宫殿",
+    "key": "rules.eff4d14c6d"
+  },
+  {
+    "source": "收入 4 魔力；结束本轮时，每所学校获得 3 分。",
+    "key": "rules.f268439872"
+  },
+  {
+    "source": "城市宫殿",
+    "key": "rules.7b42fc1dd0"
+  },
+  {
+    "source": "建城魔力门槛降为 6；收入 2 金币、2 魔力和 1 工具。",
+    "key": "rules.386255bf5f"
+  },
+  {
+    "source": "飞行宫殿",
+    "key": "rules.dda68f4821"
+  },
+  {
+    "source": "收入一学者；改造建造可支付一学者跨越最多两格，获得 5 分。",
+    "key": "rules.a7c6dc09f1"
+  },
+  {
+    "source": "知识宫殿",
+    "key": "rules.b203996870"
+  },
+  {
+    "source": "建成获得 12 魔力和两本书；收入 6 金币。",
+    "key": "rules.8a97951e88"
+  },
+  {
+    "source": "建城宫殿",
+    "key": "rules.8440451238"
+  },
+  {
+    "source": "建成立即领取一块城市板块；收入一工具。",
+    "key": "rules.dd47e0a429"
+  },
+  {
+    "source": "工坊宫殿",
+    "key": "rules.266dae2b38"
+  },
+  {
+    "source": "收入 8 魔力；每建造一座工坊获得 2 分。",
+    "key": "rules.7d6025ec50"
+  },
+  {
+    "source": "商业宫殿",
+    "key": "rules.f9a9707abc"
+  },
+  {
+    "source": "每建造商会获得 3 分；特殊行动获得一本书和 3 金币。",
+    "key": "rules.cb610092e4"
+  },
+  {
+    "source": "河港宫殿",
+    "key": "rules.41209628b6"
+  },
+  {
+    "source": "建成免费提升两级航运；收入 6 魔力；建城可连接一个河流格。",
+    "key": "rules.60e9d92254"
+  },
+  {
+    "source": "工程宫殿",
+    "key": "rules.c15ff4d082"
+  },
+  {
+    "source": "收入 6 魔力；建成获得 2 把铲子、两座免费桥和两本书，可选择各奖励的处理顺序。",
+    "key": "rules.f9523c6d6d"
+  },
+  {
+    "source": "远方商会宫殿",
+    "key": "rules.4a10b6a9af"
+  },
+  {
+    "source": "建成立即在任意空置家园放置一座免费商会；收入 2 魔力和一本书。",
+    "key": "rules.504deb2473"
+  },
+  {
+    "source": "荣耀宫殿",
+    "key": "rules.5ffd1ad27f"
+  },
+  {
+    "source": "建成获得 10 分；收入 2 魔力。",
+    "key": "rules.94ebc443e6"
+  },
+  {
+    "source": "机械降神",
+    "key": "rules.411df6b7e4"
+  },
+  {
+    "source": "立即获得一本书并各学科 +1；特殊行动：一把铲子并可建造。",
+    "key": "rules.d84994fca1"
+  },
+  {
+    "source": "贸易路线",
+    "key": "rules.67b4ce0eff"
+  },
+  {
+    "source": "结束本轮时，每座商会获得 2 分。",
+    "key": "rules.2bb9a591d4"
+  },
+  {
+    "source": "教授",
+    "key": "rules.456e01f920"
+  },
+  {
+    "source": "特殊行动：获得一学者和 3 分。",
+    "key": "rules.027f89420e"
+  },
+  {
+    "source": "建筑学",
+    "key": "rules.5f2504af32"
+  },
+  {
+    "source": "立即获得 10 分，并为每种不同外形的建筑自由推进学科一格。",
+    "key": "rules.8b671974ca"
+  },
+  {
+    "source": "人口普查",
+    "key": "rules.8384399649"
+  },
+  {
+    "source": "拥有 7–8 / 9–10 / 11+ 座建筑，立即获得 8 / 12 / 18 分。",
+    "key": "rules.f224ca8e4c"
+  },
+  {
+    "source": "学院",
+    "key": "rules.33a172fee2"
+  },
+  {
+    "source": "每所学校立即获得 5 分。",
+    "key": "rules.d6423d19d3"
+  },
+  {
+    "source": "通讯",
+    "key": "rules.8d48a4ba3f"
+  },
+  {
+    "source": "拥有 4 / 5 / 6+ 个相邻建筑群，立即获得 8 / 12 / 18 分。",
+    "key": "rules.5baa394cf6"
+  },
+  {
+    "source": "城市联盟",
+    "key": "rules.9daa8b54f5"
+  },
+  {
+    "source": "每块城市板块立即获得 5 分。",
+    "key": "rules.295093ab7c"
+  },
+  {
+    "source": "图书馆",
+    "key": "rules.266e6cb770"
+  },
+  {
+    "source": "立即获得最高两项学科等级总和的分数。",
+    "key": "rules.edec6108a9"
+  },
+  {
+    "source": "排水系统",
+    "key": "rules.053ac3d6b0"
+  },
+  {
+    "source": "每座工坊立即获得 2 分。",
+    "key": "rules.286613cda2"
+  },
+  {
+    "source": "蒸汽动力",
+    "key": "rules.3adaa856e5"
+  },
+  {
+    "source": "立即获得一学者，并免费提升改造和航运各一级，照常获得奖励。",
+    "key": "rules.ad553bf643"
+  },
+  {
+    "source": "钢铁",
+    "key": "rules.1232085ef0"
+  },
+  {
+    "source": "拥有 1 / 2 / 3 座桥，立即获得 8 / 12 / 18 分。",
+    "key": "rules.70a1ebed23"
+  },
+  {
+    "source": "中立工坊",
+    "key": "rules.b220db3a3a"
+  },
+  {
+    "source": "立即放置中立工坊；收入 3 工具。",
+    "key": "rules.09e189284c"
+  },
+  {
+    "source": "中立商会",
+    "key": "rules.c9eff65537"
+  },
+  {
+    "source": "立即放置中立商会；收入 5 金币。",
+    "key": "rules.4a32b0ddf1"
+  },
+  {
+    "source": "中立学校",
+    "key": "rules.e221360d7c"
+  },
+  {
+    "source": "立即放置中立学校并获得能力板块。",
+    "key": "rules.a040444d34"
+  },
+  {
+    "source": "中立大学",
+    "key": "rules.2c09c41117"
+  },
+  {
+    "source": "立即放置中立大学；收入 2 分。",
+    "key": "rules.7bcd978053"
+  },
+  {
+    "source": "中立宫殿",
+    "key": "rules.b47ad733e0"
+  },
+  {
+    "source": "立即放置中立宫殿并向魔力碗 III 增加两个魔力标记；收入 4 魔力。",
+    "key": "rules.6790dfe7bd"
+  },
+  {
+    "source": "纪念碑",
+    "key": "rules.50ab9d01a5"
+  },
+  {
+    "source": "立即放置魔力值为 4 的纪念碑并获得 7 分；所在城市只需两座建筑。",
+    "key": "rules.9169d63fb1"
+  },
+  {
+    "source": "收入 6 金币",
+    "key": "rules.04e3a8388c"
+  },
+  {
+    "source": "收入 2 金币、4 魔力",
+    "key": "rules.c973416846"
+  },
+  {
+    "source": "收入 3 魔力；建造商会 +3 分",
+    "key": "rules.4a035a40f7"
+  },
+  {
+    "source": "收入一学者；派遣学者 +2 分",
+    "key": "rules.4300e882e0"
+  },
+  {
+    "source": "收入 4 金币；结束本轮每所学校自由推进学科一格",
+    "key": "rules.b8e8e46550"
+  },
+  {
+    "source": "收入一工具；结束本轮每座宫殿或大学 +4 分",
+    "key": "rules.acd7e80ac1"
+  },
+  {
+    "source": "航运可达范围 +1（不用于终局）；沿河工坊 +2 分",
+    "key": "rules.7f4bbdb908"
+  },
+  {
+    "source": "收入一本书；特殊行动获得一把铲子并可建造",
+    "key": "rules.9981e92780"
+  },
+  {
+    "source": "收入一本书；特殊行动免费建桥",
+    "key": "rules.fab1a40b9f"
+  },
+  {
+    "source": "收入两工具；特殊行动自由推进学科一格",
+    "key": "rules.21435b1681"
+  },
+  {
+    "source": "宫殿即时得分",
+    "key": "rules.8b41c4ee28"
+  },
+  {
+    "source": "纪念碑创新",
+    "key": "rules.39fde6f02b"
+  },
+  {
+    "source": "商会奖励板",
+    "key": "rules.9969c666e1"
+  },
+  {
+    "source": "商会宫殿",
+    "key": "rules.da5008b395"
+  },
+  {
+    "source": "航海家沿河工坊",
+    "key": "rules.f4002a20a5"
+  },
+  {
+    "source": "沿河奖励板",
+    "key": "rules.f5c67a466c"
+  },
+  {
+    "source": "边缘工坊能力",
+    "key": "rules.21ae83d99c"
+  },
+  {
+    "source": "第六轮边缘奖励",
+    "key": "rules.770a6f6d98"
+  },
+  {
+    "source": "处理待响应",
+    "key": "rules.80a83fdc68"
+  },
+  {
+    "source": "资源转换",
+    "key": "rules.a12a2f3342"
+  },
+  {
+    "source": "燃烧魔力",
+    "key": "rules.94656bc8f2"
+  },
+  {
+    "source": "选择开局配置",
+    "key": "rules.6df997b13d"
+  },
+  {
+    "source": "放置起始工坊",
+    "key": "rules.a8bd53cd55"
+  },
+  {
+    "source": "结束回合",
+    "key": "rules.975778d990"
+  },
+  {
+    "source": "改造与建造",
+    "key": "rules.4c18923c92"
+  },
+  {
+    "source": "升级建筑",
+    "key": "rules.a5fabd14f2"
+  },
+  {
+    "source": "派遣学者",
+    "key": "rules.95ad8a65f7"
+  },
+  {
+    "source": "推进技术",
+    "key": "rules.afa08d11a2"
+  },
+  {
+    "source": "公共魔力行动",
+    "key": "rules.93530554d7"
+  },
+  {
+    "source": "书籍行动",
+    "key": "rules.e9c9ee1df8"
+  },
+  {
+    "source": "研发创新",
+    "key": "rules.f4805a1e59"
+  },
+  {
+    "source": "特殊行动",
+    "key": "rules.44ad253090"
+  },
+  {
+    "source": "结束本轮",
+    "key": "rules.e597fd46fa"
+  },
+  {
+    "source": "{p0} 选择开局配置",
+    "key": "rules.cf660876bf"
+  },
+  {
+    "source": "{p0} 已处理选择",
+    "key": "rules.ae0e581769"
+  },
+  {
+    "source": "{p0} 放置起始建筑",
+    "key": "rules.0fc4aae8ee"
+  },
+  {
+    "source": "学者奖励板",
+    "key": "rules.7de153ae90"
+  },
+  {
+    "source": "派遣学者能力",
+    "key": "rules.9033c23a3e"
+  },
+  {
+    "source": "工坊",
+    "key": "rules.c647c592b7"
+  },
+  {
+    "source": "商会",
+    "key": "rules.613085ac89"
+  },
+  {
+    "source": "学校与大学",
+    "key": "rules.80ba123dc4"
+  },
+  {
+    "source": "山地家园",
+    "key": "rules.eba094bfe4"
+  },
+  {
+    "source": "奖励板",
+    "key": "rules.d7fb5bfc83"
+  },
+  {
+    "source": "银行学 9",
+    "key": "rules.db7c5effcb"
+  },
+  {
+    "source": "法学 9",
+    "key": "rules.a9a0fd4467"
+  },
+  {
+    "source": "工程学 9",
+    "key": "rules.edc97ce9d8"
+  },
+  {
+    "source": "医学 9",
+    "key": "rules.84aa39fa52"
+  },
+  {
+    "source": "奥玛",
+    "key": "rules.f0f71e1449"
+  },
+  {
+    "source": "中立工坊创新",
+    "key": "rules.bfd13b4379"
+  },
+  {
+    "source": "中立商会创新",
+    "key": "rules.a68dd64972"
+  },
+  {
+    "source": "中立大学创新",
+    "key": "rules.53c08c1df1"
+  },
+  {
+    "source": "中立宫殿创新",
+    "key": "rules.864d56e74b"
+  },
+  {
+    "source": "工具与学科能力",
+    "key": "rules.ab33d8e51a"
+  },
+  {
+    "source": "塔楼能力",
+    "key": "rules.a3f770dbab"
+  },
+  {
+    "source": "得分与金币能力",
+    "key": "rules.9f6b4df116"
+  },
+  {
+    "source": "书籍与魔力能力",
+    "key": "rules.15f6a4f37f"
+  },
+  {
+    "source": "轮抽开局配置",
+    "key": "rules.958e34a7ff"
+  },
+  {
+    "source": "提交回合",
+    "key": "rules.4ee4fb9525"
+  },
+  {
+    "source": "选择种族与家园",
+    "key": "rules.61bba121c6"
+  },
+  {
+    "source": "跨河建城",
+    "key": "rules.8d5a3a0431"
+  },
+  {
+    "source": "放置起始建筑",
+    "key": "rules.76d5d61166"
+  },
+  {
+    "source": "处理选择",
+    "key": "rules.74dd112aa5"
+  },
+  {
+    "source": "设置自动蹭魔",
+    "key": "rules.959eff2475"
+  },
+  {
+    "source": "金币",
+    "key": "rules.bbece6f829"
+  },
+  {
+    "source": "工具",
+    "key": "rules.5ca6730d44"
+  },
+  {
+    "source": "学者",
+    "key": "rules.230cc1d6c8"
+  },
+  {
+    "source": "分数",
+    "key": "rules.89e35e662a"
+  },
+  {
+    "source": "城市钥匙",
+    "key": "rules.2be7ed8644"
+  },
+  {
+    "source": "航运",
+    "key": "rules.2d74968197"
+  },
+  {
+    "source": "改造等级",
+    "key": "rules.a5f9385c9c"
+  },
+  {
+    "source": "魔力Ⅰ",
+    "key": "rules.9061dd6cdd"
+  },
+  {
+    "source": "魔力Ⅱ",
+    "key": "rules.e9aeb216ba"
+  },
+  {
+    "source": "魔力Ⅲ",
+    "key": "rules.4c32b2b5c5"
+  },
+  {
+    "source": "银行学书",
+    "key": "rules.fa696f34c1"
+  },
+  {
+    "source": "法学书",
+    "key": "rules.409095ea5c"
+  },
+  {
+    "source": "工程学书",
+    "key": "rules.6612342cbe"
+  },
+  {
+    "source": "医学书",
+    "key": "rules.ed5900e2fd"
+  },
+  {
+    "source": "银行学",
+    "key": "rules.b1eff676a2"
+  },
+  {
+    "source": "法学",
+    "key": "rules.b237c80398"
+  },
+  {
+    "source": "工程学",
+    "key": "rules.e9f3d305ff"
+  },
+  {
+    "source": "医学",
+    "key": "rules.8cff79bb4f"
+  },
+  {
+    "source": "{p0} 因超时被移除；按末名结算，其余玩家并列第一。余局不再改变战绩。",
+    "key": "rules.39dab7dbf8"
+  },
+  {
+    "source": "整局连续 10 天没有有效操作，自动结束；已有弃局结果保留，否则不判胜负。",
+    "key": "rules.3ce5b4e0bd"
+  },
+  {
+    "source": "玩家结束余局，已结算的战绩保持不变。",
+    "key": "rules.8f70aebf02"
+  },
+  {
+    "source": "余局无法自动跳过此步骤，已结束余局；弃局战绩保持不变。",
+    "key": "rules.28c3f08870"
+  },
+  {
+    "source": "{p0} 已退出，自动处理必要步骤或跳过回合。",
+    "key": "rules.ad7cb46264"
+  },
+  {
+    "source": "经全体玩家同意，恢复到 #{p0} 的局面",
+    "key": "rules.661111dbaa"
+  },
+  {
+    "source": "{p0} 获得 {p1} 魔力，支付 {p2} 分",
+    "key": "rules.6615faf138"
+  },
+  {
+    "source": "第 {p0} 轮计分板",
+    "key": "rules.fe61e97d50"
+  },
+  {
+    "source": "第六轮计分奖励",
+    "key": "rules.9aec0083ea"
+  },
+  {
+    "source": "轮次计分奖励",
+    "key": "rules.5c6743e29a"
+  },
+  {
+    "source": "宫殿与大学奖励板",
+    "key": "rules.ee13d0011d"
+  },
+  {
+    "source": "对局得分",
+    "key": "rules.f3ee1bd368"
+  },
+  {
+    "source": "最大连通区域",
+    "key": "rules.efc9b0b697"
+  },
+  {
+    "source": "剩余资源",
+    "key": "rules.c9649c84e7"
+  },
+  {
+    "source": "技术升级",
+    "key": "rules.9dccc4b944"
+  }
+]

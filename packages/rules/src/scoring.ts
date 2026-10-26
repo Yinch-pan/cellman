@@ -1,6 +1,7 @@
 import type { GameState } from "./types";
 import { ownBuildings } from "./internal";
 import { officialLarge, reachable } from "./map";
+import { travelReach } from "./travel";
 export function rankPoints(
   values: Record<string, number>,
   awards: number[],
@@ -33,14 +34,16 @@ export function networkSize(s: GameState, seat: string) {
       for (const id of ids)
         if (
           !seen.has(id) &&
-          reachable(
+          (reachable(
             officialLarge,
             [component[i]],
             id,
             s.players[seat].sailing,
             s.board.bridges,
             seat,
-          )
+          ) ||
+            travelReach(s, s.players[seat], id, "tunnel", [component[i]]) ||
+            travelReach(s, s.players[seat], id, "flight", [component[i]]))
         ) {
           seen.add(id);
           component.push(id);

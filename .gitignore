@@ -8,3 +8,4 @@ work/
 test-results/
 playwright-report/
 *.tsbuildinfo
+/tmp/

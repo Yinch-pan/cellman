@@ -1,0 +1,27 @@
+[Unit]
+Description=cellman game server
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=cellman
+Group=cellman
+WorkingDirectory=/srv/cellman/current
+EnvironmentFile=/etc/cellman/app.env
+EnvironmentFile=-/etc/cellman/mail.env
+ExecStart=/usr/local/bin/node --max-old-space-size=384 --import tsx apps/server/src/index.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=40
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictSUIDSGID=true
+UMask=0077
+MemoryMax=512M
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

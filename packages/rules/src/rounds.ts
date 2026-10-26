@@ -1,3 +1,6 @@
+import { awardPoints } from "./score-events";
+import { incomeSources } from "./income";
+import { palaces } from "./content";
 import type { GameState, Player } from "./types";
 import { ownBuildings, requireRule, gainScholar } from "./internal";
 import { gainPower } from "./actions/power";
@@ -7,65 +10,35 @@ import { finishGame } from "./scoring";
 export function giveIncome(s: GameState) {
   s.phase = "income";
   for (const p of Object.values(s.players)) {
-    const bs = ownBuildings(s, p.seat);
-    const count = (kind: string) =>
-      bs.filter(([, b]) => b.kind === kind && !b.neutral).length;
-    p.resources.tools += count("workshop");
-    const g = count("guild");
-    p.resources.coins +=
-      2 * g + (p.native === "mountain" ? 2 + (g ? 1 : 0) : 0);
-    p.resources.power = gainPower(p.resources.power, [0, 1, 2, 4, 6][g]);
-    gainScholar(s, p, count("school") + count("university"));
-    if (p.bonus === "coins") p.resources.coins += 6;
-    if (p.bonus === "power") {
-      p.resources.coins += 2;
-      p.resources.power = gainPower(p.resources.power, 4);
-    }
-    if (p.bonus === "guild")
-      p.resources.power = gainPower(p.resources.power, 3);
-    if (p.bonus === "scholar") gainScholar(s, p, 1);
-    if (p.bonus === "school") p.resources.coins += 4;
-    if (p.bonus === "bigbuilding") p.resources.tools++;
-    if (p.science[0] >= 9) p.resources.coins += 3;
-    if (p.science[1] >= 9) p.resources.power = gainPower(p.resources.power, 6);
-    if (p.science[2] >= 9) p.resources.tools++;
-    if (p.science[3] >= 9) gainScholar(s, p, 3);
-    if (p.palace === "immediate-score")
-      p.resources.power = gainPower(p.resources.power, 2);
-    if (p.palace === "school-pass")
-      p.resources.power = gainPower(p.resources.power, 4);
-    if (p.palace === "power-books") p.resources.coins += 6;
-    if (p.palace === "income-power")
-      p.resources.power = gainPower(p.resources.power, 8);
-    if (p.palace === "workshop-score")
-      p.resources.power = gainPower(p.resources.power, 8);
-    if (p.palace === "city-discount") {
-      p.resources.coins += 2;
-      p.resources.tools++;
-      p.resources.power = gainPower(p.resources.power, 2);
-    }
-    if (p.competencies.includes("income-tool-science")) {
-      p.resources.tools++;
-      queueChoice(
-        s,
-        p.seat,
-        "science",
-        1,
-        ["0", "1", "2", "3"],
-        "income-tool-science",
-      );
-    }
-    if (p.competencies.includes("tower")) {
-      p.resources.coins += 2;
-      p.resources.power = gainPower(p.resources.power, 2);
-    }
-    if (p.competencies.includes("income-vp-coins")) {
-      p.vp += 3;
-      p.resources.coins += 2;
-    }
-    if (p.competencies.includes("income-book-power")) {
-      p.resources.power = gainPower(p.resources.power, 1);
-      queueChoice(s, p.seat, "book", 1, ["0", "1", "2", "3"], "income");
+    for (const row of incomeSources(s, p)) {
+      p.resources.coins += row.coins ?? 0;
+      p.resources.tools += row.tools ?? 0;
+      awardPoints(s, p, row.vp ?? 0, row.source);
+      if (row.power)
+        p.resources.power = gainPower(p.resources.power, row.power);
+      if (row.scholars) gainScholar(s, p, row.scholars);
+      if (row.books)
+        queueChoice(
+          s,
+          p.seat,
+          "book",
+          row.books,
+          ["0", "1", "2", "3"],
+          row.source === "奖励板"
+            ? "bonus-income"
+            : row.source === "书籍与魔力能力"
+              ? "income"
+              : "palace-income",
+        );
+      if (row.science)
+        queueChoice(
+          s,
+          p.seat,
+          "science",
+          row.science,
+          ["0", "1", "2", "3"],
+          "income-tool-science",
+        );
     }
   }
   if (!s.pending.length) s.phase = "actions";
@@ -133,16 +106,33 @@ export function pass(s: GameState, p: Player, bonus?: string) {
     );
   }
   const bs = ownBuildings(s, p.seat);
+  if (p.innovations.includes("trading-routes"))
+    awardPoints(
+      s,
+      p,
+      2 * bs.filter(([, b]) => b.kind === "guild").length,
+      "trading-routes",
+    );
   if (p.palace === "school-pass")
-    p.vp += 3 * bs.filter(([, b]) => b.kind === "school").length;
-  if (p.competencies.includes("city-pass")) p.vp += p.keys * 2;
+    awardPoints(
+      s,
+      p,
+      3 * bs.filter(([, b]) => b.kind === "school").length,
+      "school-pass",
+    );
+  if (p.competencies.includes("city-pass"))
+    awardPoints(s, p, p.keys * 2, "city-pass");
   if (p.competencies.includes("min-science-pass"))
-    p.vp += Math.min(...p.science);
+    awardPoints(s, p, Math.min(...p.science), "min-science-pass");
   if (p.bonus === "bigbuilding")
-    p.vp +=
+    awardPoints(
+      s,
+      p,
       4 *
-      bs.filter(([, b]) => b.kind === "palace" || b.kind === "university")
-        .length;
+        bs.filter(([, b]) => b.kind === "palace" || b.kind === "university")
+          .length,
+      "宫殿与大学奖励板",
+    );
   if (p.bonus === "school") {
     const n = bs.filter(([, b]) => b.kind === "school").length;
     for (let i = 0; i < n; i++)
@@ -178,6 +168,10 @@ export function completeRound(s: GameState) {
 }
 export function settlePhase(s: GameState) {
   if (s.pending.length) return;
+  if (s.phase === "setup") {
+    giveIncome(s);
+    return;
+  }
   if (s.phase === "science") startNextRound(s);
   else if (s.phase === "income") s.phase = "actions";
   else if (s.passOrder.length === s.turnOrder.length) completeRound(s);

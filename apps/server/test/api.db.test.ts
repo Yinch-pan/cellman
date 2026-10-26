@@ -224,3 +224,66 @@ it("logout immediately closes this session event stream", async () => {
     req.on("error", reject);
   });
 });
+
+it("players sharing an IP have independent request budgets; sessions cannot reset an account budget", async () => {
+  const isolated = createApp(db);
+  try {
+    const a = await login(db, "apiuser0", "test-password-1234");
+    const b = await login(db, "apiuser1", "test-password-1234");
+    for (let i = 0; i < 300; i++) {
+      const r = await isolated.inject({
+        url: "/api/me/games",
+        headers: { cookie: "session=" + a.session },
+      });
+      expect(r.statusCode).toBe(200);
+    }
+    expect(
+      (
+        await isolated.inject({
+          url: "/api/me/games",
+          headers: { cookie: "session=" + b.session },
+        })
+      ).statusCode,
+    ).toBe(200);
+    const anotherSession = await login(db, "apiuser0", "test-password-1234");
+    expect(
+      (
+        await isolated.inject({
+          url: "/api/me/games",
+          headers: { cookie: "session=" + anotherSession.session },
+        })
+      ).statusCode,
+    ).toBe(429);
+  } finally {
+    await isolated.close();
+  }
+});
+
+it("login attempts are rate limited before password verification", async () => {
+  const isolated = createApp(db);
+  try {
+    for (let i = 0; i < 12; i++) {
+      expect(
+        (
+          await isolated.inject({
+            method: "POST",
+            url: "/api/auth/login",
+            headers: { origin: "http://127.0.0.1:5173" },
+            payload: { username: "absent", password: "incorrect" },
+          })
+        ).statusCode,
+      ).toBe(401);
+    }
+    const blocked = await isolated.inject({
+      method: "POST",
+      url: "/api/auth/login",
+      headers: { origin: "http://127.0.0.1:5173" },
+      payload: { username: "absent", password: "incorrect" },
+    });
+    expect(blocked.statusCode).toBe(429);
+    expect(blocked.json()).toEqual({ error: "RATE_LIMIT" });
+    expect(Number(blocked.headers["retry-after"])).toBeGreaterThan(0);
+  } finally {
+    await isolated.close();
+  }
+});

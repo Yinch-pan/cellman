@@ -1,4 +1,55 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { SpadesForm } from "./spades-form";
+import { TableActionEditor, tableActionTargets } from "./table-action-editor";
+import { t as translate } from "./i18n";
+import { MapBuilding, BuildingLegend } from "./map-building";
+import { RoundRibbon } from "./round-ribbon";
+import { ScienceBoard } from "./science-board";
+import { MapActionPanel, type MapAnchor } from "./map-actions";
+import { fieldLabels } from "./i18n/presentation";
+import {
+  SetupPanel,
+  SpecialPanel,
+  AbilityReference,
+  BridgeChoice,
+} from "./table-panels";
+import { ReviewPanel, UndoNotice, type UndoRequest } from "./review";
+import { GameClockPanel, type ClockSnapshot } from "./game-clock";
+import {
+  defaultGameSettings,
+  type GameSettings,
+} from "../../../packages/contracts/src/room";
+import { TableHelp, jumpToTable } from "./table-help";
+import {
+  GuidedAction,
+  FreeActions,
+  PlacementPanel,
+  terraformTargets,
+  buildHighlights,
+  suggestBooks,
+} from "./action-guidance";
+import {
+  ledgerEntry,
+  type ResourceChange,
+} from "../../../packages/rules/src/ledger";
+import { standardSetup } from "../../../packages/rules/src/setup";
+import { validBridgeGeometry } from "../../../packages/rules/src/actions/bridge";
+import {
+  palaces,
+  innovations,
+  bonusDescriptions,
+  competencyDescriptions,
+} from "./i18n/content";
+import {
+  replayRecord,
+  type ReplayRecord,
+} from "../../../packages/rules/src/replay";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+} from "react";
 import type {
   GameAction,
   GameState,
@@ -9,8 +60,27 @@ import type {
 import type { CommandEnvelope } from "../../../packages/contracts/src/game";
 import { createGame } from "../../../packages/rules/src/state";
 import { developmentSetup } from "../../../packages/rules/src/preset";
+import { supportsTurnPlanning } from "../../../packages/rules/src/state";
+import { planTurn, submissionActions, type TurnDraft } from "./turn-planner";
+import { PersonalBoard } from "./personal-board";
+import { PlayerIncome } from "./player-income";
+import { BoardActions, type BoardIntent } from "./board-actions";
+import {
+  ChoiceQueue,
+  choiceTitle,
+  choiceSource,
+  cityDetails,
+  currentTask,
+  PlayerResources,
+  FinalScores,
+  bonusTitles,
+  unusedSpecials,
+} from "./table-experience";
+import "./table-experience.css";
 import {
   applyAction,
+  getAvailableChoices,
+  canConvertDuringChoice,
   getWaitingSeats,
 } from "../../../packages/rules/src/engine";
 import {
@@ -29,13 +99,21 @@ const colors: Record<string, string> = {
   wasteland: "#c88770",
   river: "#d3e7e5",
 };
-const seatColors = ["#e9bd53", "#397d91", "#b85543", "#665ea0", "#284837"];
+const factionColors: Record<Terrain, string> = {
+  forest: "#287444",
+  lake: "#2875b5",
+  mountain: "#777777",
+  desert: "#dfb534",
+  plains: "#8b542e",
+  swamp: "#303d45",
+  wasteland: "#be453c",
+};
 function freshDemo() {
   return createGame(
     developmentSetup("local-demo", [
-      { id: "1", name: "你" },
-      { id: "2", name: "林间客" },
-      { id: "3", name: "远行者" },
+      { id: "1", name: translate("ui.game.a0c7716669") },
+      { id: "2", name: translate("ui.game.e8edae9acc") },
+      { id: "3", name: translate("ui.game.e602d38d33") },
     ]),
   );
 }
@@ -53,11 +131,11 @@ export function GamePage({
   id?: string;
   demo?: boolean;
 }) {
-  const [state, setState] = useState<GameState | null>(() =>
+  const [liveState, setState] = useState<GameState | null>(() =>
       demo ? getDemo() : null,
     ),
     [seat, setSeat] = useState(() =>
-      demo && state ? (getWaitingSeats(state)[0] ?? "p1") : "p1",
+      demo && liveState ? (getWaitingSeats(liveState)[0] ?? "p1") : "p1",
     ),
     [selected, setSelected] = useState(""),
     [draft, setDraft] = useState<CommandEnvelope | null>(null),
@@ -66,23 +144,237 @@ export function GamePage({
     [busy, setBusy] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [history, setHistory] = useState<any[]>([]),
-    [tab, setTab] = useState("build");
+    [tab, setTab] = useState("build"),
+    [localCount, setLocalCount] = useState(3);
+  const actionInFlight = useRef(false);
+  const [viewed, setViewed] = useState<GameState | null>(null);
+  const [requests, setRequests] = useState<UndoRequest[]>([]);
+  const [sessionSettings, setSessionSettings] =
+    useState<GameSettings>(defaultGameSettings);
+  const [clock, setClock] = useState<ClockSnapshot | null>(null);
+  const [inactiveDeadline, setInactiveDeadline] = useState<string>();
+  const [online, setOnline] = useState(navigator.onLine);
+  const [planning, setPlanning] = useState(
+    () =>
+      localStorage.getItem("cellman-turn-planning") === "on" ||
+      (localStorage.getItem("cellman-turn-planning") !== "off" && !demo),
+  );
+  const [turnDraft, setTurnDraft] = useState<TurnDraft | null>(null);
+  const [stepReview, setStepReview] = useState(
+    () => localStorage.getItem("cellman-step-review") === "on",
+  );
+  const [conversionPrompt, setConversionPrompt] = useState(
+    () => localStorage.getItem("cellman-conversion-prompt") ?? "always",
+  );
+  const [endPrompt, setEndPrompt] = useState(false);
+  const [intent, setIntent] = useState<BoardIntent | null>(null);
+  const [tableIntent, setTableIntent] = useState<BoardIntent | null>(null);
+  const [pickingTableTarget, setPickingTableTarget] = useState(false);
+  const tableTrigger = useRef<HTMLElement | null>(null);
+  const [mapMenu, setMapMenu] = useState<MapAnchor | null>(null);
+  const [mapPreview, setMapPreview] = useState(false);
+  const draftKey = `cellman-turn:${id ?? "demo"}:${seat}`;
+  const loadedDraft = useRef("");
+  useEffect(() => {
+    if (!liveState || viewed) return;
+    if (turnDraft && liveState.revision !== turnDraft.baseRevision) {
+      setTurnDraft(null);
+      setDraft(null);
+      setPreview(null);
+      localStorage.removeItem(draftKey);
+      setError(translate("ui.game.310b2ad06b"));
+      return;
+    }
+    if (loadedDraft.current === draftKey) return;
+    loadedDraft.current = draftKey;
+    setTurnDraft(null);
+    try {
+      const saved = JSON.parse(localStorage.getItem(draftKey) ?? "null");
+      if (
+        saved &&
+        saved.gameId === liveState.setup.id &&
+        saved.baseRevision === liveState.revision &&
+        planning &&
+        supportsTurnPlanning(liveState.rulesVersion)
+      )
+        setTurnDraft(planTurn(liveState, seat, saved.actions));
+      else if (saved) localStorage.removeItem(draftKey);
+    } catch {
+      localStorage.removeItem(draftKey);
+    }
+  }, [liveState, seat, draftKey, planning, viewed]);
+  const clearTurn = () => {
+    setTurnDraft(null);
+    setDraft(null);
+    setPreview(null);
+    setEndPrompt(false);
+    localStorage.removeItem(draftKey);
+  };
+  const saveTurn = (next: TurnDraft) => {
+    setTurnDraft(next);
+    localStorage.setItem(
+      draftKey,
+      JSON.stringify({
+        gameId: liveState?.setup.id,
+        baseRevision: next.baseRevision,
+        actions: next.actions,
+      }),
+    );
+  };
+  const [connection, setConnection] = useState("connecting");
+  const refreshSerial = useRef(0);
+  const state = viewed ?? turnDraft?.state ?? liveState;
+  const tableSpadesChoice =
+    state &&
+    getAvailableChoices(state).find(
+      (c) =>
+        c.seat === seat && c.kind === "spades" && c.source === "book-action",
+    );
+  useEffect(() => {
+    if (preview && !mapPreview && !tableIntent && !tableSpadesChoice)
+      jumpToTable("table-preview");
+  }, [preview, mapPreview, tableIntent, tableSpadesChoice]);
+  useEffect(() => {
+    setMapMenu(null);
+    setMapPreview(false);
+    setTableIntent(null);
+    setPickingTableTarget(false);
+  }, [state?.revision, turnDraft?.actions.length, seat, viewed]);
+  const competencyChoiceId =
+    state &&
+    getAvailableChoices(state).find(
+      (c) => c.seat === seat && c.kind === "competency",
+    )?.id;
+  useEffect(() => {
+    if (competencyChoiceId && !viewed) jumpToTable("table-competencies");
+  }, [competencyChoiceId, viewed]);
+  useEffect(() => {
+    if (tableSpadesChoice && !viewed) jumpToTable("table-action-editor");
+  }, [tableSpadesChoice?.id, viewed]);
+  useEffect(() => {
+    if (pickingTableTarget) jumpToTable("table-map-target");
+  }, [pickingTableTarget]);
+  const closeTableEditor = () => {
+    if (busy || uncertain) return;
+    setTableIntent(null);
+    setPickingTableTarget(false);
+    setDraft(null);
+    setPreview(null);
+    setError("");
+    tableTrigger.current?.focus({ preventScroll: true });
+  };
+  const closeMapMenu = () => {
+    if (busy || uncertain) return;
+    setMapMenu(null);
+    if (mapPreview) {
+      setDraft(null);
+      setPreview(null);
+      setMapPreview(false);
+    }
+  };
+  const planningEnabled =
+    planning && supportsTurnPlanning(liveState?.rulesVersion ?? "");
+  const highlighted = useMemo(
+    () =>
+      state
+        ? tableIntent &&
+          ((tableIntent.kind === "book" && tableIntent.id === "upgrade") ||
+            (tableIntent.kind === "power" &&
+              ["spade", "spades"].includes(tableIntent.id!)))
+          ? tableActionTargets(state, seat, tableIntent)
+          : buildHighlights(state, seat)
+        : undefined,
+    [state, seat, tableIntent],
+  );
+  const frozen = requests.some((r) => r.status === "pending");
+  const readOnly =
+    !!viewed ||
+    frozen ||
+    (!demo && !online) ||
+    liveState?.matchResult?.loser === seat;
+  const viewState = (next: GameState | null) => {
+    if (turnDraft) {
+      setError(translate("ui.game.c2d7746e9e"));
+      return;
+    }
+    if (uncertain) {
+      setError(translate("ui.game.28ce1db800"));
+      return;
+    }
+    setViewed(next);
+    setDraft(null);
+    setPreview(null);
+  };
+  const exportRecord = async () => {
+    try {
+      const record = demo
+        ? JSON.parse(localStorage.getItem("boardgame-demo-record") ?? "null")
+        : await api("/games/" + id + "/replay");
+      if (!record) throw Error(translate("ui.game.f19d1c0c5b"));
+      replayRecord(record);
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(record, null, 2)], {
+          type: "application/json",
+        }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `yijian-${state?.setup.id}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  const olderHistory = async () => {
+    try {
+      const old = await api(
+        "/games/" + id + "/history?before=" + (history[0]?.revision ?? 1),
+      );
+      setHistory((h) => [
+        ...old.filter((r: any) => !h.some((x) => x.revision === r.revision)),
+        ...h,
+      ]);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
   const refresh = useCallback(async () => {
-    if (demo) return;
+    const serial = ++refreshSerial.current;
+    if (demo) {
+      try {
+        const record = JSON.parse(
+          localStorage.getItem("boardgame-demo-record") ?? "null",
+        );
+        if (record) setHistory(replayRecord(record).history);
+      } catch {}
+      return;
+    }
     try {
       const data = await api("/games/" + id);
+      const receivedAt = performance.now();
       if (data.state.setup.id !== id) return;
+      const h = await api("/games/" + id + "/history");
+      if (serial !== refreshSerial.current) return;
       setState((current) =>
         current && current.revision > data.state.revision
           ? current
           : data.state,
       );
       setSeat(data.seat);
-      const h = await api("/games/" + id + "/history");
+      setSessionSettings(data.settings ?? defaultGameSettings());
+      setClock(data.clock ? { ...data.clock, receivedAt } : null);
+      setInactiveDeadline(data.inactiveDeadline);
+      setRequests(data.undoRequests ?? []);
       setHistory((current) =>
         (current.at(-1)?.revision ?? 0) > (h.at(-1)?.revision ?? 0)
           ? current
-          : h,
+          : [
+              ...current.filter(
+                (row) => !h.some((next: any) => next.revision === row.revision),
+              ),
+              ...h,
+            ].sort((a, b) => a.revision - b.revision),
       );
     } catch (e) {
       setError((e as Error).message);
@@ -92,7 +384,19 @@ export function GamePage({
     refresh();
     if (demo) return;
     const stream = new EventSource("/api/games/" + id + "/events");
-    stream.onmessage = () => refresh();
+    stream.onopen = () => setConnection("connected");
+    stream.onerror = () => setConnection("reconnecting");
+    stream.onmessage = () => {
+      setConnection("connected");
+      refresh();
+    };
+    const wentOffline = () => setOnline(false);
+    const wentOnline = () => {
+      setOnline(true);
+      refresh();
+    };
+    addEventListener("offline", wentOffline);
+    addEventListener("online", wentOnline);
     const t = setInterval(() => {
       if (!document.hidden) refresh();
     }, 30000);
@@ -104,10 +408,14 @@ export function GamePage({
       stream.close();
       clearInterval(t);
       removeEventListener("visibilitychange", visible);
+      removeEventListener("offline", wentOffline);
+      removeEventListener("online", wentOnline);
     };
   }, [refresh, id, demo]);
   const previewAction = async (action: GameAction) => {
-    if (!state) return;
+    if (!state || readOnly || busy || uncertain || actionInFlight.current)
+      return;
+    actionInFlight.current = true;
     setError("");
     setBusy(true);
     try {
@@ -117,8 +425,20 @@ export function GamePage({
         action,
       };
       let result;
-      if (demo) {
-        const transition = applyAction(state, seat, action);
+      if (
+        demo ||
+        (planningEnabled &&
+          action.kind !== "turn" &&
+          action.kind !== "setLeech" &&
+          liveState?.phase === "actions" &&
+          liveState.activeSeat === seat &&
+          !liveState.players[seat].passed)
+      ) {
+        const transition = applyAction(
+          action.kind === "turn" ? liveState! : state,
+          seat,
+          action,
+        );
         if (!transition.ok) throw new RequestError(transition.error.code);
         result = {
           state: transition.state,
@@ -129,23 +449,79 @@ export function GamePage({
       setDraft(command);
       setPreview(result);
       setUncertain(false);
+      // Setup tiles are selections; ordinary actions already display a live quote.
+      // Keep an explicit review for passing and discarding rewards.
+      if (
+        !stepReview &&
+        !["draftPick", "chooseSetup", "pass", "restore"].includes(
+          action.kind,
+        ) &&
+        !(action.kind === "respond" && action.option === "discard")
+      ) {
+        await confirm(command);
+      }
     } catch (e) {
       setError((e as Error).message);
       if (e instanceof RequestError && e.code === "REVISION_CONFLICT")
         refresh();
     } finally {
       setBusy(false);
+      actionInFlight.current = false;
     }
   };
-  const confirm = async () => {
-    if (!draft || !state) return;
+  const confirm = async (command: CommandEnvelope | null = draft) => {
+    const draft = command;
+    if (!draft || !state || readOnly) return;
     setBusy(true);
     setError("");
     try {
+      if (
+        planningEnabled &&
+        draft.action.kind !== "turn" &&
+        draft.action.kind !== "setLeech" &&
+        liveState?.phase === "actions" &&
+        liveState.activeSeat === seat &&
+        !liveState.players[seat].passed
+      ) {
+        saveTurn(
+          planTurn(liveState, seat, [
+            ...(turnDraft?.actions ?? []),
+            draft.action,
+          ]),
+        );
+        setDraft(null);
+        setPreview(null);
+        return;
+      }
       if (demo) {
-        const result = applyAction(state, seat, draft.action);
+        const base = draft.action.kind === "turn" ? liveState! : state;
+        const result = applyAction(base, seat, draft.action);
         if (!result.ok) throw new RequestError(result.error.code);
+        let record;
+        try {
+          record = JSON.parse(
+            localStorage.getItem("boardgame-demo-record") ?? "null",
+          );
+        } catch {}
+        if (
+          !record ||
+          record.revision !== base.revision ||
+          record.initial.setup.id !== state.setup.id
+        )
+          record = {
+            format: "yijian-replay-v1",
+            initial: base,
+            commands: [],
+            revision: state.revision,
+          };
         result.state.revision++;
+        record.commands.push({
+          revision: result.state.revision,
+          seat,
+          action: draft.action,
+        });
+        record.revision = result.state.revision;
+        localStorage.setItem("boardgame-demo-record", JSON.stringify(record));
         setState(result.state);
         setSeat(getWaitingSeats(result.state)[0] ?? seat);
         localStorage.setItem("boardgame-demo-v1", JSON.stringify(result.state));
@@ -155,8 +531,10 @@ export function GamePage({
         ]);
       } else {
         await api("/games/" + id + "/commands", draft);
+        clearTurn();
         await refresh();
       }
+      clearTurn();
       setDraft(null);
       setPreview(null);
       setUncertain(false);
@@ -172,35 +550,428 @@ export function GamePage({
       setBusy(false);
     }
   };
-  if (!state) return <main className="empty">{error || "正在恢复对局…"}</main>;
+  const localRestore = (record: ReplayRecord) => {
+    const restored = replayRecord(record);
+    record.format = "yijian-replay-v2";
+    localStorage.setItem("boardgame-demo-record", JSON.stringify(record));
+    localStorage.setItem("boardgame-demo-v1", JSON.stringify(restored.state));
+    setState(restored.state);
+    setViewed(null);
+    setDraft(null);
+    setPreview(null);
+    setSeat(getWaitingSeats(restored.state)[0] ?? seat);
+    setHistory(restored.history);
+  };
+  const vote = async (
+    request: UndoRequest,
+    decision: "approve" | "reject" | "cancel",
+  ) => {
+    setBusy(true);
+    setError("");
+    try {
+      await api(`/games/${id}/undo/vote`, { requestId: request.id, decision });
+      await refresh();
+      setViewed(null);
+      setDraft(null);
+      setPreview(null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const adjudicate = async (reason: "forfeit" | "close", target?: string) => {
+    if (!liveState || busy || viewed) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api(`/games/${id}/adjudicate`, {
+        expectedRevision: liveState.revision,
+        reason,
+        target,
+      });
+      setDraft(null);
+      setPreview(null);
+      setTurnDraft(null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      await refresh();
+      setBusy(false);
+    }
+  };
+  if (!state)
+    return (
+      <main className="empty">{error || translate("ui.game.86dc53393e")}</main>
+    );
   const player = state.players[seat],
     waiting = getWaitingSeats(state),
     myTurn = waiting.includes(seat),
     r = player.resources;
+  const selectedBuilding = state.board.buildings[selected];
+  const selectedDescription = selected
+    ? `${selected} · ${label(state.board.terrain[selected] ?? officialLarge.hexes[selected]?.terrain)} · ${selectedBuilding ? translate("ui.game.2704be0cde", { p0: state.players[selectedBuilding.seat]?.name, p1: label(selectedBuilding.kind), p2: selectedBuilding.neutral ? translate("ui.game.4e3c82b301") : "" }) : translate("ui.game.cb557c76d0")}`
+    : translate("ui.game.36ed07fd6d");
+  const task = currentTask(state, seat);
+  const pendingBridge = getAvailableChoices(state).find(
+    (c) => c.seat === seat && c.kind === "bridge",
+  );
+  const turnAction: GameAction | null = turnDraft
+    ? { kind: "turn", actions: submissionActions(turnDraft, seat) }
+    : null;
+  const turnReady =
+    !!turnAction && !!liveState && applyAction(liveState, seat, turnAction).ok;
+  const canConvert = (
+    [
+      { kind: "burn", count: 1 },
+      { kind: "convert", from: "power", to: "coin", count: 1 },
+      { kind: "convert", from: "tool", to: "coin", count: 1 },
+      { kind: "convert", from: "scholar", to: "tool", count: 1 },
+      ...[0, 1, 2, 3].map((color) => ({
+        kind: "convert",
+        from: "book",
+        to: "coin",
+        count: 1,
+        color,
+      })),
+    ] as GameAction[]
+  ).some((a) => applyAction(state, seat, a).ok);
+  const publishTurn = () => {
+    if (!turnAction) return;
+    const powerGained = turnDraft?.actions.some((_, i) => {
+      const before = planTurn(liveState!, seat, turnDraft.actions.slice(0, i))
+        .state.players[seat].resources.power;
+      const after = planTurn(
+        liveState!,
+        seat,
+        turnDraft.actions.slice(0, i + 1),
+      ).state.players[seat].resources.power;
+      return after[1] + 2 * after[2] > before[1] + 2 * before[2];
+    });
+    if (
+      !endPrompt &&
+      canConvert &&
+      !state.pending.length &&
+      (conversionPrompt === "always" ||
+        (conversionPrompt === "power" && powerGained))
+    ) {
+      setEndPrompt(true);
+      return;
+    }
+    setEndPrompt(false);
+    previewAction(turnAction);
+  };
+  const previewPanel = preview && draft && (
+    <div className="preview-panel" id="table-preview" tabIndex={-1}>
+      <strong>{translate("ui.game.db51313720")}</strong>
+      {draft.action.kind === "respond" && draft.action.option === "discard" && (
+        <p className="action-warning">
+          {translate("ui.game.24487ff158")}
+          {state.pending
+            .filter(
+              (c) =>
+                draft.action.kind === "respond" &&
+                c.id === draft.action.choiceId,
+            )
+            .map(choiceTitle)
+            .join("、")}
+          {translate("ui.game.49801b4d1c")}
+        </p>
+      )}
+      {draft.action.kind === "pass" && (
+        <div className="pass-review">
+          <strong>
+            {state.round === 6
+              ? translate("ui.game.a60165e865")
+              : translate("ui.game.819b05a67d")}
+          </strong>
+          {unusedSpecials(player).length > 0 && (
+            <div className="action-warning">
+              {translate("ui.game.452ec2f811")}
+              <ul>
+                {unusedSpecials(player).map((s) => (
+                  <li key={s.id}>{s.label}</li>
+                ))}
+              </ul>
+              {translate("ui.game.bf3c4cc0f4")}
+            </div>
+          )}
+          <p className="small">
+            {state.round < 6
+              ? translate("ui.game.c9b39e706b", {
+                  p0: state.passOrder.length + 1,
+                })
+              : translate("ui.game.d0c788951a")}
+          </p>
+        </div>
+      )}
+      <p>
+        {planningEnabled &&
+        draft.action.kind !== "turn" &&
+        liveState?.phase === "actions" &&
+        liveState.activeSeat === seat
+          ? translate("ui.game.be41b95875")
+          : translate("ui.game.0054637815")}
+      </p>
+      <PreviewChanges
+        before={draft.action.kind === "turn" ? liveState! : state}
+        after={preview.state}
+        seat={seat}
+        action={draft.action}
+      />
+      <p className="small">
+        {demo
+          ? translate("ui.game.4afdd6b75a")
+          : translate("ui.game.35af3ebaf3")}
+      </p>
+      {draft.expectedRevision !== state.revision && !uncertain && (
+        <p className="error">{translate("ui.game.f52322b95e")}</p>
+      )}
+      <button
+        className="primary full"
+        disabled={
+          busy || (!uncertain && draft.expectedRevision !== state.revision)
+        }
+        onClick={() => confirm()}
+      >
+        {uncertain
+          ? translate("ui.game.35814ebc91")
+          : planningEnabled &&
+              draft.action.kind !== "turn" &&
+              draft.action.kind !== "setLeech" &&
+              liveState?.phase === "actions" &&
+              liveState.activeSeat === seat &&
+              !liveState.players[seat].passed
+            ? translate("ui.game.23a7807b5e")
+            : translate("ui.game.9ebe36f8cf")}
+      </button>
+      {!uncertain && (
+        <button
+          className="text-button full"
+          onClick={() => {
+            setDraft(null);
+            setPreview(null);
+          }}
+        >
+          {translate("ui.game.3160fc9159")}
+        </button>
+      )}
+    </div>
+  );
   return (
-    <main className="game-page">
+    <main
+      className={`game-page ${state.phase === "draft" && state.setup.draft ? "snake-drafting" : ""}`}
+    >
+      <div
+        className="turn-bar"
+        role="region"
+        aria-label={translate("ui.game.ef26096871")}
+      >
+        <strong>
+          {viewed
+            ? translate("ui.game.d909d78ffc")
+            : turnDraft
+              ? translate("ui.game.b2c391591c", {
+                  p0: turnDraft.actions.length,
+                })
+              : state.status === "finished"
+                ? translate("ui.game.91456873df")
+                : myTurn
+                  ? task
+                  : task}
+        </strong>
+        <span className="small">
+          {turnDraft
+            ? translate("ui.game.a6c160d88d")
+            : state.phase === "draft"
+              ? translate("ui.game.3dab827ed0")
+              : selected
+                ? selectedDescription
+                : translate("ui.game.ed1a91890a", { p0: state.round })}
+        </span>
+        {turnDraft && (
+          <div className="turn-buttons">
+            <button
+              disabled={busy || uncertain || readOnly}
+              onClick={() => {
+                const actions = turnDraft.actions.slice(0, -1);
+                if (actions.length)
+                  saveTurn(planTurn(liveState!, seat, actions));
+                else clearTurn();
+                setDraft(null);
+                setPreview(null);
+              }}
+            >
+              {translate("ui.game.c1ddffa2e6")}
+            </button>
+            <button
+              disabled={busy || uncertain || readOnly}
+              onClick={clearTurn}
+            >
+              {translate("ui.game.668eb0ca1f")}
+            </button>
+            <button
+              className="primary"
+              disabled={!turnReady || busy || uncertain || readOnly}
+              onClick={publishTurn}
+            >
+              {state.pending.some((c) => c.seat !== seat)
+                ? translate("ui.game.c1a6e94ba1")
+                : translate("ui.game.4ee4fb9525")}
+            </button>
+          </div>
+        )}
+        {turnDraft && !turnReady && (
+          <span className="small">{translate("ui.game.c0d24bce23")}</span>
+        )}
+        {endPrompt && (
+          <div className="end-turn-prompt" role="status">
+            {translate("ui.game.f246e0be48")}
+            <button
+              onClick={() => {
+                setEndPrompt(false);
+                document
+                  .querySelector<HTMLDetailsElement>(".free-actions")
+                  ?.setAttribute("open", "");
+                jumpToTable("table-actions");
+              }}
+            >
+              {translate("ui.game.62ac572279")}
+            </button>
+            <button className="primary" onClick={publishTurn}>
+              {translate("ui.game.bac8a62c6c")}
+            </button>
+          </div>
+        )}
+      </div>
       <div className="table-heading">
         <div>
           <a href="#/" className="back-link">
-            ← 大厅
+            {translate("ui.game.124c5815d6")}
           </a>
           <h1>
-            大创造时代 <span>AGE OF INNOVATION</span>
+            {translate("ui.game.1518bcfff0")}
+            <span>AGE OF INNOVATION</span>
           </h1>
         </div>
         <div className="table-meta">
-          <span className="tag">{demo ? "本地演示" : "联机开发预览"}</span>
+          <span className="tag">
+            {demo
+              ? translate("ui.game.5f116605ca")
+              : translate("ui.game.cc182c3389")}
+          </span>
           <strong>
-            第 {state.round} <small>/ 6 轮</small>
+            {translate("ui.game.9552fe3bd3")}
+            {state.round} <small>{translate("ui.game.773e0dc408")}</small>
           </strong>
-          <span className="muted">局面版本 {state.revision}</span>
+          <span className="muted">
+            {translate("ui.game.f1ac9351c7")}
+            {state.revision}
+          </span>
         </div>
       </div>
+      {!demo && (
+        <div className="connection-status" role="status">
+          <span>
+            {!online
+              ? translate("ui.game.68b4fdcbf0")
+              : connection === "connected"
+                ? translate("ui.game.b08e587d5d")
+                : connection === "reconnecting"
+                  ? translate("ui.game.e959b869d2")
+                  : translate("ui.game.f34374f220")}
+          </span>
+          {online && connection !== "connected" && (
+            <button className="text-button" onClick={refresh}>
+              {translate("ui.game.d5a8d22971")}
+            </button>
+          )}
+        </div>
+      )}
+      <TableHelp state={state} />
+      {viewed && (
+        <section className="notice history-notice" role="status">
+          <strong>
+            {translate("ui.game.950a3ac361")}
+            {viewed.revision} {translate("ui.game.74139b0130")}
+          </strong>
+          <p>
+            {translate("ui.game.59b7f424e3")}
+            {liveState?.revision}
+            {translate("ui.game.76704a58b1")}
+          </p>
+          <button onClick={() => viewState(null)}>
+            {translate("ui.game.4a507105ed")}
+          </button>
+        </section>
+      )}
+      {liveState && !demo && (
+        <GameClockPanel
+          state={liveState}
+          settings={sessionSettings}
+          clock={clock}
+          seat={seat}
+          inactiveDeadline={inactiveDeadline}
+          disabled={busy || !!viewed || !online || uncertain}
+          onAdjudicate={adjudicate}
+        />
+      )}
+      {liveState && (
+        <UndoNotice
+          requests={requests}
+          state={liveState}
+          seat={seat}
+          busy={busy}
+          onVote={vote}
+        />
+      )}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {demo && (
         <div className="demo-strip">
-          <span>本地演示 · 提交后自动切换到待行动座位，不是联机对局</span>
+          <span>{translate("ui.game.f309a5a067")}</span>
           <select
-            aria-label="演示座位"
+            aria-label={translate("ui.game.a49049744f")}
+            value={localCount}
+            onChange={(e) => setLocalCount(Number(e.target.value))}
+          >
+            {[3, 4, 5].map((n) => (
+              <option key={n} value={n}>
+                {n} {translate("ui.game.d63842643d")}
+              </option>
+            ))}
+          </select>
+          <button
+            className="secondary"
+            onClick={() => {
+              const next = createGame(
+                standardSetup(
+                  crypto.randomUUID(),
+                  Array.from({ length: localCount }, (_, i) => ({
+                    id: String(i),
+                    name: translate("ui.game.56bf69b861", { p0: i + 1 }),
+                  })),
+                ),
+              );
+              setState(next);
+              clearTurn();
+              setViewed(null);
+              setSeat(next.activeSeat);
+              setDraft(null);
+              setPreview(null);
+              setHistory([]);
+              setError("");
+              localStorage.setItem("boardgame-demo-v1", JSON.stringify(next));
+              localStorage.removeItem("boardgame-demo-record");
+            }}
+          >
+            {translate("ui.game.4716d348fe")}
+          </button>
+          <select
+            aria-label={translate("ui.game.fd2cd0221d")}
             value={seat}
             onChange={(e) => {
               setSeat(e.target.value);
@@ -218,15 +989,18 @@ export function GamePage({
             className="text-button"
             onClick={() => {
               const next = freshDemo();
+              clearTurn();
               setState(next);
+              setViewed(null);
               setSeat("p1");
               setDraft(null);
               setPreview(null);
               setHistory([]);
               localStorage.setItem("boardgame-demo-v1", JSON.stringify(next));
+              localStorage.removeItem("boardgame-demo-record");
             }}
           >
-            重新开始
+            {translate("ui.game.cc92cb4b89")}
           </button>
         </div>
       )}
@@ -240,58 +1014,87 @@ export function GamePage({
           >
             <span
               className="player-dot"
-              style={{ background: seatColors[i] }}
+              style={{ background: factionColors[p.native] }}
             />
             <div>
               <strong>
                 {p.name}
-                {p.seat === seat ? "（你）" : ""}
+                {p.seat === seat ? translate("ui.game.4bb17ff691") : ""}
               </strong>
               <span>
-                {label(p.native)} · {label(p.faction)}
+                {state.phase === "draft" && state.setup.draft
+                  ? translate("ui.game.840c7c7418", {
+                      p0: Object.keys(state.draftPicks?.[p.seat] ?? {}).length,
+                    })
+                  : state.phase === "draft" &&
+                      state.turnOrder.indexOf(p.seat) <
+                        state.turnOrder.length - (state.draftIndex ?? 0)
+                    ? translate("ui.game.451a9ef2ac")
+                    : `${label(p.native)} · ${label(p.faction)}`}
               </span>
             </div>
             <strong className="score">
-              {p.vp}
-              <small> 分</small>
+              {state.status === "finished"
+                ? (state.scores.find((score) => score.seat === p.seat)?.total ??
+                  p.vp)
+                : p.vp}
+              <small> {translate("ui.game.b75a03ace7")}</small>
             </strong>
             <span className="turn-tag">
               {state.status === "finished"
-                ? "终局"
+                ? translate("ui.game.256404af25")
                 : waiting.includes(p.seat)
-                  ? "待行动"
+                  ? translate("ui.game.d03d3b10f9")
                   : p.passed
-                    ? "已结束本轮"
-                    : "等待"}
+                    ? translate("ui.game.b1ad507761")
+                    : translate("ui.game.251bc40e70")}
             </span>
+            {state.phase !== "draft" && <PlayerResources player={p} />}
+            {state.phase !== "draft" && (
+              <PlayerIncome state={state} player={p} />
+            )}
           </div>
         ))}
       </div>
       <details className="opponent-resources">
-        <summary>查看所有玩家资源</summary>
+        <summary>{translate("ui.game.c332015814")}</summary>
         <div className="resource-table">
           {Object.values(state.players).map((p) => (
             <div key={p.seat}>
               <strong>{p.name}</strong>
-              <span>金币 {p.resources.coins}</span>
-              <span>工具 {p.resources.tools}</span>
-              <span>学者 {p.resources.scholars}</span>
-              <span>书籍 {p.resources.books.join(" / ")}</span>
-              <span>魔力 {p.resources.power.join(" / ")}</span>
+              <span>
+                {translate("ui.game.f34e4daa0c")}
+                {p.resources.coins}
+              </span>
+              <span>
+                {translate("ui.game.0d474170c7")}
+                {p.resources.tools}
+              </span>
+              <span>
+                {translate("ui.game.394bba8648")}
+                {p.resources.scholars}
+              </span>
+              <span>
+                {translate("ui.game.c59cf7d31e")}
+                {p.resources.books.join(" / ")}
+              </span>
+              <span>
+                {translate("ui.game.c9c1abba38")}
+                {p.resources.power.join(" / ")}
+              </span>
             </div>
           ))}
         </div>
       </details>
-      <div className="table-grid">
+      <ChoiceQueue state={state} seat={seat} />
+      <div
+        className={`table-grid ${state.phase === "draft" ? "draft-layout" : ""}`}
+      >
         <section className="board-column">
           <div className="board-toolbar">
             <span>
               <i className={"status-dot " + (myTurn ? "on" : "")} />
-              {state.status === "finished"
-                ? "对局结束"
-                : myTurn
-                  ? "轮到你行动"
-                  : `等待 ${waiting.map((s) => state.players[s].name).join("、")}`}
+              {task}
             </span>
             <span className="muted">
               {selected
@@ -301,18 +1104,129 @@ export function GamePage({
                     state.board.terrain[selected] ??
                       officialLarge.hexes[selected]?.terrain,
                   )
-                : "点击地图选择地块"}
+                : state.phase === "draft"
+                  ? translate("ui.game.9450e5a313")
+                  : translate("ui.game.f3d3462f8d")}
             </span>
           </div>
-          <div className="round-ribbon">
-            {state.setup.roundTiles.map((id, i) => (
-              <div key={i} className={state.round === i + 1 ? "current" : ""}>
-                <small>第 {i + 1} 轮</small>
-                <strong>{roundNames[id] ?? id}</strong>
-              </div>
-            ))}
-          </div>
-          <MapBoard state={state} selected={selected} onSelect={setSelected} />
+          <nav
+            hidden={state.phase === "draft"}
+            className="market-shortcuts"
+            aria-label={translate("market.navigation")}
+          >
+            <button
+              className="secondary"
+              onClick={() => jumpToTable("table-public-actions")}
+            >
+              {translate("market.publicActions")}
+            </button>
+            <button
+              className="secondary"
+              onClick={() => jumpToTable("table-innovations")}
+            >
+              {translate("market.innovations")}
+            </button>
+            <button
+              className="secondary"
+              onClick={() => jumpToTable("table-competencies")}
+            >
+              {translate("competency.market")}
+            </button>
+          </nav>
+          <RoundRibbon state={state} />
+          {pickingTableTarget && (tableIntent || tableSpadesChoice) && (
+            <div
+              id="table-map-target"
+              tabIndex={-1}
+              className="table-map-prompt"
+              role="status"
+            >
+              <span>{translate("tableAction.mapPrompt")}</span>
+              <button
+                className="secondary"
+                onClick={() => {
+                  setPickingTableTarget(false);
+                  jumpToTable("table-action-editor");
+                }}
+              >
+                {translate("tableAction.return")}
+              </button>
+              {tableIntent && (
+                <button className="text-button" onClick={closeTableEditor}>
+                  {translate("tableAction.cancel")}
+                </button>
+              )}
+            </div>
+          )}
+          <MapBoard
+            state={state}
+            selected={selected}
+            onSelect={(hex, anchor) => {
+              if (mapMenu && (busy || uncertain)) return;
+              if ((tableIntent || tableSpadesChoice) && (busy || uncertain))
+                return;
+              setSelected(hex);
+              if (
+                tableSpadesChoice ||
+                (tableIntent?.kind === "book" &&
+                  tableIntent.id === "upgrade") ||
+                (tableIntent?.kind === "power" &&
+                  ["spade", "spades"].includes(tableIntent.id!))
+              ) {
+                setPickingTableTarget(false);
+                jumpToTable("table-action-editor");
+                return;
+              }
+              if (tableIntent) closeTableEditor();
+              if (
+                state.phase === "actions" &&
+                !state.pending.length &&
+                state.activeSeat === seat &&
+                !player.primaryDone
+              )
+                setIntent({ kind: "build", nonce: Date.now() });
+              if (
+                state.status === "active" &&
+                state.phase === "actions" &&
+                !state.pending.length &&
+                state.activeSeat === seat &&
+                !player.primaryDone &&
+                !readOnly &&
+                !busy &&
+                !uncertain &&
+                (state.board.terrain[hex] ??
+                  officialLarge.hexes[hex]?.terrain) !== "river"
+              ) {
+                setMapMenu(anchor ?? { x: 20, y: 100 });
+                setMapPreview(false);
+                setDraft(null);
+                setPreview(null);
+              } else if (mapMenu) closeMapMenu();
+            }}
+            allowRiver={player.palace === "river-city"}
+            highlighted={highlighted}
+            bridgeOptions={pendingBridge?.options.filter(
+              (pair) =>
+                pair !== "discard" &&
+                applyAction(state, seat, {
+                  kind: "respond",
+                  choiceId: pendingBridge.id,
+                  option: pair,
+                }).ok,
+            )}
+            onBridgeSelect={(pair) =>
+              pendingBridge &&
+              !readOnly &&
+              myTurn &&
+              !busy &&
+              !uncertain &&
+              previewAction({
+                kind: "respond",
+                choiceId: pendingBridge.id,
+                option: pair,
+              })
+            }
+          />
           <div className="terrain-legend">
             {terrainCycle.map((t) => (
               <span key={t}>
@@ -321,160 +1235,330 @@ export function GamePage({
               </span>
             ))}
           </div>
-          <section className="science-panel">
-            <div className="section-heading">
-              <h3>学科进展</h3>
-              <span className="muted">
-                城市钥匙 {player.keysUsed} / {player.keys}
-              </span>
-            </div>
-            {["银行学", "法学", "工程学", "医学"].map((name, t) => (
-              <div className="science-row" key={name}>
-                <strong>{name}</strong>
-                <div className="track">
-                  {Array.from({ length: 13 }, (_, n) => (
-                    <span className={n === 8 ? "key-step" : ""} key={n}>
-                      {n}
-                      <div>
-                        {Object.values(state.players)
-                          .filter((p) => p.science[t] === n)
-                          .map((p) => (
-                            <i
-                              title={p.name}
-                              key={p.seat}
-                              style={{
-                                background:
-                                  seatColors[
-                                    Object.keys(state.players).indexOf(p.seat)
-                                  ],
-                              }}
-                            />
-                          ))}
-                      </div>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </section>
-          <details className="history-panel">
-            <summary>行动记录 · {history.length} 条</summary>
-            {history
-              .slice(-30)
-              .reverse()
-              .map((h) => (
-                <div className="history-row" key={h.revision}>
-                  <span>#{h.revision}</span>
-                  {h.events.map((e: any, i: number) => (
-                    <p key={i}>{e.text}</p>
-                  ))}
-                </div>
-              ))}
-          </details>
-        </section>
-        <aside className="control-column">
-          <section className="resource-panel">
-            <div className="section-heading">
-              <h3>你的个人板</h3>
-              <span>{label(player.native)}</span>
-            </div>
-            <p className="personal-bonus">本轮奖励：{label(player.bonus)}</p>
-            <div className="resource-grid">
-              <Resource icon="◉" name="金币" value={r.coins} />
-              <Resource icon="⚒" name="工具" value={r.tools} />
-              <Resource icon="♟" name="学者" value={r.scholars} />
-            </div>
-            <div className="books">
-              <span>书籍</span>
-              {r.books.map((n, i) => (
-                <span
-                  key={i}
-                  className={"book book" + i}
-                  title={["黄色书籍", "蓝色书籍", "棕色书籍", "白色书籍"][i]}
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-            <div className="power-bowls">
-              {r.power.map((n, i) => (
-                <div key={i}>
-                  <span>{["Ⅰ", "Ⅱ", "Ⅲ"][i]}</span>
-                  <strong>{n}</strong>
-                  <small>{["待充能", "待激活", "可使用"][i]}</small>
-                </div>
-              ))}
-            </div>
-            <div className="mini-stats">
-              <span>
-                航行 <b>{player.sailing}</b>
-              </span>
-              <span>
-                改造 <b>{3 - player.terraformLevel} 工具 / 铲</b>
-              </span>
-            </div>
-          </section>
-          {state.status === "finished" ? (
-            <section className="action-panel">
-              <h2>终局成绩</h2>
-              {[...state.scores]
-                .sort((a, b) => b.total - a.total)
-                .map((score) => (
-                  <details key={score.seat}>
-                    <summary>
-                      {state.players[score.seat].name} · {score.total} 分
-                    </summary>
-                    {score.items.map((item) => (
-                      <p key={item.reason}>
-                        {item.reason}
-                        <b className="float-right">{item.points}</b>
+          <BuildingLegend />
+          <ScienceBoard state={state} seat={seat} />
+          {state.phase !== "draft" && (
+            <BoardActions
+              state={state}
+              seat={seat}
+              disabled={
+                state.phase !== "actions" ||
+                !myTurn ||
+                busy ||
+                uncertain ||
+                readOnly ||
+                !!state.pending.length
+              }
+              choiceDisabled={busy || uncertain || readOnly}
+              activeIntent={tableIntent}
+              renderEditor={(kind) =>
+                tableIntent?.kind === kind ? (
+                  <TableActionEditor
+                    key={seat + ":" + tableIntent.nonce}
+                    state={state}
+                    seat={seat}
+                    intent={tableIntent}
+                    selected={selected}
+                    stepwise={planningEnabled}
+                    disabled={
+                      !myTurn ||
+                      busy ||
+                      uncertain ||
+                      readOnly ||
+                      !!state.pending.length ||
+                      player.primaryDone
+                    }
+                    error={error}
+                    preview={previewPanel}
+                    onAction={previewAction}
+                    onCancel={closeTableEditor}
+                    onPickMap={() => {
+                      setPickingTableTarget(true);
+                    }}
+                  />
+                ) : kind === "book" && tableSpadesChoice ? (
+                  <section
+                    id="table-action-editor"
+                    className="table-action-editor"
+                    tabIndex={-1}
+                    aria-label={choiceTitle(tableSpadesChoice)}
+                  >
+                    <h4>{choiceTitle(tableSpadesChoice)}</h4>
+                    {error && (
+                      <p className="unavailable" role="alert">
+                        {error}
                       </p>
-                    ))}
-                  </details>
+                    )}
+                    {previewPanel || (
+                      <>
+                        <div className="table-target-picker">
+                          <p role="status">
+                            {selected
+                              ? translate("tableAction.selected", {
+                                  hex: selected,
+                                })
+                              : translate("tableAction.noTarget")}
+                          </p>
+                          <button
+                            className="secondary"
+                            disabled={busy || uncertain || readOnly}
+                            onClick={() => {
+                              setPickingTableTarget(true);
+                            }}
+                          >
+                            {translate(
+                              selected
+                                ? "tableAction.changeTarget"
+                                : "tableAction.pickTarget",
+                            )}
+                          </button>
+                        </div>
+                        <SpadesForm
+                          key={tableSpadesChoice.id}
+                          stepwise={planningEnabled}
+                          state={state}
+                          seat={seat}
+                          selected={selected}
+                          native={player.native}
+                          amount={tableSpadesChoice.amount}
+                          canBuild={tableSpadesChoice.canBuild !== false}
+                          travelOptions={[
+                            ...(player.faction === "moles"
+                              ? ["tunnel" as const]
+                              : []),
+                            ...(player.palace === "flight"
+                              ? ["flight" as const]
+                              : []),
+                          ]}
+                          disabled={busy || uncertain || readOnly}
+                          onPreview={previewAction}
+                          toAction={(terraform) => ({
+                            kind: "respond",
+                            choiceId: tableSpadesChoice.id,
+                            option: "terraform",
+                            terraform,
+                          })}
+                        />
+                        {tableSpadesChoice.options.includes("discard") && (
+                          <button
+                            className="text-button"
+                            disabled={busy || uncertain || readOnly}
+                            onClick={() =>
+                              previewAction({
+                                kind: "respond",
+                                choiceId: tableSpadesChoice.id,
+                                option: "discard",
+                              })
+                            }
+                          >
+                            {translate("tableAction.discardSpades")}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </section>
+                ) : null
+              }
+              onPreview={(action) => {
+                if (tableIntent) closeTableEditor();
+                previewAction(action);
+              }}
+              onIntent={(next) => {
+                closeMapMenu();
+                tableTrigger.current = document.activeElement as HTMLElement;
+                setDraft(null);
+                setPreview(null);
+                setError("");
+                setPickingTableTarget(false);
+                setTableIntent({ ...next, nonce: Date.now() });
+              }}
+            />
+          )}
+          <ReviewPanel
+            history={history}
+            state={liveState!}
+            seat={seat}
+            requests={requests}
+            viewedRevision={viewed?.revision}
+            demo={demo}
+            id={id}
+            onView={viewState}
+            onRefresh={refresh}
+            onLocalRestore={localRestore}
+            disabled={busy || uncertain || frozen}
+            allowUndo={
+              !liveState?.matchResult &&
+              (demo || sessionSettings.undo !== "disabled")
+            }
+            onExport={exportRecord}
+            onOlder={demo ? undefined : olderHistory}
+          />
+        </section>
+        <fieldset
+          className="control-column"
+          id="table-actions"
+          tabIndex={-1}
+          disabled={readOnly}
+        >
+          {state.phase !== "draft" && state.status !== "finished" && (
+            <div className="selected-target" role="status">
+              <strong>{selectedDescription}</strong>
+              <button
+                className="text-button"
+                onClick={() => jumpToTable("table-map")}
+              >
+                {translate("ui.game.52270c6fb7")}
+              </button>
+            </div>
+          )}
+          <AbilityReference state={state} seat={seat} />
+          <PersonalBoard state={state} player={player} />
+          <details className="personal-board">
+            <summary>
+              {translate("ui.game.89236446d4")}
+              {r.coins} {translate("ui.game.2be28b9ae0")}
+              {r.tools} {translate("ui.game.43a3d4600c")}
+              {r.scholars} {translate("ui.game.430c08d298")}
+              <br />
+              <span className="small">
+                {translate("ui.game.c9c1abba38")}
+                {r.power.join(" / ")} {translate("ui.game.4a2f6437ee")}
+                {r.books.join(" / ")} {translate("ui.game.c199965e92")}
+              </span>
+            </summary>
+            <section className="resource-panel">
+              <div className="section-heading">
+                <h3>{translate("ui.game.1721209593")}</h3>
+                <span>{label(player.native)}</span>
+              </div>
+              <p className="personal-bonus">
+                {translate("ui.game.b9e0e5b01a")}
+                {label("bonus:" + player.bonus)}
+              </p>
+              <div className="resource-grid">
+                <Resource
+                  icon="◉"
+                  name={translate("ui.game.bbece6f829")}
+                  value={r.coins}
+                />
+                <Resource
+                  icon="⚒"
+                  name={translate("ui.game.5ca6730d44")}
+                  value={r.tools}
+                />
+                <Resource
+                  icon="♟"
+                  name={translate("ui.game.230cc1d6c8")}
+                  value={r.scholars}
+                />
+              </div>
+              <div className="books">
+                <span>{translate("ui.game.1ee4e22b2e")}</span>
+                {r.books.map((n, i) => (
+                  <span
+                    key={i}
+                    className={"book book" + i}
+                    title={
+                      [
+                        translate("ui.game.6c06e6a581"),
+                        translate("ui.game.ed189de955"),
+                        translate("ui.game.15d671e649"),
+                        translate("ui.game.63f2313788"),
+                      ][i]
+                    }
+                  >
+                    {n}
+                  </span>
                 ))}
+              </div>
+              <div className="power-bowls">
+                {r.power.map((n, i) => (
+                  <div key={i}>
+                    <span>{["Ⅰ", "Ⅱ", "Ⅲ"][i]}</span>
+                    <strong>{n}</strong>
+                    <small>
+                      {
+                        [
+                          translate("ui.game.45f945b8ba"),
+                          translate("ui.game.c263dac326"),
+                          translate("ui.game.1f7ebcd3a8"),
+                        ][i]
+                      }
+                    </small>
+                  </div>
+                ))}
+              </div>
+              <div className="mini-stats">
+                <span>
+                  {translate("ui.game.456ffcb111")}
+                  <b>{player.sailing}</b>
+                </span>
+                <span>
+                  {translate("ui.game.c0bb4ba199")}
+                  <b>
+                    {3 - player.terraformLevel}{" "}
+                    {translate("ui.game.1f2307bd52")}
+                  </b>
+                </span>
+              </div>
             </section>
+          </details>
+          {state.status === "finished" ? (
+            <FinalScores state={state} />
           ) : (
             <section className="action-panel">
-              {state.pending.some((c) => c.seat === seat) ? (
+              {state.phase === "draft" ? (
+                <SetupPanel
+                  state={state}
+                  disabled={!myTurn || busy || uncertain}
+                  onPreview={previewAction}
+                  selectedPick={
+                    draft?.action.kind === "draftPick"
+                      ? draft.action
+                      : undefined
+                  }
+                />
+              ) : state.pending.some((c) => c.seat === seat) ? (
                 <>
-                  <div className="eyebrow">需要你的选择</div>
-                  {state.pending
-                    .filter(
-                      (c) =>
-                        c.seat === seat &&
-                        (state.phase !== "science" ||
-                          c.kind !== "spades" ||
-                          state.pending.find((other) => other.kind === "spades")
-                            ?.id === c.id) &&
-                        (c.kind === "key" ||
-                          c.kind === "neutral" ||
-                          !state.pending.some(
-                            (other) =>
-                              other.seat === seat && other.kind === "neutral",
-                          )) &&
-                        (c.kind === "key" ||
-                          !state.pending.some(
-                            (other) =>
-                              other.seat === seat && other.kind === "key",
-                          )),
-                    )
+                  <div className="eyebrow">
+                    {translate("ui.game.34cffa29df")}
+                  </div>
+                  {getAvailableChoices(state)
+                    .filter((c) => c.seat === seat)
                     .map((c) => (
-                      <div key={c.id}>
-                        <h3>
-                          {c.kind === "key"
-                            ? `使用城市钥匙？${["银行学", "法学", "工程学", "医学"][c.scienceTrack!]}继续推进 ${c.amount} 格`
-                            : c.kind === "leech"
-                              ? `蹭魔：${c.amount} 魔力`
-                              : "请选择奖励"}
-                        </h3>
-                        {c.kind === "leech" && (
-                          <p>接受需要支付 {Math.max(0, c.amount - 1)} 分。</p>
+                      <div key={c.id} data-choice-id={c.id}>
+                        <h3>{choiceTitle(c)}</h3>
+                        <p className="small muted">{choiceSource(state, c)}</p>
+                        {c.kind === "competency" && (
+                          <button
+                            className="secondary full"
+                            onClick={() => jumpToTable("table-competencies")}
+                          >
+                            {translate("competency.chooseNow")}
+                          </button>
                         )}
-                        {c.kind === "neutral" && (
+                        {c.kind === "leech" && (
+                          <p>
+                            {translate("ui.game.c51b321967")}
+                            {c.amount} {translate("ui.game.72d4ebb69e")}{" "}
+                            {Math.max(0, c.amount - 1)}{" "}
+                            {translate("ui.game.c78ebb35e2")}
+                          </p>
+                        )}
+                        {["neutral", "freeGuild", "freeWorkshop"].includes(
+                          c.kind,
+                        ) && (
                           <>
                             <p className="small">
-                              在可达空地放置{label(c.buildingKind ?? "tower")}
-                              ，改造费用将自动计算。
+                              {translate("ui.game.901d1623fc")}
+                              {label(
+                                c.kind === "freeGuild"
+                                  ? "guild"
+                                  : c.kind === "freeWorkshop"
+                                    ? "workshop"
+                                    : (c.buildingKind ?? "tower"),
+                              )}
+                              {translate("ui.game.023d7eb45d")}
                             </p>
                             <button
                               className="secondary full"
@@ -491,38 +1575,92 @@ export function GamePage({
                                 })
                               }
                             >
-                              预览放置 {selected}
+                              {translate("ui.game.1afeee986c")}
+                              {selected}
                             </button>
                           </>
                         )}
-                        {c.kind === "spades" && (
-                          <SpadesForm
-                            selected={selected}
-                            native={player.native}
-                            amount={c.amount}
-                            canBuild={c.canBuild !== false}
+                        {c.kind === "bridge" && (
+                          <BridgeChoice
+                            choice={c}
                             disabled={busy || uncertain}
-                            onPreview={(terraform) =>
-                              previewAction({
+                            onPreview={previewAction}
+                          />
+                        )}
+                        {c.id === tableSpadesChoice?.id && (
+                          <button
+                            className="secondary full"
+                            onClick={() => jumpToTable("table-action-editor")}
+                          >
+                            {translate("tableAction.continueSpades")}
+                          </button>
+                        )}
+                        {c.kind === "spades" &&
+                          c.id !== tableSpadesChoice?.id && (
+                            <SpadesForm
+                              stepwise={planningEnabled}
+                              state={state}
+                              seat={seat}
+                              selected={selected}
+                              native={player.native}
+                              amount={c.amount}
+                              canBuild={c.canBuild !== false}
+                              sciencePhase={state.phase === "science"}
+                              travelOptions={
+                                state.phase === "actions"
+                                  ? [
+                                      ...(player.faction === "moles"
+                                        ? ["tunnel" as const]
+                                        : []),
+                                      ...(player.palace === "flight"
+                                        ? ["flight" as const]
+                                        : []),
+                                    ]
+                                  : []
+                              }
+                              disabled={busy || uncertain}
+                              onPreview={previewAction}
+                              toAction={(terraform) => ({
                                 kind: "respond",
                                 choiceId: c.id,
                                 option: "terraform",
                                 terraform,
-                              })
-                            }
-                          />
+                              })}
+                            />
+                          )}
+                        {c.kind === "buildWorkshop" && (
+                          <p className="small">
+                            {c.source} {translate("ui.game.9c90061b92")}
+                          </p>
                         )}
                         <div className="choice-buttons">
                           {c.options
                             .filter(
                               (option) =>
-                                option !== "terraform" && c.kind !== "neutral",
+                                c.kind !== "competency" &&
+                                c.id !== tableSpadesChoice?.id &&
+                                option !== "terraform" &&
+                                (![
+                                  "neutral",
+                                  "freeGuild",
+                                  "freeWorkshop",
+                                  "bridge",
+                                ].includes(c.kind) ||
+                                  option === "discard"),
                             )
                             .map((option) => (
                               <button
                                 className="secondary"
                                 key={option}
-                                disabled={busy || uncertain}
+                                disabled={
+                                  busy ||
+                                  uncertain ||
+                                  !applyAction(state, seat, {
+                                    kind: "respond",
+                                    choiceId: c.id,
+                                    option,
+                                  }).ok
+                                }
                                 onClick={() =>
                                   previewAction({
                                     kind: "respond",
@@ -531,22 +1669,58 @@ export function GamePage({
                                   })
                                 }
                               >
-                                {c.kind === "key"
-                                  ? option === "use"
-                                    ? "使用钥匙并继续"
-                                    : "保留钥匙，停在 7 级"
-                                  : option === "accept"
-                                    ? "接受"
-                                    : option === "decline"
-                                      ? "放弃"
-                                      : ["0", "1", "2", "3"].includes(option)
-                                        ? [
-                                            "银行 / 黄",
-                                            "法学 / 蓝",
-                                            "工程 / 棕",
-                                            "医学 / 白",
-                                          ][Number(option)]
-                                        : label(option)}
+                                {c.kind === "buildWorkshop"
+                                  ? option === "build"
+                                    ? translate("ui.game.4c0b82be57")
+                                    : translate("ui.game.53994c91f5")
+                                  : c.kind === "key"
+                                    ? option === "use"
+                                      ? translate("ui.game.15cbeeb744")
+                                      : translate("ui.game.546faf8110")
+                                    : option === "accept"
+                                      ? translate("ui.game.329fcec618")
+                                      : option === "decline"
+                                        ? translate("ui.game.e7f51b070e")
+                                        : option === "discard"
+                                          ? translate("ui.game.c8279b05e5", {
+                                              p0:
+                                                c.kind === "bridge"
+                                                  ? translate(
+                                                      "ui.game.8da7ebed00",
+                                                    )
+                                                  : c.kind === "spades"
+                                                    ? translate(
+                                                        "ui.game.07abcabde1",
+                                                      )
+                                                    : translate(
+                                                        "ui.game.2c79f93423",
+                                                      ),
+                                            })
+                                          : ["0", "1", "2", "3"].includes(
+                                                option,
+                                              )
+                                            ? [
+                                                translate("ui.game.61e85f6baf"),
+                                                translate("ui.game.56541f587b"),
+                                                translate("ui.game.9fb0d52f93"),
+                                                translate("ui.game.6575322492"),
+                                              ][Number(option)]
+                                            : label(
+                                                (c.kind === "competency" ||
+                                                c.kind === "city"
+                                                  ? c.kind + ":"
+                                                  : "") + option,
+                                              )}
+                                {c.kind === "city" && (
+                                  <small className="choice-detail">
+                                    {cityDetails[option]}
+                                  </small>
+                                )}
+                                {c.kind === "competency" && (
+                                  <small className="choice-detail">
+                                    {competencyDescriptions[option]}
+                                  </small>
+                                )}
                                 {c.kind === "competency" &&
                                   state.shared.competencies?.find(
                                     (cell) => cell.id === option,
@@ -557,7 +1731,23 @@ export function GamePage({
                                           state.shared.competencies.find(
                                             (cell) => cell.id === option,
                                           )!;
-                                        return `${["银行", "法学", "工程", "医学"][cell.color]} +${3 - cell.row} · ${["黄", "蓝", "棕", "白"][cell.color]}书 +${cell.row} · 剩余 ${cell.remaining}`;
+                                        return translate("ui.game.4f64cf3802", {
+                                          p0: [
+                                            translate("ui.game.920e88c5a6"),
+                                            translate("ui.game.b237c80398"),
+                                            translate("ui.game.85d56bf4d4"),
+                                            translate("ui.game.8cff79bb4f"),
+                                          ][cell.color],
+                                          p1: 3 - cell.row,
+                                          p2: [
+                                            translate("ui.game.c732e4d7e3"),
+                                            translate("ui.game.52f354ecfc"),
+                                            translate("ui.game.3eb2456f3b"),
+                                            translate("ui.game.3366645622"),
+                                          ][cell.color],
+                                          p3: cell.row,
+                                          p4: cell.remaining,
+                                        });
                                       })()}
                                     </small>
                                   )}
@@ -566,104 +1756,78 @@ export function GamePage({
                         </div>
                       </div>
                     ))}
+                  {canConvertDuringChoice(state, seat) && (
+                    <FreeActions
+                      key={seat}
+                      state={state}
+                      seat={seat}
+                      disabled={busy || uncertain}
+                      onPreview={previewAction}
+                    />
+                  )}
                 </>
               ) : state.phase === "placement" ? (
-                <>
-                  <div className="eyebrow">开局准备</div>
-                  <h2>放置起始工坊</h2>
-                  <p className="muted">
-                    选择一个空置的{label(player.native)}
-                    地块。每人先后放置两座工坊，第二轮按反向顺序。
-                  </p>
-                  <button
-                    className="primary full"
-                    disabled={!myTurn || !selected || busy || uncertain}
-                    onClick={() =>
-                      previewAction({ kind: "place", hex: selected })
-                    }
-                  >
-                    预览行动
-                  </button>
-                </>
+                <PlacementPanel
+                  state={state}
+                  seat={seat}
+                  selected={selected}
+                  disabled={!myTurn || busy || uncertain}
+                  onPreview={previewAction}
+                />
               ) : (
                 <>
                   <div className="section-heading">
                     <h3>
-                      {player.primaryDone ? "主要行动已完成" : "选择你的行动"}
+                      {player.primaryDone
+                        ? translate("ui.game.99797e1140")
+                        : translate("ui.game.722f3315a9")}
                     </h3>
                   </div>
-                  <div className="action-tabs">
-                    {[
-                      ["build", "建设"],
-                      ["research", "研究"],
-                      ["power", "魔力"],
-                      ["pass", "轮次"],
-                    ].map(([id, name]) => (
-                      <button
-                        className={tab === id ? "selected" : ""}
-                        key={id}
-                        onClick={() => setTab(id)}
-                      >
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                  <ActionForm
-                    tab={tab}
-                    state={state}
-                    seat={seat}
-                    selected={selected}
-                    disabled={!myTurn || busy || uncertain}
-                    onPreview={previewAction}
-                  />
-                  {(player.annexes > 0 ||
-                    player.competencies.includes("power-special")) && (
-                    <div className="form-stack">
-                      <h4>能力行动</h4>
-                      {player.annexes > 0 && (
-                        <button
-                          className="secondary"
-                          disabled={
-                            !myTurn ||
-                            player.primaryDone ||
-                            !selected ||
-                            busy ||
-                            uncertain
-                          }
-                          onClick={() =>
-                            previewAction({
-                              kind: "special",
-                              source: "annex",
-                              hex: selected,
-                            })
-                          }
-                        >
-                          放置附属建筑（余 {player.annexes}）
-                        </button>
-                      )}
-                      {player.competencies.includes("power-special") && (
-                        <button
-                          className="secondary"
-                          disabled={
-                            !myTurn ||
-                            player.primaryDone ||
-                            player.usedSpecials.includes(
-                              "competency:power-special",
-                            ) ||
-                            busy ||
-                            uncertain
-                          }
-                          onClick={() =>
-                            previewAction({
-                              kind: "special",
-                              source: "competency:power-special",
-                            })
-                          }
-                        >
-                          能力：获得 4 魔力
-                        </button>
-                      )}
-                    </div>
+                  {player.primaryDone && (
+                    <p className="action-hint">
+                      {translate("ui.game.1924ed917f")}
+                    </p>
+                  )}
+                  {!player.primaryDone && (
+                    <>
+                      <div className="action-tabs">
+                        {[
+                          ["build", translate("ui.game.1a58afef9f")],
+                          ["research", translate("ui.game.4ff0f1dda8")],
+                          ["power", translate("ui.game.41a9919720")],
+                          ["pass", translate("ui.game.4890584bb5")],
+                        ].map(([id, name]) => (
+                          <button
+                            className={tab === id ? "selected" : ""}
+                            key={id}
+                            onClick={() => {
+                              closeTableEditor();
+                              setTab(id);
+                            }}
+                          >
+                            {name}
+                          </button>
+                        ))}
+                      </div>
+                      <ActionForm
+                        stepwise={planningEnabled}
+                        intent={intent}
+                        key={seat + ":" + state.round}
+                        tab={tab}
+                        state={state}
+                        seat={seat}
+                        selected={selected}
+                        disabled={!myTurn || busy || uncertain}
+                        onPreview={previewAction}
+                      />
+                      <SpecialPanel
+                        state={state}
+                        seat={seat}
+                        selected={selected}
+                        disabled={!myTurn || busy || uncertain}
+                        onPreview={previewAction}
+                      />
+                    </>
                   )}
                   {player.primaryDone && (
                     <button
@@ -671,61 +1835,91 @@ export function GamePage({
                       disabled={!myTurn || busy || uncertain}
                       onClick={() => previewAction({ kind: "endTurn" })}
                     >
-                      结束回合
+                      {translate("ui.game.975778d990")}
                     </button>
                   )}
+                  <FreeActions
+                    key={seat}
+                    state={state}
+                    seat={seat}
+                    disabled={!myTurn || busy || uncertain}
+                    onPreview={previewAction}
+                  />
                 </>
               )}
-              {error && (
-                <p className="error" role="alert">
-                  {error}
-                </p>
-              )}
-              {preview && draft && (
-                <div className="preview-panel">
-                  <strong>行动预览</strong>
-                  <p>确认提交后生效</p>
-                  <PreviewChanges
-                    before={state}
-                    after={preview.state}
-                    seat={seat}
-                  />
-                  <p className="small">提交后不能撤回。</p>
-                  {draft.expectedRevision !== state.revision && !uncertain && (
-                    <p className="error">局面已更新，请保留选择并重新预览。</p>
-                  )}
-                  <button
-                    className="primary full"
-                    disabled={
-                      busy ||
-                      (!uncertain && draft.expectedRevision !== state.revision)
-                    }
-                    onClick={confirm}
-                  >
-                    {uncertain ? "安全重试提交" : "确认提交"}
-                  </button>
-                  {!uncertain && (
-                    <button
-                      className="text-button full"
-                      onClick={() => {
-                        setDraft(null);
-                        setPreview(null);
-                      }}
-                    >
-                      返回修改
-                    </button>
-                  )}
-                </div>
-              )}
+              {!mapPreview &&
+                !tableIntent &&
+                !tableSpadesChoice &&
+                previewPanel}
             </section>
           )}
           <details className="settings-panel">
-            <summary>自动蹭魔设置</summary>
-            <p className="small muted">仅对这局生效。超过阈值仍然等你选择。</p>
+            <summary>{translate("ui.game.0feba9b41c")}</summary>
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={stepReview}
+                disabled={!!draft || !!turnDraft || busy || uncertain}
+                onChange={(e) => {
+                  setStepReview(e.target.checked);
+                  localStorage.setItem(
+                    "cellman-step-review",
+                    e.target.checked ? "on" : "off",
+                  );
+                }}
+              />
+              {translate("action.stepReview")}
+            </label>
+            {supportsTurnPlanning(state.rulesVersion) && (
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  checked={planning}
+                  disabled={!!turnDraft || busy || uncertain}
+                  onChange={(e) => {
+                    setPlanning(e.target.checked);
+                    localStorage.setItem(
+                      "cellman-turn-planning",
+                      e.target.checked ? "on" : "off",
+                    );
+                  }}
+                />
+                {translate("ui.game.44c50e9d8b")}
+              </label>
+            )}
+            <label>
+              {translate("ui.game.65ea0261cd")}
+              <select
+                value={conversionPrompt}
+                onChange={(e) => {
+                  setConversionPrompt(e.target.value);
+                  localStorage.setItem(
+                    "cellman-conversion-prompt",
+                    e.target.value,
+                  );
+                }}
+              >
+                <option value="always">
+                  {translate("ui.game.d568447147")}
+                </option>
+                <option value="power">{translate("ui.game.64133ba30f")}</option>
+                <option value="never">{translate("ui.game.d1ca89547f")}</option>
+              </select>
+            </label>
+          </details>
+          <details className="settings-panel">
+            <summary>{translate("ui.game.c98f62b9bc")}</summary>
+            <p className="small muted">{translate("ui.game.40f112cd63")}</p>
             <label className="checkbox">
               <input
                 type="checkbox"
                 checked={player.leechPolicy.enabled}
+                disabled={
+                  !!turnDraft ||
+                  state.status === "finished" ||
+                  busy ||
+                  uncertain
+                }
                 onChange={(e) =>
                   previewAction({
                     kind: "setLeech",
@@ -734,15 +1928,21 @@ export function GamePage({
                   })
                 }
               />
-              启用自动接受
+              {translate("ui.game.1347d09243")}
             </label>
             <label>
-              最多支付分数
+              {translate("ui.game.252b862352")}
               <input
                 type="number"
                 min="0"
                 max="999"
                 defaultValue={player.leechPolicy.maxVpCost}
+                disabled={
+                  !!turnDraft ||
+                  state.status === "finished" ||
+                  busy ||
+                  uncertain
+                }
                 onBlur={(e) => {
                   const n = Number(e.target.value);
                   if (n !== player.leechPolicy.maxVpCost)
@@ -755,8 +1955,79 @@ export function GamePage({
               />
             </label>
           </details>
-        </aside>
+        </fieldset>
       </div>
+      <nav
+        className="table-shortcuts"
+        aria-label={translate("ui.game.4e7f7acd3e")}
+      >
+        <span>
+          {viewed
+            ? translate("ui.game.7ada721791", { p0: viewed.revision })
+            : state.phase === "draft" || state.status === "finished"
+              ? currentTask(state, seat)
+              : selectedDescription}
+        </span>
+        <div>
+          <button onClick={() => jumpToTable("table-map")}>
+            {translate("ui.game.41ab2e0ecb")}
+          </button>
+          <button
+            data-map-preview={mapPreview || undefined}
+            onClick={() =>
+              jumpToTable(
+                tableIntent || tableSpadesChoice
+                  ? "table-action-editor"
+                  : preview
+                    ? "table-preview"
+                    : "table-actions",
+              )
+            }
+          >
+            {preview
+              ? translate("ui.game.13495f8f19")
+              : translate("ui.game.ed31fbb483")}
+          </button>
+          <button
+            onClick={() => {
+              const target =
+                document.querySelector<HTMLDetailsElement>(".history-panel");
+              if (target) target.open = true;
+              jumpToTable("table-records");
+            }}
+          >
+            {translate("ui.game.9fad24e2c3")}
+          </button>
+        </div>
+      </nav>
+      {mapMenu &&
+        !readOnly &&
+        myTurn &&
+        state.status === "active" &&
+        state.phase === "actions" &&
+        !state.pending.length &&
+        !player.primaryDone && (
+          <MapActionPanel
+            state={state}
+            seat={seat}
+            hex={selected}
+            anchor={mapMenu}
+            busy={busy}
+            locked={uncertain}
+            error={error}
+            preview={mapPreview ? previewPanel : null}
+            onPreview={(action) => {
+              setMapPreview(true);
+              previewAction(action);
+            }}
+            onClose={closeMapMenu}
+            onDetails={() => {
+              closeMapMenu();
+              setTab("build");
+              jumpToTable("table-actions");
+            }}
+          />
+        )}
     </main>
   );
 }
@@ -781,22 +2052,54 @@ export function MapBoard({
   state,
   selected,
   onSelect,
+  allowRiver = false,
+  highlighted,
+  bridgeOptions,
+  onBridgeSelect,
 }: {
   state: GameState;
   selected: string;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, anchor?: MapAnchor) => void;
+  allowRiver?: boolean;
+  highlighted?: Set<string>;
+  bridgeOptions?: string[];
+  onBridgeSelect?: (pair: string) => void;
 }) {
   const [overview, setOverview] = useState(false);
   return (
-    <div className="map-frame" data-overview={overview}>
+    <div
+      className="map-frame"
+      id="table-map"
+      tabIndex={-1}
+      data-overview={overview}
+    >
+      {!!highlighted?.size && (
+        <p className="map-availability small">
+          {state.phase === "placement"
+            ? translate("ui.game.29c1ce7270")
+            : state.pending.length
+              ? translate("ui.game.97175b020b")
+              : translate("ui.game.d688b49ba6")}
+        </p>
+      )}
       <div className="map-mobile-tools">
-        <span>{overview ? "全图总览" : "左右滑动地图选择地块"}</span>
+        <span>
+          {overview
+            ? translate("ui.game.ff2bbc3662")
+            : translate("ui.game.f047e07042")}
+        </span>
         <button className="text-button" onClick={() => setOverview(!overview)}>
-          {overview ? "放大选格" : "缩小总览"}
+          {overview
+            ? translate("ui.game.74e5876c96")
+            : translate("ui.game.ecb1a2e4ba")}
         </button>
       </div>
       <div className="map-scroll">
-        <svg viewBox="0 0 850 535" role="group" aria-label="大创造时代地图">
+        <svg
+          viewBox="0 0 850 535"
+          role="group"
+          aria-label={translate("ui.game.b9fb040247")}
+        >
           <defs>
             <pattern
               id="water"
@@ -816,7 +2119,8 @@ export function MapBoard({
           {Object.values(officialLarge.hexes).map((h) => {
             const terrain = state.board.terrain[h.id] ?? h.terrain,
               b = state.board.buildings[h.id],
-              isRiver = terrain === "river";
+              isRiver = terrain === "river",
+              selectable = !isRiver || allowRiver;
             const pts = Array.from({ length: 6 }, (_, i) => {
               const a = ((i * 60 + 30) * Math.PI) / 180;
               return `${h.x + 34 * Math.cos(a)},${h.y + 34 * Math.sin(a)}`;
@@ -824,23 +2128,64 @@ export function MapBoard({
             return (
               <g
                 key={h.id}
-                role={isRiver ? undefined : "button"}
-                tabIndex={isRiver ? -1 : 0}
-                aria-label={h.id + " " + label(terrain)}
-                onClick={() => !isRiver && onSelect(h.id)}
+                role={selectable ? "button" : undefined}
+                tabIndex={selectable ? 0 : -1}
+                aria-label={
+                  h.id +
+                  " " +
+                  label(terrain) +
+                  (b
+                    ? translate("ui.game.9983fa8700", {
+                        p0: state.players[b.seat]?.name,
+                        p1: label(b.kind),
+                        p2: b.neutral ? translate("ui.game.4e3c82b301") : "",
+                        p3: b.cityId ? translate("ui.game.cf63dbc24d") : "",
+                      })
+                    : translate("ui.game.8cf2791007"))
+                }
+                aria-pressed={selectable ? selected === h.id : undefined}
+                data-available={highlighted?.has(h.id) || undefined}
+                onClick={(e) => {
+                  if (!selectable) return;
+                  const box = e.currentTarget.getBoundingClientRect();
+                  onSelect(h.id, { x: box.right, y: box.top });
+                }}
                 onKeyDown={(e) => {
-                  if (!isRiver && (e.key === "Enter" || e.key === " ")) {
+                  if (selectable && (e.key === "Enter" || e.key === " ")) {
                     e.preventDefault();
-                    onSelect(h.id);
+                    const box = e.currentTarget.getBoundingClientRect();
+                    onSelect(h.id, { x: box.right, y: box.top });
                   }
                 }}
-                className={!isRiver ? "hex" : ""}
+                className={selectable ? "hex" : ""}
               >
+                <title>
+                  {h.id} · {label(terrain)} ·{" "}
+                  {b
+                    ? translate("ui.game.73338fe506", {
+                        p0: state.players[b.seat]?.name,
+                        p1: label(b.kind),
+                      })
+                    : translate("ui.game.cb557c76d0")}
+                </title>
                 <polygon
                   points={pts}
                   fill={colors[terrain]}
-                  stroke={selected === h.id ? "#143f3d" : "#f2f2e8"}
-                  strokeWidth={selected === h.id ? 4 : 1.8}
+                  stroke={
+                    selected === h.id
+                      ? "#143f3d"
+                      : highlighted?.has(h.id)
+                        ? "#537d3f"
+                        : "#f2f2e8"
+                  }
+                  strokeWidth={
+                    selected === h.id ? 5 : highlighted?.has(h.id) ? 3 : 1.8
+                  }
+                  strokeDasharray={
+                    selected !== h.id && highlighted?.has(h.id)
+                      ? "5 2"
+                      : undefined
+                  }
                 />
                 {isRiver ? (
                   <polygon points={pts} fill="url(#water)" />
@@ -851,19 +2196,14 @@ export function MapBoard({
                     </text>
                     {b ? (
                       <>
-                        <path
-                          d={`M${h.x - 12} ${h.y + 7} v-15 l12 -10 l12 10 v15 z`}
-                          fill={
-                            seatColors[
-                              Object.keys(state.players).indexOf(b.seat)
-                            ]
-                          }
-                          stroke="#273c38"
-                          strokeWidth="1.5"
+                        <MapBuilding
+                          kind={b.kind}
+                          x={h.x}
+                          y={h.y}
+                          color={factionColors[state.players[b.seat].native]}
+                          neutral={b.neutral}
+                          annex={b.annex}
                         />
-                        <text x={h.x} y={h.y + 2} className="building-letter">
-                          {label(b.kind).slice(0, 1)}
-                        </text>
                         {b.cityId && (
                           <circle
                             cx={h.x + 18}
@@ -894,13 +2234,60 @@ export function MapBoard({
               </g>
             );
           })}
+          {bridgeOptions?.map((pair) => {
+            const [a, b] = pair.split(":").map((id) => officialLarge.hexes[id]);
+            if (!a || !b) return null;
+            return (
+              <g
+                key={pair}
+                className="bridge-target"
+                role="button"
+                tabIndex={0}
+                aria-label={translate("ui.game.105be2c648", {
+                  p0: pair.replace(":", translate("ui.game.d17154b026")),
+                })}
+                onClick={() => onBridgeSelect?.(pair)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onBridgeSelect?.(pair);
+                  }
+                }}
+              >
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke="transparent"
+                  strokeWidth="20"
+                />
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke="#196bb1"
+                  strokeWidth="5"
+                  strokeDasharray="7 4"
+                />
+                <title>
+                  {translate("ui.game.550378d18a")}
+                  {pair.replace(":", " ↔ ")}
+                </title>
+              </g>
+            );
+          })}
           {state.board.bridges.map((bridge, i) => {
             const a = officialLarge.hexes[bridge.a],
               b = officialLarge.hexes[bridge.b];
             return (
               <g
                 key={i}
-                aria-label={`桥梁 ${bridge.a} 到 ${bridge.b}`}
+                aria-label={translate("ui.game.121ee7034d", {
+                  p0: bridge.a,
+                  p1: bridge.b,
+                })}
                 pointerEvents="none"
               >
                 <line
@@ -916,9 +2303,7 @@ export function MapBoard({
                   y1={a.y}
                   x2={b.x}
                   y2={b.y}
-                  stroke={
-                    seatColors[Object.keys(state.players).indexOf(bridge.seat)]
-                  }
+                  stroke={factionColors[state.players[bridge.seat].native]}
                   strokeWidth="5"
                   strokeDasharray="5 2"
                 />
@@ -926,7 +2311,7 @@ export function MapBoard({
             );
           })}
           <text x="40" y="515" className="map-caption">
-            3–5 人地图 · 地形与建筑使用自制图形
+            {translate("ui.game.433a73f801")}
           </text>
         </svg>
       </div>
@@ -934,6 +2319,8 @@ export function MapBoard({
   );
 }
 function ActionForm({
+  stepwise,
+  intent,
   tab,
   state,
   seat,
@@ -941,6 +2328,8 @@ function ActionForm({
   disabled,
   onPreview,
 }: {
+  stepwise?: boolean;
+  intent?: BoardIntent | null;
   tab: string;
   state: GameState;
   seat: string;
@@ -949,64 +2338,265 @@ function ActionForm({
   onPreview: (a: GameAction) => void;
 }) {
   const p = state.players[seat];
-  const [terrain, setTerrain] = useState<Terrain>(p.native),
+  const palaceChoices = p.draftPalace ? [p.draftPalace] : state.shared.palaces;
+  const [selectedTerrain, setTerrain] = useState<Terrain>(p.native),
     [build, setBuild] = useState(true),
-    [upgrade, setUpgrade] = useState("guild"),
-    [palace, setPalace] = useState("workshop-score"),
+    [selectedUpgrade, setUpgrade] = useState("guild"),
+    [selectedPalace, setPalace] = useState(palaceChoices[0] ?? ""),
     [track, setTrack] = useState(0),
-    [slot, setSlot] = useState("0"),
-    [power, setPower] = useState("coins"),
-    [from, setFrom] = useState("power"),
-    [to, setTo] = useState("coin"),
-    [count, setCount] = useState(1),
-    [bonus, setBonus] = useState(""),
-    [innovation, setInnovation] = useState("colleges"),
+    [selectedSlot, setSlot] = useState("0"),
+    [selectedPower, setPower] = useState("coins"),
+    [selectedBonus, setBonus] = useState(""),
+    [selectedInnovation, setInnovation] = useState(
+      state.shared.innovations[0] ?? "",
+    ),
     [books, setBooks] = useState<[number, number, number, number]>([
       0, 0, 0, 0,
     ]);
   useEffect(() => setTerrain(p.native), [p.native]);
   const [bridge, setBridge] = useState("");
-  const [bookActionId, setBookActionId] = useState("power");
+  const [travel, setTravel] = useState<"" | "tunnel" | "flight">("");
+  const [selectedBookAction, setBookActionId] = useState("");
+  useEffect(() => {
+    if (!intent) return;
+    if (intent.kind === "power") setPower(intent.id!);
+    if (intent.kind === "book") {
+      setBookActionId(intent.id!);
+      setBooks([0, 0, 0, 0]);
+    }
+    if (intent.kind === "innovation") {
+      setInnovation(intent.id!);
+      setBooks([0, 0, 0, 0]);
+    }
+  }, [intent]);
+  const availableBooks = state.shared.bookActions.filter(
+    (id) => !state.shared.usedActions.includes("book:" + id),
+  );
+  const availablePower = [
+    "coins",
+    "tools",
+    "scholar",
+    "spade",
+    "spades",
+    "bridge",
+  ].filter((id) => !state.shared.usedActions.includes(id));
+  const chooseAvailable = (selected: string, available: string[]) =>
+    available.includes(selected) ? selected : (available[0] ?? "");
+  const selectedBuilding = state.board.buildings[selected];
+  const upgrades =
+    selectedBuilding?.seat === seat && !selectedBuilding.neutral
+      ? ((
+          {
+            workshop: ["guild"],
+            guild: ["school", "palace"],
+            school: ["university"],
+          } as Record<string, string[]>
+        )[selectedBuilding.kind] ?? [])
+      : [];
+  const upgrade = chooseAvailable(selectedUpgrade, upgrades);
+  const bookActionId = chooseAvailable(selectedBookAction, availableBooks);
+  const power = chooseAvailable(selectedPower, availablePower);
+  const palace = chooseAvailable(selectedPalace, palaceChoices);
+  const innovation = chooseAvailable(
+    selectedInnovation,
+    state.shared.innovations,
+  );
+  const bonus =
+    state.setup.bonusPool.includes(selectedBonus) &&
+    !Object.values(state.players).some(
+      (player) => player.bonus === selectedBonus,
+    )
+      ? selectedBonus
+      : "";
+  const openSlots = state.shared.scholarSlots[track].flatMap((owner, i) =>
+    owner === null ? [String(i)] : [],
+  );
+  const slot =
+    selectedSlot === "return"
+      ? "return"
+      : chooseAvailable(selectedSlot, [...openSlots, "return"]);
   const blocked = disabled || p.primaryDone;
+  const bridgeChoices = useMemo(() => {
+    const ids = Object.keys(officialLarge.hexes);
+    const sites =
+      p.faction === "moles"
+        ? ids.flatMap((a) =>
+            ids
+              .filter((b) => a < b && validBridgeGeometry(a, b, true))
+              .map((b) => [a, b]),
+          )
+        : bridgeSites;
+    return sites.filter(
+      ([a, b]) =>
+        (state.board.buildings[a]?.seat === seat ||
+          state.board.buildings[b]?.seat === seat) &&
+        !state.board.bridges.some(
+          (bridge) =>
+            [bridge.a, bridge.b].includes(a) &&
+            [bridge.a, bridge.b].includes(b),
+        ),
+    );
+  }, [state.board, seat, p.faction]);
+  const terrains = terraformTargets(state, selected, p.native);
+  const terrain = terrains.includes(selectedTerrain)
+    ? selectedTerrain
+    : terrains.includes(p.native)
+      ? p.native
+      : (terrains[0] ?? p.native);
+  const terraformAction: GameAction | null =
+    selected && !selectedBuilding && terrains.length
+      ? {
+          kind: "terraform",
+          hex: selected,
+          terrain,
+          build:
+            terrain === p.native &&
+            (stepwise
+              ? (state.board.terrain[selected] ??
+                  officialLarge.hexes[selected]?.terrain) === p.native
+              : build),
+          deferBuild:
+            stepwise &&
+            terrain === p.native &&
+            (state.board.terrain[selected] ??
+              officialLarge.hexes[selected]?.terrain) !== p.native,
+          travel: travel || undefined,
+        }
+      : null;
+  const upgradeAction: GameAction | null =
+    selected && upgrade
+      ? { kind: "upgrade", hex: selected, to: upgrade as any, palace }
+      : null;
+  const innovationTotal =
+    5 +
+    (p.innovations.length === 1 && p.native === "wasteland"
+      ? 0
+      : p.innovations.length);
+  const innovationRequired =
+    state.setup.innovationCosts?.[innovation] ??
+    [0, 1, 2, 3].map((i) =>
+      i === state.setup.innovations.indexOf(innovation) % 4 ? 2 : 0,
+    );
+  const innovationPayment = suggestBooks(
+    p.resources.books,
+    innovationRequired,
+    innovationTotal,
+  );
+  const bookTotal =
+    (
+      {
+        power: 1,
+        science: 1,
+        coins: 2,
+        upgrade: 2,
+        "guild-score": 2,
+        spades: 3,
+      } as Record<string, number>
+    )[bookActionId] ?? 0;
+  const publicPayment = suggestBooks(
+    p.resources.books,
+    [0, 0, 0, 0],
+    bookTotal,
+  );
   if (tab === "build")
     return (
       <div className="form-stack">
+        {!selected && (
+          <p className="action-hint">{translate("ui.game.c5dde2b957")}</p>
+        )}
+        {selectedBuilding && (
+          <p className="action-hint">
+            {translate("ui.game.af1ab71067")}
+            {state.players[selectedBuilding.seat]?.name}
+            {translate("ui.game.8af2350cfd")}
+            {label(selectedBuilding.kind)}。
+            {selectedBuilding.seat !== seat
+              ? translate("ui.game.a6a480146c")
+              : selectedBuilding.neutral
+                ? translate("ui.game.98f46c9652")
+                : upgrades.length
+                  ? translate("ui.game.bbfc246ecb") +
+                    upgrades.map(label).join("、")
+                  : translate("ui.game.98348a8d5d")}
+          </p>
+        )}
         <label>
-          地形改造目标
+          {translate("ui.game.ec2b0dfbf7")}
           <select
             value={terrain}
+            disabled={!terrains.length}
             onChange={(e) => setTerrain(e.target.value as Terrain)}
           >
-            {terrainCycle.map((t) => (
+            {!terrains.length && (
+              <option value={p.native}>
+                {translate("ui.game.1713b08c51")}
+              </option>
+            )}
+            {terrains.map((t) => (
               <option value={t} key={t}>
                 {label(t)}
-                {t === p.native ? "（家园）" : ""}
+                {t === p.native ? translate("ui.game.62be575967") : ""}
               </option>
             ))}
           </select>
         </label>
-        <label className="checkbox">
-          <input
-            type="checkbox"
-            checked={build}
-            onChange={(e) => setBuild(e.target.checked)}
-          />
-          同时建造工坊
-        </label>
-        <button
-          className="secondary full"
-          disabled={blocked || !selected}
-          onClick={() =>
-            onPreview({ kind: "terraform", hex: selected, terrain, build })
-          }
+        {(p.faction === "moles" || p.palace === "flight") && (
+          <label>
+            {translate("ui.game.bfc00be234")}
+            <select
+              value={travel}
+              onChange={(e) => setTravel(e.target.value as typeof travel)}
+            >
+              <option value="">{translate("ui.game.108ef16c8b")}</option>
+              {p.faction === "moles" && (
+                <option value="tunnel">
+                  {translate("ui.game.f5bb9b1066")}
+                </option>
+              )}
+              {p.palace === "flight" && (
+                <option value="flight">
+                  {translate("ui.game.196f468730")}
+                </option>
+              )}
+            </select>
+          </label>
+        )}
+        {!stepwise && (
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={build && terrain === p.native}
+              disabled={terrain !== p.native || !terrains.length}
+              onChange={(e) => setBuild(e.target.checked)}
+            />
+            {translate("ui.game.05683e0fba")}
+          </label>
+        )}
+        {stepwise && <p className="small">{translate("ui.game.22b4b042ca")}</p>}
+        {terrain !== p.native && (
+          <p className="small muted">{translate("ui.game.5bf7c595b6")}</p>
+        )}
+        <GuidedAction
+          state={state}
+          seat={seat}
+          action={terraformAction}
+          disabled={blocked}
+          onPreview={onPreview}
         >
-          预览改造与建造
-        </button>
+          {translate("ui.game.019db0fa25")}
+        </GuidedAction>
         <div className="divider" />
         <label>
-          升级为
-          <select value={upgrade} onChange={(e) => setUpgrade(e.target.value)}>
-            {["guild", "school", "palace", "university"].map((k) => (
+          {translate("ui.game.9f2da771a5")}
+          <select
+            disabled={!upgrades.length}
+            value={upgrade}
+            onChange={(e) => setUpgrade(e.target.value)}
+          >
+            {!upgrades.length && (
+              <option value="">{translate("ui.game.da8dd23005")}</option>
+            )}
+            {upgrades.map((k) => (
               <option key={k} value={k}>
                 {label(k)}
               </option>
@@ -1015,43 +2605,46 @@ function ActionForm({
         </label>
         {upgrade === "palace" && (
           <select
-            aria-label="宫殿能力"
+            aria-label={translate("ui.game.0e4a037f2f")}
             value={palace}
             onChange={(e) => setPalace(e.target.value)}
           >
-            {state.shared.palaces.map((id) => (
+            {palaceChoices.map((id) => (
               <option key={id} value={id}>
-                {label(id)}
+                {label("palace:" + id)}
               </option>
             ))}
           </select>
         )}
-        <button
-          className="secondary full"
-          disabled={blocked || !selected}
-          onClick={() =>
-            onPreview({
-              kind: "upgrade",
-              hex: selected,
-              to: upgrade as any,
-              palace,
-            })
-          }
+        {upgrade === "palace" && (
+          <p className="small">{palaces[palace]?.description}</p>
+        )}
+        <GuidedAction
+          state={state}
+          seat={seat}
+          action={upgradeAction}
+          disabled={blocked}
+          onPreview={onPreview}
         >
-          预览升级
-        </button>
+          {translate("ui.game.77fffeb97f")}
+        </GuidedAction>
       </div>
     );
   if (tab === "research")
     return (
       <div className="form-stack">
         <label>
-          派遣学者
+          {translate("ui.game.95ad8a65f7")}
           <select
             value={track}
             onChange={(e) => setTrack(Number(e.target.value))}
           >
-            {["银行学", "法学", "工程学", "医学"].map((name, i) => (
+            {[
+              translate("ui.game.b1eff676a2"),
+              translate("ui.game.b237c80398"),
+              translate("ui.game.e9f3d305ff"),
+              translate("ui.game.8cff79bb4f"),
+            ].map((name, i) => (
               <option value={i} key={name}>
                 {name}
               </option>
@@ -1059,50 +2652,61 @@ function ActionForm({
           </select>
         </label>
         <select
-          aria-label="学者位置"
+          aria-label={translate("ui.game.f3a68bfb56")}
           value={slot}
           onChange={(e) => setSlot(e.target.value)}
         >
-          <option value="return">返回供应：推进 1 格</option>
+          <option value="return">{translate("ui.game.dfd0a54dad")}</option>
           {state.shared.scholarSlots[track].map((owner, i) => (
             <option key={i} value={i} disabled={owner !== null}>
-              永久位置 {i + 1}：推进 {i === 0 ? 3 : 2} 格
-              {owner ? "（已占用）" : ""}
+              {translate("ui.game.aab0b437e3")}
+              {i + 1}
+              {translate("ui.game.b734d31487")}
+              {i === 0 ? 3 : 2} {translate("ui.game.6d1f8ad23e")}
+              {owner ? translate("ui.game.3854a45773") : ""}
             </option>
           ))}
         </select>
-        <button
-          className="secondary full"
+        <GuidedAction
+          state={state}
+          seat={seat}
+          action={{
+            kind: "scholar",
+            track: track as Discipline,
+            slot: slot === "return" ? null : Number(slot),
+          }}
           disabled={blocked}
-          onClick={() =>
-            onPreview({
-              kind: "scholar",
-              track: track as Discipline,
-              slot: slot === "return" ? null : Number(slot),
-            })
-          }
+          onPreview={onPreview}
         >
-          预览派遣
-        </button>
-        <div className="inline">
-          <button
-            className="secondary"
+          {translate("ui.game.17f4039032")}
+        </GuidedAction>
+        <div className="technology-actions">
+          <p className="small">
+            {translate("ui.game.21342d0cfd")}
+            {p.native === "plains" ? 1 : 5} {translate("ui.game.d9d9427396")}
+          </p>
+          <GuidedAction
+            state={state}
+            seat={seat}
+            action={{ kind: "advance", track: "sailing" }}
             disabled={blocked}
-            onClick={() => onPreview({ kind: "advance", track: "sailing" })}
+            onPreview={onPreview}
           >
-            推进航行
-          </button>
-          <button
-            className="secondary"
+            {translate("ui.game.85c1e36bb5")}
+          </GuidedAction>
+          <GuidedAction
+            state={state}
+            seat={seat}
+            action={{ kind: "advance", track: "terraform" }}
             disabled={blocked}
-            onClick={() => onPreview({ kind: "advance", track: "terraform" })}
+            onPreview={onPreview}
           >
-            推进改造
-          </button>
+            {translate("ui.game.baa9ece62f")}
+          </GuidedAction>
         </div>
         <div className="divider" />
         <label>
-          获得创新
+          {translate("ui.game.11ff8464a7")}
           <select
             value={innovation}
             onChange={(e) => setInnovation(e.target.value)}
@@ -1115,121 +2719,186 @@ function ActionForm({
           </select>
         </label>
         <p className="small muted">
-          按黄、蓝、棕、白顺序选择支付书籍。基础 5 本，其中 2 本必须匹配所在列。
+          {innovations[innovation]?.description}
+          <br />
+          {translate("ui.game.d65ceb4aeb")}{" "}
+          {5 +
+            (p.innovations.length === 1 && p.native === "wasteland"
+              ? 0
+              : p.innovations.length)}{" "}
+          {translate("ui.game.e0d2c7380c")}
+          {(
+            state.setup.innovationCosts?.[innovation] ??
+            [0, 1, 2, 3].map((i) =>
+              i === state.setup.innovations.indexOf(innovation) % 4 ? 2 : 0,
+            )
+          ).join(" / ")}
+          。
+          {!p.palace
+            ? translate("ui.game.e35841f60f")
+            : translate("ui.game.fff03000af")}
         </p>
         <div className="book-payment">
           {books.map((n, i) => (
-            <input
-              key={i}
-              aria-label={["支付黄书", "支付蓝书", "支付棕书", "支付白书"][i]}
-              type="number"
-              min="0"
-              max={p.resources.books[i]}
-              value={n}
-              onChange={(e) =>
-                setBooks(
-                  (v) =>
-                    v.map((x, j) =>
-                      i === j ? Number(e.target.value) : x,
-                    ) as typeof books,
-                )
-              }
-            />
+            <label key={i}>
+              <span>
+                {
+                  [
+                    translate("ui.game.0129eae620"),
+                    translate("ui.game.452cb5bc11"),
+                    translate("ui.game.9eafaa2881"),
+                    translate("ui.game.c5f803c2fe"),
+                  ][i]
+                }{" "}
+                {translate("ui.game.3705b74639")} {p.resources.books[i]}
+              </span>
+              <input
+                aria-label={
+                  [
+                    translate("ui.game.f362481f9e"),
+                    translate("ui.game.95363b47e8"),
+                    translate("ui.game.42ebba5ade"),
+                    translate("ui.game.dc4df2a898"),
+                  ][i]
+                }
+                type="number"
+                min="0"
+                max={p.resources.books[i]}
+                value={n}
+                onChange={(e) =>
+                  setBooks(
+                    (v) =>
+                      v.map((x, j) =>
+                        i === j ? Number(e.target.value) : x,
+                      ) as typeof books,
+                  )
+                }
+              />
+            </label>
           ))}
         </div>
+        <p className="small">
+          {translate("ui.game.52c963128e")}
+          {books.reduce((a, b) => a + b, 0)} / {innovationTotal}{" "}
+          {translate("ui.game.60fa7ec551")}
+        </p>
         <button
-          className="secondary full"
-          disabled={blocked}
-          onClick={() =>
-            onPreview({ kind: "innovation", id: innovation, books })
-          }
+          className="text-button"
+          disabled={blocked || !innovationPayment}
+          onClick={() => innovationPayment && setBooks(innovationPayment)}
         >
-          预览创新
+          {translate("ui.game.1c93f83617")}
         </button>
+        <GuidedAction
+          state={state}
+          seat={seat}
+          action={
+            innovation ? { kind: "innovation", id: innovation, books } : null
+          }
+          disabled={blocked}
+          onPreview={onPreview}
+        >
+          {translate("ui.game.18eb382c31")}
+        </GuidedAction>
       </div>
     );
   if (tab === "power")
     return (
       <div className="form-stack">
         <label>
-          公共魔力动作
+          {translate("ui.game.c31f14b604")}
           <select value={power} onChange={(e) => setPower(e.target.value)}>
+            {!power && (
+              <option value="">{translate("ui.game.7a8c788571")}</option>
+            )}
             {[
-              ["coins", "4 魔力 → 7 金币"],
-              ["tools", "4 魔力 → 2 工具"],
-              ["scholar", "3 魔力 → 1 学者"],
-              ["spade", "4 魔力 → 1 铲"],
-              ["spades", "6 魔力 → 2 铲"],
-              ["bridge", "3 魔力 → 桥梁"],
+              ["coins", translate("ui.game.a36dd3e1ce")],
+              ["tools", translate("ui.game.f694d01cb5")],
+              ["scholar", translate("ui.game.8351691754")],
+              ["spade", translate("ui.game.509960a119")],
+              ["spades", translate("ui.game.ecbba994ba")],
+              ["bridge", translate("ui.game.40af3d3dd3")],
             ].map(([id, name]) => (
               <option
                 key={id}
                 value={id}
                 disabled={state.shared.usedActions.includes(id)}
               >
-                {name}
-                {state.shared.usedActions.includes(id) ? "（已使用）" : ""}
+                {p.faction === "illusionists"
+                  ? name.replace(/^\d+/, (n) => String(Number(n) - 1))
+                  : name}
+                {state.shared.usedActions.includes(id)
+                  ? translate("ui.game.83a69757de")
+                  : ""}
               </option>
             ))}
           </select>
         </label>
         {power === "spade" || power === "spades" ? (
           <SpadesForm
+            stepwise={stepwise}
+            state={state}
+            seat={seat}
             selected={selected}
             native={p.native}
             amount={power === "spade" ? 1 : 2}
+            travelOptions={[
+              ...(p.faction === "moles" ? ["tunnel" as const] : []),
+              ...(p.palace === "flight" ? ["flight" as const] : []),
+            ]}
             disabled={blocked}
-            onPreview={(input) =>
-              onPreview({ kind: "powerAction", id: power, ...input })
-            }
+            onPreview={onPreview}
+            toAction={(input) => ({ kind: "powerAction", id: power, ...input })}
           />
         ) : (
           <>
             {power === "bridge" && (
               <label>
-                桥梁位置
+                {translate("ui.game.a386240a3f")}
                 <select
                   value={bridge}
                   onChange={(e) => setBridge(e.target.value)}
                 >
-                  <option value="">请选择两岸</option>
-                  {bridgeSites
-                    .filter(
-                      ([a, b]) =>
-                        state.board.buildings[a]?.seat === seat ||
-                        state.board.buildings[b]?.seat === seat,
-                    )
-                    .map(([a, b]) => (
-                      <option key={a + b} value={a + "," + b}>
-                        {a} ↔ {b}
-                      </option>
-                    ))}
+                  <option value="">{translate("ui.game.34b87dc661")}</option>
+                  {bridgeChoices.map(([a, b]) => (
+                    <option key={a + b} value={a + "," + b}>
+                      {a} ↔ {b}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
-            <button
-              className="secondary full"
-              disabled={blocked || (power === "bridge" && !bridge)}
-              onClick={() =>
-                onPreview({
-                  kind: "powerAction",
-                  id: power,
-                  a: bridge.split(",")[0],
-                  b: bridge.split(",")[1],
-                })
+            <GuidedAction
+              state={state}
+              seat={seat}
+              disabled={blocked}
+              onPreview={onPreview}
+              action={
+                !power || (power === "bridge" && !bridge)
+                  ? null
+                  : {
+                      kind: "powerAction",
+                      id: power,
+                      ...(power === "bridge"
+                        ? { a: bridge.split(",")[0], b: bridge.split(",")[1] }
+                        : {}),
+                    }
               }
             >
-              预览公共动作
-            </button>
+              {translate("ui.game.2cffd620ef")}
+            </GuidedAction>
           </>
         )}
         <div className="divider" />
-        <h4>书籍公共动作</h4>
+        <h4>{translate("ui.game.3503f101ce")}</h4>
         <select
-          aria-label="书籍公共动作"
+          aria-label={translate("ui.game.3503f101ce")}
           value={bookActionId}
           onChange={(e) => setBookActionId(e.target.value)}
         >
+          {!bookActionId && (
+            <option value="">{translate("ui.game.39ae735833")}</option>
+          )}
           {(state.shared.bookActions ?? ["power", "science", "coins"]).map(
             (id) => (
               <option
@@ -1239,12 +2908,12 @@ function ActionForm({
               >
                 {
                   {
-                    power: "1 本书 → 5 魔力",
-                    science: "1 本书 → 2 学科",
-                    coins: "2 本书 → 6 金币",
-                    upgrade: "2 本书 → 免费升级商会",
-                    "guild-score": "2 本书 → 每商会 2 分",
-                    spades: "3 本书 → 3 铲",
+                    power: translate("ui.game.538cb7c542"),
+                    science: translate("ui.game.73a18ad965"),
+                    coins: translate("ui.game.58e38bac25"),
+                    upgrade: translate("ui.game.17a96b3917"),
+                    "guild-score": translate("ui.game.181aed2fe0"),
+                    spades: translate("ui.game.b48a468b27"),
                   }[id]
                 }
               </option>
@@ -1253,12 +2922,18 @@ function ActionForm({
         </select>
         {bookActionId === "science" && (
           <label>
-            学科
+            {translate("ui.game.20f236b416")}
             <select
+              aria-label={translate("ui.game.20f236b416")}
               value={track}
               onChange={(e) => setTrack(Number(e.target.value))}
             >
-              {["银行学", "法学", "工程学", "医学"].map((name, i) => (
+              {[
+                translate("ui.game.b1eff676a2"),
+                translate("ui.game.b237c80398"),
+                translate("ui.game.e9f3d305ff"),
+                translate("ui.game.8cff79bb4f"),
+              ].map((name, i) => (
                 <option key={i} value={i}>
                   {name}
                 </option>
@@ -1268,311 +2943,241 @@ function ActionForm({
         )}
         <div className="book-payment">
           {books.map((n, i) => (
-            <input
-              key={i}
-              aria-label={
-                [
-                  "公共动作黄书",
-                  "公共动作蓝书",
-                  "公共动作棕书",
-                  "公共动作白书",
-                ][i]
-              }
-              type="number"
-              min="0"
-              max={p.resources.books[i]}
-              value={n}
-              onChange={(e) =>
-                setBooks(
-                  (v) =>
-                    v.map((x, j) =>
-                      i === j ? Number(e.target.value) : x,
-                    ) as typeof books,
-                )
-              }
-            />
+            <label key={i}>
+              <span>
+                {
+                  [
+                    translate("ui.game.0129eae620"),
+                    translate("ui.game.452cb5bc11"),
+                    translate("ui.game.9eafaa2881"),
+                    translate("ui.game.c5f803c2fe"),
+                  ][i]
+                }{" "}
+                {translate("ui.game.3705b74639")} {p.resources.books[i]}
+              </span>
+              <input
+                aria-label={
+                  [
+                    translate("ui.game.60cb5c27f9"),
+                    translate("ui.game.44c7110fe4"),
+                    translate("ui.game.746605386c"),
+                    translate("ui.game.ff29019c5d"),
+                  ][i]
+                }
+                type="number"
+                min="0"
+                max={p.resources.books[i]}
+                value={n}
+                onChange={(e) =>
+                  setBooks(
+                    (v) =>
+                      v.map((x, j) =>
+                        i === j ? Number(e.target.value) : x,
+                      ) as typeof books,
+                  )
+                }
+              />
+            </label>
           ))}
         </div>
+        <p className="small">
+          {translate("ui.game.52c963128e")}
+          {books.reduce((a, b) => a + b, 0)} / {bookTotal}{" "}
+          {translate("ui.game.60fa7ec551")}
+        </p>
         <button
-          className="secondary full"
-          disabled={blocked || (bookActionId === "upgrade" && !selected)}
-          onClick={() =>
-            onPreview({
-              kind: "bookAction",
-              id: bookActionId,
-              books,
-              track: track as Discipline,
-              hex: selected || undefined,
-            })
+          className="text-button"
+          disabled={blocked || !bookActionId || !publicPayment}
+          onClick={() => publicPayment && setBooks(publicPayment)}
+        >
+          {translate("ui.game.1c93f83617")}
+        </button>
+        <GuidedAction
+          state={state}
+          seat={seat}
+          disabled={blocked}
+          onPreview={onPreview}
+          action={
+            !bookActionId || (bookActionId === "upgrade" && !selected)
+              ? null
+              : {
+                  kind: "bookAction",
+                  id: bookActionId,
+                  books,
+                  track: track as Discipline,
+                  hex: selected || undefined,
+                }
           }
         >
-          预览书籍动作
-        </button>
-        <div className="divider" />
-        <h4>自由转换</h4>
-        <div className="inline">
-          <select
-            aria-label="转换来源"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-          >
-            {[
-              ["power", "魔力"],
-              ["tool", "工具"],
-              ["scholar", "学者"],
-              ["book", "书籍"],
-            ].map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <span>→</span>
-          <select
-            aria-label="转换目标"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-          >
-            {[
-              ["coin", "金币"],
-              ["tool", "工具"],
-              ["scholar", "学者"],
-              ["book", "书籍"],
-            ].map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <label>
-          获得数量
-          <input
-            type="number"
-            min="1"
-            value={count}
-            onChange={(e) => setCount(Number(e.target.value))}
-          />
-        </label>
-        {(from === "book" || to === "book") && (
-          <label>
-            书籍颜色
-            <select
-              value={track}
-              onChange={(e) => setTrack(Number(e.target.value))}
-            >
-              {["黄", "蓝", "棕", "白"].map((n, i) => (
-                <option key={i} value={i}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <button
-          className="secondary full"
-          disabled={disabled}
-          onClick={() =>
-            onPreview({
-              kind: "convert",
-              from: from as any,
-              to: to as any,
-              count,
-              color: track as Discipline,
-            })
-          }
-        >
-          预览转换
-        </button>
-        <button
-          className="text-button full"
-          disabled={disabled}
-          onClick={() => onPreview({ kind: "burn", count: 1 })}
-        >
-          燃烧 1 枚魔力标记
-        </button>
+          {translate("ui.game.03baf147a0")}
+        </GuidedAction>
       </div>
     );
   return (
     <div className="form-stack">
-      <p className="muted">
-        结束本轮后，本轮不能再行动。下一轮的顺序按结束先后决定。
-      </p>
+      <p className="muted">{translate("ui.game.6898d29e7d")}</p>
       {state.round < 6 && (
-        <label>
-          下一轮奖励
-          <select value={bonus} onChange={(e) => setBonus(e.target.value)}>
-            <option value="">请选择一张空闲奖励板</option>
+        <>
+          <label>
+            {translate("ui.game.2efc930c74")}
+            <select value={bonus} onChange={(e) => setBonus(e.target.value)}>
+              <option value="">{translate("ui.game.0850f32146")}</option>
+              {state.setup.bonusPool
+                .filter(
+                  (id) =>
+                    !Object.values(state.players).some((p) => p.bonus === id),
+                )
+                .map((id) => (
+                  <option key={id} value={id}>
+                    {label("bonus:" + id)}
+                    {state.shared.bonusCoins[id]
+                      ? translate("ui.game.c42220e17c", {
+                          p0: state.shared.bonusCoins[id],
+                        })
+                      : ""}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <div
+            className="bonus-market"
+            aria-label={translate("ui.game.eef45edf9d")}
+          >
             {state.setup.bonusPool
               .filter(
                 (id) =>
-                  !Object.values(state.players).some((p) => p.bonus === id),
+                  !Object.values(state.players).some(
+                    (player) => player.bonus === id,
+                  ),
               )
               .map((id) => (
-                <option key={id} value={id}>
-                  {label(id)}
-                  {state.shared.bonusCoins[id]
-                    ? ` +${state.shared.bonusCoins[id]} 金币`
-                    : ""}
-                </option>
+                <button
+                  type="button"
+                  className="bonus-card"
+                  key={id}
+                  aria-pressed={bonus === id}
+                  disabled={blocked}
+                  onClick={() => setBonus(id)}
+                >
+                  <strong>{bonusTitles[id] ?? label(id)}</strong>
+                  <span>{bonusDescriptions[id]}</span>
+                  <small>
+                    {translate("ui.game.691a04889d")}
+                    {state.shared.bonusCoins[id] ?? 0}{" "}
+                    {translate("ui.game.044ad9e1ca")}
+                  </small>
+                </button>
               ))}
-          </select>
-        </label>
+          </div>
+        </>
       )}
       <button
         className="secondary full"
         disabled={blocked || (state.round < 6 && !bonus)}
         onClick={() => onPreview({ kind: "pass", bonus: bonus || undefined })}
       >
-        结束本轮
+        {translate("ui.game.e597fd46fa")}
       </button>
     </div>
   );
 }
 
-function SpadesForm({
-  selected,
-  native,
-  amount,
-  canBuild = true,
-  disabled,
-  onPreview,
-}: {
-  selected: string;
-  native: Terrain;
-  amount: number;
-  canBuild?: boolean;
-  disabled: boolean;
-  onPreview: (input: {
-    hex: string;
-    terrain: Terrain;
-    build: boolean;
-    additional: { hex: string; terrain: Terrain }[];
-  }) => void;
-}) {
-  const [terrain, setTerrain] = useState<Terrain>(native),
-    [targets, setTargets] = useState<{ hex: string; terrain: Terrain }[]>([]),
-    [build, setBuild] = useState(false);
-  return (
-    <div className="form-stack">
-      <p className="small">
-        获得 {amount}{" "}
-        把铲子。依次选择地块；只有第一个改造成家园后，才能把剩余铲子分给下一块。
-      </p>
-      <label>
-        改造目标
-        <select
-          value={terrain}
-          onChange={(e) => setTerrain(e.target.value as Terrain)}
-        >
-          {terrainCycle.map((t) => (
-            <option key={t} value={t}>
-              {label(t)}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button
-        className="secondary"
-        disabled={
-          disabled ||
-          !selected ||
-          targets.length >= amount ||
-          targets.some((t) => t.hex === selected)
-        }
-        onClick={() => setTargets((t) => [...t, { hex: selected, terrain }])}
-      >
-        添加地块 {selected}
-      </button>
-      {targets.map((t, i) => (
-        <p className="small" key={t.hex}>
-          {i + 1}. {t.hex} → {label(t.terrain)}{" "}
-          <button
-            className="text-button"
-            onClick={() => setTargets((v) => v.filter((_, j) => i !== j))}
-          >
-            移除
-          </button>
-        </p>
-      ))}
-      {canBuild && (
-        <label className="checkbox">
-          <input
-            type="checkbox"
-            checked={build}
-            onChange={(e) => setBuild(e.target.checked)}
-          />
-          在第一个地块建造工坊
-        </label>
-      )}
-      <button
-        className="secondary full"
-        disabled={disabled || !targets.length}
-        onClick={() =>
-          onPreview({
-            ...targets[0],
-            build: canBuild && build,
-            additional: targets.slice(1),
-          })
-        }
-      >
-        预览铲子分配
-      </button>
-    </div>
-  );
-}
-
-const roundNames: Record<string, string> = {
-  "workshop-law": "工坊 +2 分",
-  "workshop-bank": "工坊 +2 分",
-  "guild-law": "商会 +3 分",
-  "guild-medicine": "商会 +3 分",
-  "school-bank": "学校 +4 分",
-  "big-medicine": "宫殿 / 大学 +5 分",
-  "big-bank": "宫殿 / 大学 +5 分",
-  "spade-engineering": "每铲 +2 分",
-  "science-medicine": "学科每格 +1 分",
-  "city-engineering": "城市 +5 分",
-  "advance-engineering": "技术推进 +3 分",
-  "innovation-law": "创新 +5 分",
-};
 function PreviewChanges({
   before,
   after,
   seat,
+  action,
 }: {
   before: GameState;
   after: GameState;
   seat: string;
+  action: GameAction;
 }) {
   const p = before.players[seat],
     n = after.players[seat];
   const changes: [string, string][] = [];
+  if (action.kind === "draftPick") {
+    const title =
+      action.category === "bonus"
+        ? (bonusTitles[action.option] ?? label(action.option))
+        : label(action.option);
+    changes.push([
+      translate("ui.game.c11330b852") +
+        {
+          faction: translate("ui.game.b49377b38c"),
+          native: translate("ui.game.51695ad45a"),
+          palace: translate("ui.game.c837854a57"),
+          bonus: translate("ui.game.d7fb5bfc83"),
+        }[action.category],
+      title,
+    ]);
+  }
   for (const [key, name] of [
-    ["coins", "金币"],
-    ["tools", "工具"],
-    ["scholars", "学者"],
+    ["sailing", translate("ui.game.705b35125d")],
+    ["terraformLevel", translate("ui.game.4de82a21d9")],
+    ["keys", translate("ui.game.2be7ed8644")],
+  ] as const)
+    if (n[key] !== p[key]) changes.push([name, `${p[key]} → ${n[key]}`]);
+  for (const id of n.innovations.filter((id) => !p.innovations.includes(id)))
+    changes.push([translate("ui.game.11ff8464a7"), label(id)]);
+  for (const id of n.competencies.filter((id) => !p.competencies.includes(id)))
+    changes.push([translate("ui.game.4f9c08d4e0"), label("competency:" + id)]);
+  if (n.palace && n.palace !== p.palace)
+    changes.push([translate("ui.game.0bf1b46980"), label(n.palace)]);
+  if (n.bonus !== p.bonus)
+    changes.push([
+      translate("ui.game.d7fb5bfc83"),
+      bonusTitles[n.bonus] ?? label(n.bonus),
+    ]);
+  for (const bridge of after.board.bridges.filter(
+    (b) => !before.board.bridges.some((old) => old.a === b.a && old.b === b.b),
+  ))
+    changes.push([
+      translate("ui.game.111f29973b"),
+      `${bridge.a} ↔ ${bridge.b}`,
+    ]);
+  for (const [key, name] of [
+    ["coins", translate("ui.game.bbece6f829")],
+    ["tools", translate("ui.game.5ca6730d44")],
+    ["scholars", translate("ui.game.230cc1d6c8")],
   ] as const) {
     const delta = n.resources[key] - p.resources[key];
-    if (delta) changes.push([name, (delta > 0 ? "+" : "") + delta]);
+    if (delta)
+      changes.push([
+        name,
+        `${p.resources[key]} → ${n.resources[key]}（${delta > 0 ? "+" : ""}${delta}）`,
+      ]);
   }
   if (n.vp !== p.vp)
-    changes.push(["分数", (n.vp > p.vp ? "+" : "") + (n.vp - p.vp)]);
+    changes.push([
+      translate("ui.game.89e35e662a"),
+      (n.vp > p.vp ? "+" : "") + (n.vp - p.vp),
+    ]);
   for (let i = 0; i < 4; i++) {
     if (p.resources.books[i] !== n.resources.books[i])
       changes.push([
-        ["黄书", "蓝书", "棕书", "白书"][i],
+        [
+          translate("ui.game.0129eae620"),
+          translate("ui.game.452cb5bc11"),
+          translate("ui.game.9eafaa2881"),
+          translate("ui.game.c5f803c2fe"),
+        ][i],
         `${p.resources.books[i]} → ${n.resources.books[i]}`,
       ]);
     if (p.science[i] !== n.science[i])
       changes.push([
-        ["银行学", "法学", "工程学", "医学"][i],
+        [
+          translate("ui.game.b1eff676a2"),
+          translate("ui.game.b237c80398"),
+          translate("ui.game.e9f3d305ff"),
+          translate("ui.game.8cff79bb4f"),
+        ][i],
         `${p.science[i]} → ${n.science[i]}`,
       ]);
   }
   if (p.resources.power.join() !== n.resources.power.join())
     changes.push([
-      "魔力碗",
+      translate("ui.game.5c5051a4d1"),
       `${p.resources.power.join("/")} → ${n.resources.power.join("/")}`,
     ]);
   for (const [hex, b] of Object.entries(after.board.buildings)) {
@@ -1581,15 +3186,21 @@ function PreviewChanges({
       (before.board.buildings[hex]?.kind !== b.kind ||
         before.board.buildings[hex]?.annex !== b.annex)
     )
-      changes.push([hex, label(b.kind) + (b.annex ? "＋附属建筑" : "")]);
+      changes.push([
+        hex,
+        label(b.kind) + (b.annex ? translate("ui.game.a082304076") : ""),
+      ]);
   }
   if (before.round !== after.round)
-    changes.push(["轮次", `第 ${before.round} → ${after.round} 轮`]);
+    changes.push([
+      translate("ui.game.4890584bb5"),
+      translate("ui.game.331d71b27f", { p0: before.round, p1: after.round }),
+    ]);
   return (
     <>
       <div className="preview-changes">
-        {changes.map(([name, value]) => (
-          <div key={name}>
+        {changes.map(([name, value], index) => (
+          <div key={`${name}:${index}`}>
             <span>{name}</span>
             <b>{value}</b>
           </div>
@@ -1597,9 +3208,38 @@ function PreviewChanges({
       </div>
       {after.pending.length > 0 && (
         <p className="small">
-          提交后还有 {after.pending.length} 项奖励或蹭魔选择。
+          {translate("ui.game.1b0ac7ded8")}
+          {after.pending.length} {translate("ui.game.a3b26551c1")}
         </p>
       )}
+      {after.pending.length > 0 && (
+        <ul className="pending-preview">
+          {after.pending.map((c) => (
+            <li key={c.id}>
+              {after.players[c.seat]?.name}：{choiceTitle(c)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {(() => {
+        const changes = ledgerEntry(before, after, seat, action).details
+          ?.changes as ResourceChange[];
+        const others = changes.filter((c) => c.seat !== seat);
+        return others.length ? (
+          <details className="other-player-preview">
+            <summary>
+              {translate("ui.game.6f4f29521b")}
+              {others.length} {translate("ui.game.22d36c0220")}
+            </summary>
+            {others.map((c) => (
+              <p key={`${c.seat}:${c.field}`}>
+                {after.players[c.seat].name} · {fieldLabels[c.field]}：
+                {c.before} → {c.after}
+              </p>
+            ))}
+          </details>
+        ) : null;
+      })()}
     </>
   );
 }

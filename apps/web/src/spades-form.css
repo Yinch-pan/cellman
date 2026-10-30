@@ -1,0 +1,51 @@
+.spades-budget {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px;
+  background: #e7eee0;
+  border-radius: 8px;
+}
+.spades-current {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.spades-targets {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.spades-targets li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px;
+  background: #f6f7f0;
+  border-radius: 6px;
+}
+.spades-targets small {
+  display: block;
+  color: #65735d;
+}
+.spades-targets button {
+  min-height: 44px;
+  padding: 6px 10px;
+}
+.spades-warning {
+  color: #855b19;
+}
+.spades-confirm {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #c9a768;
+  border-radius: 8px;
+  background: #fff7e8;
+}

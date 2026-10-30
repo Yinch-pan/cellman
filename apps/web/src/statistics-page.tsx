@@ -58,6 +58,7 @@ export function StatisticsPage() {
         timeouts: number;
         forfeits: number;
         inactive: number;
+        consensual: number;
         games: {
           id: string;
           date: string;
@@ -65,7 +66,7 @@ export function StatisticsPage() {
           players: number;
           score: number | null;
           rank: number | null;
-          reason: "normal" | "forfeit" | "inactive";
+          reason: "normal" | "forfeit" | "inactive" | "consensus";
           forfeited: boolean;
         }[];
       })
@@ -77,6 +78,7 @@ export function StatisticsPage() {
     positions: Group[];
     forfeits: number;
     inactive: number;
+    consensual: number;
   } | null>(null);
   const [count, setCount] = useState("");
   const [error, setError] = useState("");
@@ -128,6 +130,8 @@ export function StatisticsPage() {
               {mine.timeouts ?? 0} {translate("ui.statistics-page.ca776a16a6")}
               {mine.forfeits ?? 0} {translate("ui.statistics-page.9cbc8e710a")}
               {mine.inactive ?? 0} {translate("ui.statistics-page.cd6f79fbed")}
+              {" · "}
+              {translate("endGame.statCount", { count: mine.consensual ?? 0 })}
             </p>
             {mine.count ? (
               <>
@@ -141,19 +145,23 @@ export function StatisticsPage() {
                       <a href={`#/game/${g.id}`}>
                         {new Date(g.date).toLocaleDateString("zh-CN")} ·{" "}
                         {g.players} {translate("ui.statistics-page.dbc3a8dfd7")}{" "}
-                        {g.reason === "inactive"
-                          ? translate("ui.statistics-page.e5f1a31a8e")
-                          : g.reason === "forfeit"
-                            ? translate("ui.statistics-page.484620936e", {
-                                p0: g.forfeited
-                                  ? translate("ui.statistics-page.e80bc913c0")
-                                  : translate("ui.statistics-page.45d8b78ca2"),
-                              })
-                            : translate("ui.statistics-page.36793e1c45", {
-                                p0: label(g.faction),
-                                p1: g.score,
-                                p2: g.rank,
-                              })}
+                        {g.reason === "consensus"
+                          ? translate("endGame.statResult")
+                          : g.reason === "inactive"
+                            ? translate("ui.statistics-page.e5f1a31a8e")
+                            : g.reason === "forfeit"
+                              ? translate("ui.statistics-page.484620936e", {
+                                  p0: g.forfeited
+                                    ? translate("ui.statistics-page.e80bc913c0")
+                                    : translate(
+                                        "ui.statistics-page.45d8b78ca2",
+                                      ),
+                                })
+                              : translate("ui.statistics-page.36793e1c45", {
+                                  p0: label(g.faction),
+                                  p1: g.score,
+                                  p2: g.rank,
+                                })}
                       </a>
                     </p>
                   ))}
@@ -191,7 +199,8 @@ export function StatisticsPage() {
             <p>
               {translate("ui.statistics-page.dc8e0f337f")}
               {site.forfeits ?? 0} {translate("ui.statistics-page.b72db29618")}{" "}
-              {site.inactive ?? 0} {translate("ui.statistics-page.a017f70a75")}
+              {site.inactive ?? 0} {translate("ui.statistics-page.a017f70a75")}{" "}
+              {translate("endGame.statCount", { count: site.consensual ?? 0 })}
             </p>
             {site.count > 0 && <StatsTable rows={site.factions} />}
             {count ? (

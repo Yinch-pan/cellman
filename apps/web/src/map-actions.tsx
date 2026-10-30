@@ -9,6 +9,8 @@ import { officialLarge } from "../../../packages/rules/src/map";
 import { label, RequestError } from "./api";
 import { palaces } from "./i18n/content";
 import { t } from "./i18n";
+import { hexLabel } from "./map-coordinates";
+import { usesCurrentActionProtocol } from "../../../packages/rules/src/state";
 
 export type MapAnchor = { x: number; y: number };
 
@@ -35,6 +37,14 @@ export function mapActions(state: GameState, seat: string, hex: string) {
     };
     for (const to of paths[building.kind] ?? []) {
       if (to === "palace") {
+        if (usesCurrentActionProtocol(state.rulesVersion) && !player.draftPalace) {
+          offers.push({
+            title: t("mapAction.upgrade", { building: label(to) }),
+            description: t("palace.afterLeech"),
+            action: { kind: "upgrade", hex, to, deferPalace: true },
+          });
+          continue;
+        }
         for (const palace of player.draftPalace
           ? [player.draftPalace]
           : state.shared.palaces)
@@ -48,13 +58,35 @@ export function mapActions(state: GameState, seat: string, hex: string) {
       } else
         offers.push({
           title: t("mapAction.upgrade", { building: label(to) }),
-          action: { kind: "upgrade", hex, to },
+          action: {
+            kind: "upgrade",
+            hex,
+            to,
+            ...(["school", "university"].includes(to) &&
+            usesCurrentActionProtocol(state.rulesVersion)
+              ? { deferCompetency: true }
+              : {}),
+          },
         });
     }
   } else {
     const terrain =
       state.board.terrain[hex] ?? officialLarge.hexes[hex]?.terrain;
     if (!terrain || terrain === "river") return offers;
+    if (terrain !== player.native && usesCurrentActionProtocol(state.rulesVersion)) {
+      offers.push({
+        title: t("mapAction.terraformOnly"),
+        description: t("mapAction.buildLater"),
+        action: {
+          kind: "terraform",
+          hex,
+          terrain: player.native,
+          build: false,
+          deferBuild: true,
+        },
+      });
+      return offers;
+    }
     offers.push({
       title: t(
         terrain === player.native
@@ -174,7 +206,7 @@ export function MapActionPanel({
       <header>
         <div>
           <strong>
-            {hex} ·{" "}
+            {hexLabel(hex)} ·{" "}
             {label(
               state.board.terrain[hex] ?? officialLarge.hexes[hex]?.terrain,
             )}

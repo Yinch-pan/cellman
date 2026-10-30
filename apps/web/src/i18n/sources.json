@@ -1361,6 +1361,10 @@
     "text": "纪念碑",
     "file": "packages/rules/src/content.ts"
   },
+  "rules.5195ff5738": {
+    "text": "全体玩家同意结束本局；保留对局记录，不判胜负，不计入分数和胜率。",
+    "file": "packages/rules/src/lifecycle.ts"
+  },
   "rules.53c08c1df1": {
     "text": "中立大学创新",
     "file": "packages/rules/src/income.ts"
@@ -1372,6 +1376,10 @@
   "rules.5913408bf9": {
     "text": "收入 5 魔力；特殊行动获得 2 工具。",
     "file": "packages/rules/src/content.ts"
+  },
+  "rules.59f3f619dd": {
+    "text": "领取书籍",
+    "file": "packages/rules/src/ledger.ts"
   },
   "rules.5baa394cf6": {
     "text": "拥有 4 / 5 / 6+ 个相邻建筑群，立即获得 8 / 12 / 18 分。",
@@ -1752,6 +1760,10 @@
   "rules.bac5627d6e": {
     "text": "起始多一工具，银行学、工程学 +1；每使用一把铲子获得 2 金币。",
     "file": "packages/rules/src/content.ts"
+  },
+  "rules.bb7cad7940": {
+    "text": "{p0} 自动拒绝付分蹭魔",
+    "file": "packages/rules/src/responses.ts"
   },
   "rules.bb90dddbbf": {
     "text": "猫族",
@@ -2377,6 +2389,11 @@
     "text": "验证邮箱：",
     "file": "apps/web/src/app.tsx",
     "line": 223
+  },
+  "ui.app.bb654a440e": {
+    "text": "帮助与数据说明",
+    "file": "apps/web/src/app.tsx",
+    "line": 136
   },
   "ui.app.bc2b09de8c": {
     "text": "正在检查邮件服务…",
@@ -5737,6 +5754,76 @@
     "text": "完成 ",
     "file": "apps/web/src/statistics-page.tsx",
     "line": 113
+  },
+  "ui.support.1816a8f6fe": {
+    "text": "。公开问题中请勿填写个人信息。",
+    "file": "apps/web/src/support.tsx",
+    "line": 13
+  },
+  "ui.support.289da807cd": {
+    "text": "数据请求目前由人工处理。备份中的历史副本会按备份保留周期轮换清理，不能承诺即时删除所有历史副本。",
+    "file": "apps/web/src/support.tsx",
+    "line": 20
+  },
+  "ui.support.2c531dd472": {
+    "text": "当前适合小规模公开测试。若发现规则问题，请保留对局编号并反馈。DIY 内容编辑和导入尚未开放。",
+    "file": "apps/web/src/support.tsx",
+    "line": 24
+  },
+  "ui.support.39892bef34": {
+    "text": "不要发送密码、验证码、登录链接、邀请链接或浏览器 Cookie。邮件不会自动附带你的对局或账号数据。",
+    "file": "apps/web/src/support.tsx",
+    "line": 12
+  },
+  "ui.support.3a67c41c60": {
+    "text": "账号与数据说明",
+    "file": "apps/web/src/support.tsx",
+    "line": 16
+  },
+  "ui.support.55a2ce1324": {
+    "text": "问题反馈",
+    "file": "apps/web/src/support.tsx",
+    "line": 8
+  },
+  "ui.support.5d5059773c": {
+    "text": "请描述发生时间、操作步骤、预期结果与实际结果，并附上房间或对局编号、浏览器和设备信息。截图请先遮挡邮箱等个人信息。",
+    "file": "apps/web/src/support.tsx",
+    "line": 11
+  },
+  "ui.support.712d191ae5": {
+    "text": "当前开放范围",
+    "file": "apps/web/src/support.tsx",
+    "line": 23
+  },
+  "ui.support.8a9811aa33": {
+    "text": "网站保存账号名称、密码的不可逆校验值、绑定邮箱、登录会话，以及房间、对局行动和结果，以提供登录、异步联机、回放与战绩功能。服务器也记录运行和访问日志，用于排查故障。",
+    "file": "apps/web/src/support.tsx",
+    "line": 17
+  },
+  "ui.support.95ec2aed4c": {
+    "text": "其他玩家可能看到你的玩家名称、房间信息、对局记录和战绩。请勿把私人信息写入玩家名称。邮箱用于验证、找回账号和你启用的对局通知；通知设置可以在账号页面调整。",
+    "file": "apps/web/src/support.tsx",
+    "line": 18
+  },
+  "ui.support.a6abd3d80e": {
+    "text": "需要查询、更正或申请删除账号数据，请从绑定邮箱联系维护者，并提供玩家名称和请求内容。维护者会核验账号归属，再说明可处理的范围；涉及其他玩家的共同对局历史需要单独处理。",
+    "file": "apps/web/src/support.tsx",
+    "line": 19
+  },
+  "ui.support.cacd9a7690": {
+    "text": "遇到无法继续对局、规则表现异常或账号问题，请联系维护者：",
+    "file": "apps/web/src/support.tsx",
+    "line": 9
+  },
+  "ui.support.cc980edb2c": {
+    "text": "帮助、反馈与账号数据",
+    "file": "apps/web/src/support.tsx",
+    "line": 6
+  },
+  "ui.support.dc49efcce8": {
+    "text": "也可以提交 ",
+    "file": "apps/web/src/support.tsx",
+    "line": 13
   },
   "ui.table-experience.03f418b976": {
     "text": "资源换分：金币 ",

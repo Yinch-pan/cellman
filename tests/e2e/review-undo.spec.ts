@@ -5,6 +5,58 @@ import { actionState } from "../../packages/rules/test/fixtures/actions";
 import { readFileSync } from "node:fs";
 import { setTimeout as delay } from "node:timers/promises";
 import { seedAccount } from "./account-fixture";
+for (const width of [1440, 390])
+  test(`${width}px undo from a long history is brought into view outside own turn`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    const initial = actionState();
+    initial.players.p1.resources.tools = 40;
+    initial.players.p1.resources.power = [0, 0, 12];
+    const commands: Parameters<typeof replayRecord>[0]["commands"] = Array.from(
+      { length: 30 },
+      (_, i) => ({
+        revision: i + 1,
+        seat: "p1",
+        action: { kind: "convert", from: "tool", to: "coin", count: 1 },
+      }),
+    );
+    commands.push({
+      revision: 31,
+      seat: "p1",
+      action: { kind: "powerAction", id: "coins" },
+    });
+    commands.push({ revision: 32, seat: "p1", action: { kind: "endTurn" } });
+    const record = { initial, commands, revision: 32 };
+    const state = replayRecord(record).state;
+    expect(state.activeSeat).not.toBe("p1");
+    await page.addInitScript(
+      ({ state, record }) => {
+        localStorage.setItem("boardgame-demo-v1", JSON.stringify(state));
+        localStorage.setItem("boardgame-demo-record", JSON.stringify(record));
+      },
+      { state, record },
+    );
+    await page.goto("/#/demo");
+    await page.getByLabel("演示座位").selectOption("p1");
+    await page.locator(".history-panel > summary").click();
+    await page
+      .getByRole("button", { name: "撤回此步及后续行动", exact: true })
+      .first()
+      .click();
+    // Do not fill/click first: Playwright's auto-scroll would hide this regression.
+    await expect(page.locator(".undo-form")).toBeInViewport();
+    await expect(page.getByLabel("悔棋原因")).toBeFocused();
+    await expect(
+      page.getByRole("button", { name: "确认同屏撤回", exact: true }),
+    ).toBeDisabled();
+    expect(
+      await page.evaluate(() =>
+        JSON.parse(localStorage.getItem("boardgame-demo-v1")!),
+      ),
+    ).toEqual(state);
+    await page.screenshot({ path: info.outputPath(`undo-form-${width}.png`) });
+  });
 test("same-screen undo survives refresh and resource statistics do not double count", async ({
   page,
 }) => {
@@ -134,10 +186,16 @@ test("four browsers approve, reject and cancel undo; history stays read-only and
     for (const p of pages)
       await expect(p.getByText("局面版本 2", { exact: true })).toBeVisible();
     const author = pages[first];
+    const beforeUndo = (
+      await (await author.request.get(`${origin}/api/games/${gameId}`)).json()
+    ).state;
+    expect(beforeUndo.activeSeat).not.toBe(initial.activeSeat);
     await author.locator(".history-panel > summary").click();
     await author
       .getByRole("button", { name: "撤回此步及后续行动", exact: true })
       .click();
+    await expect(author.locator(".undo-form")).toBeInViewport();
+    await expect(author.getByLabel("悔棋原因")).toBeFocused();
     await author
       .getByLabel("悔棋原因")
       .fill("选错了组合，需要一起恢复后续选择");

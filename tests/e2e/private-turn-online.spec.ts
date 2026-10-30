@@ -5,6 +5,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { chooseMove } from "../../packages/rules/test/fixtures/players";
 import { replayRecord } from "../../packages/rules/src/replay";
 import { seedAccount } from "./account-fixture";
+import { label } from "../../apps/web/src/api";
 test("four clients see no private draft, then receive one atomic turn and identical replay", async ({
   browser,
 }) => {
@@ -111,9 +112,13 @@ test("four clients see no private draft, then receive one atomic turn and identi
       (id: string) =>
         !Object.values(state.players).some((p: any) => p.bonus === id),
     );
-    await actor.getByLabel("下一轮奖励").selectOption(bonus);
     await actor.getByRole("button", { name: "结束本轮", exact: true }).click();
     await actor.getByRole("button", { name: "确认步骤", exact: true }).click();
+    await actor
+      .locator("[data-choice-id]")
+      .getByRole("button", { name: new RegExp("^" + label("bonus:" + bonus)) })
+      .click();
+    await actor.getByRole("button", { name: "完成换轮", exact: true }).click();
     expect(await read()).toEqual(state);
     await actor.getByRole("button", { name: "提交回合", exact: true }).click();
     await actor.getByRole("button", { name: "确认提交", exact: true }).click();

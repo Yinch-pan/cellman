@@ -1,4 +1,23 @@
 import { z } from "zod";
+import { draftCatalog } from "../../rules/src/draft-bans";
+const banList = (ids: readonly string[]) =>
+  z
+    .array(
+      z
+        .string()
+        .max(64)
+        .refine((id) => ids.includes(id)),
+    )
+    .max(ids.length)
+    .refine((ids) => new Set(ids).size === ids.length);
+export const draftBansSchema = z
+  .object({
+    faction: banList(draftCatalog.faction).default([]),
+    native: banList(draftCatalog.native).default([]),
+    palace: banList(draftCatalog.palace).default([]),
+    bonus: banList(draftCatalog.bonus).default([]),
+  })
+  .strict();
 export const asyncSpeeds = [0.5, 1, 2, 3, 4, 8, 12, 24] as const;
 export const timeHours = [6, 12, 24, 48, 72, 120, 168] as const;
 export const incrementalTimeSchema = z
@@ -60,6 +79,7 @@ export const timeControlSchema = z.discriminatedUnion("mode", [
 export const gameSettingsSchema = z
   .object({
     time: timeControlSchema.default({ mode: "none" }),
+    draftBans: draftBansSchema.optional(),
     undo: z.enum(["unanimous", "disabled"]).default("unanimous"),
     // Accept legacy clients/saved settings, but every completed game now counts.
     countStats: z

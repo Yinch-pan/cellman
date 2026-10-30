@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect, type Page } from "@playwright/test";
 import { actionState } from "../../packages/rules/test/fixtures/actions";
 import { sampleSetup } from "../../packages/rules/test/fixtures/setup";
@@ -20,15 +21,16 @@ test("partial terraforming offers only the shortest path and does not build on i
   s.board.buildings = { B4: { seat: "p1", kind: "workshop" } };
   s.players.p1.resources.tools = 10;
   await open(page, s);
-  await page.getByRole("button", { name: /^A4 / }).click();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("A4")} `) })
+    .click();
   await page
     .getByRole("region", { name: "地块操作" })
     .getByRole("button", { name: /^详细设置/ })
     .click();
-  await expect(page.getByRole("button", { name: /^A4 / })).toHaveAttribute(
-    "data-available",
-    "true",
-  );
+  await expect(
+    page.getByRole("button", { name: new RegExp(`^${hexLabel("A4")} `) }),
+  ).toHaveAttribute("data-available", "true");
   expect(
     await page
       .getByLabel("地形改造目标")
@@ -36,14 +38,11 @@ test("partial terraforming offers only the shortest path and does not build on i
       .evaluateAll((nodes) => nodes.map((n) => (n as HTMLOptionElement).value)),
   ).toEqual(["lake", "forest"]);
   await page.getByLabel("地形改造目标").selectOption("lake");
-  await expect(page.getByLabel("同时建造工坊")).not.toBeChecked();
-  await expect(page.getByLabel("同时建造工坊")).toBeDisabled();
+  await expect(page.getByLabel("同时建造工坊")).toHaveCount(0);
   await expect(page.locator(".action-quote").first()).toContainText(
     "工具 10 → 7",
   );
-  await page
-    .getByRole("button", { name: "改造与建造", exact: true })
-    .click();
+  await page.getByRole("button", { name: "改造与建造", exact: true }).click();
   await page.getByRole("button", { name: "确认提交", exact: true }).click();
   const saved = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("boardgame-demo-v1")!),
@@ -70,7 +69,9 @@ test("unreachable construction is disabled before preview; free conversions are 
   const s = actionState();
   s.players.p1.resources.power = [0, 0, 12];
   await open(page, s);
-  await page.getByRole("button", { name: /^I13 / }).click();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("I13")} `) })
+    .click();
   await expect(
     page.getByRole("button", { name: "改造与建造", exact: true }),
   ).toBeDisabled();
@@ -104,7 +105,9 @@ test("Omar can choose a tower for the first starting placement", async ({
   }
   await open(page, s);
   await page.getByLabel("起始建筑").selectOption("tower");
-  await page.getByRole("button", { name: /^A1 / }).click();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("A1")} `) })
+    .click();
   await page.getByRole("button", { name: "执行行动", exact: true }).click();
   await expect(page.locator(".preview-changes")).toContainText("灯塔");
   await page.getByRole("button", { name: "确认提交", exact: true }).click();
@@ -157,7 +160,7 @@ test("innovation payment shows colours and supplies a valid editable combination
   });
 });
 
-test("a public spade can terraform and build directly without a separate add-target step", async ({
+test("a public spade completes terrain before the separate building confirmation", async ({
   page,
 }) => {
   const s = actionState();
@@ -166,9 +169,21 @@ test("a public spade can terraform and build directly without a separate add-tar
   await open(page, s);
   await page.getByRole("button", { name: "公共行动", exact: true }).click();
   await page.getByLabel("公共能量动作").selectOption("spade");
-  await page.getByRole("button", { name: /^C5 / }).click();
-  await page.getByLabel("在第一个地块建造工坊").check();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("C5")} `) })
+    .click();
+  await expect(page.getByLabel("在第一个地块建造工坊")).toHaveCount(0);
   await page.getByRole("button", { name: "使用铲子", exact: true }).click();
+  await page.getByRole("button", { name: "确认提交", exact: true }).click();
+  const terrainOnly = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("boardgame-demo-v1")!),
+  );
+  expect(terrainOnly.board.terrain.C5).toBe("forest");
+  expect(terrainOnly.board.buildings.C5).toBeUndefined();
+  expect(terrainOnly.players.p1.resources.tools).toBe(
+    s.players.p1.resources.tools,
+  );
+  await page.getByRole("button", { name: "建造工坊", exact: true }).click();
   await expect(page.locator(".preview-changes")).toContainText("3 → 2");
   await page.getByRole("button", { name: "确认提交", exact: true }).click();
   const saved = await page.evaluate(() =>
@@ -192,18 +207,21 @@ test("a pending bonus spade lets its owner convert power to the missing building
   });
   if (!result.ok) throw Error(result.error.code);
   await open(page, result.state);
-  await page.getByRole("button", { name: /^C5 / }).click();
-  await page.getByLabel("在第一个地块建造工坊").check();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("C5")} `) })
+    .click();
+  await page.getByRole("button", { name: "使用铲子", exact: true }).click();
+  await page.getByRole("button", { name: "确认提交", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "使用铲子", exact: true }),
+    page.getByRole("button", { name: "建造工坊", exact: true }),
   ).toBeDisabled();
   await page.getByLabel("转换方式").selectOption("1");
   await page.getByRole("button", { name: "转换资源", exact: true }).click();
   await page.getByRole("button", { name: "确认提交", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "使用铲子", exact: true }),
+    page.getByRole("button", { name: "建造工坊", exact: true }),
   ).toBeEnabled();
-  await page.getByRole("button", { name: "使用铲子", exact: true }).click();
+  await page.getByRole("button", { name: "建造工坊", exact: true }).click();
   await page.getByRole("button", { name: "确认提交", exact: true }).click();
   const saved = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("boardgame-demo-v1")!),
@@ -232,7 +250,9 @@ test("science spades cannot silently buy missing spades", async ({ page }) => {
     },
   ];
   await open(page, s);
-  await page.getByRole("button", { name: /^C7 / }).click();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("C7")} `) })
+    .click();
   await expect(page.locator(".free-actions")).toHaveCount(0);
   await expect(page.getByLabel("在第一个地块建造工坊")).toHaveCount(0);
   await expect(

@@ -19,7 +19,7 @@ test("new users verify a required email, can correct it, and only then log in", 
     password = "abc123";
   const email = username + "@example.test",
     corrected = "fixed-" + email;
-  const origin = "http://127.0.0.1:5174";
+  const origin = `http://127.0.0.1:${process.env.E2E_WEB_PORT ?? 5174}`;
   async function deliveredLink(destination: string) {
     let message: { text: string } | undefined;
     await expect

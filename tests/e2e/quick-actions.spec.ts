@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect, type Page } from "@playwright/test";
 import { actionState } from "../../packages/rules/test/fixtures/actions";
 
@@ -51,7 +52,7 @@ test("direct map upgrade commits once without an intermediate preview button", a
   page,
 }) => {
   await open(page, false);
-  await page.getByRole("button", { name: /^A1 / }).click();
+  await page.getByRole("button", { name: new RegExp(`^${hexLabel("A1")} `) }).click();
   const panel = page.getByRole("region", { name: "地块操作" });
   await panel.getByRole("button", { name: /^升级为公会/ }).click();
   await expect(page.getByText("局面版本 1", { exact: true })).toBeVisible();

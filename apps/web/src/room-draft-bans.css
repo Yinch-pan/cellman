@@ -1,0 +1,62 @@
+.draft-ban-editor,
+.draft-ban-summary {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.draft-ban-summary {
+  flex-basis: 100%;
+  overflow-wrap: anywhere;
+}
+.draft-ban-category {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.draft-ban-category summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 5px 0;
+}
+.draft-ban-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.draft-ban-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  cursor: pointer;
+}
+.draft-ban-card.banned {
+  background: #fff0e9;
+  border-color: #b97b61;
+}
+.draft-ban-card.unavailable {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.draft-ban-card input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: #964b32;
+}
+.draft-ban-card small {
+  display: block;
+  margin-top: 5px;
+  line-height: 1.6;
+  font-weight: normal;
+}
+.draft-ban-card:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}

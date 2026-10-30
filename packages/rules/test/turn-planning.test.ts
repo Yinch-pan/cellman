@@ -91,6 +91,78 @@ it("publishes when an opponent must respond, and cannot resolve their choice ins
     }).ok,
   ).toBe(false);
 });
+it("keeps the final conversion window before publishing a turn with paid leech", () => {
+  const s = actionState();
+  const action: GameAction = {
+    kind: "turn",
+    actions: [
+      { kind: "upgrade", hex: "A1", to: "guild" },
+      { kind: "convert", from: "tool", to: "coin", count: 1 },
+      { kind: "endTurn" },
+    ],
+  };
+  const result = applyAction(s, "p1", action);
+  if (!result.ok) throw Error(result.error.code);
+  expect(result.state.activeSeat).toBe("p2");
+  expect(result.state.players.p1.primaryDone).toBe(false);
+  expect(result.state.players.p1.resources).toMatchObject({
+    tools: 0,
+    coins: 13,
+  });
+  expect(result.state.players.p2.resources).toEqual(s.players.p2.resources);
+  expect(result.state.pending).toHaveLength(1);
+  expect(result.state.pending[0]).toMatchObject({
+    kind: "leech",
+    seat: "p2",
+    amount: 2,
+  });
+  expect(
+    applyAction(result.state, "p2", {
+      kind: "upgrade",
+      hex: "B1",
+      to: "school",
+    }),
+  ).toMatchObject({ ok: false, error: { code: "PENDING_CHOICES" } });
+  const accepted = applyAction(result.state, "p2", {
+    kind: "respond",
+    choiceId: result.state.pending[0].id,
+    option: "accept",
+  });
+  if (!accepted.ok) throw Error(accepted.error.code);
+  expect(accepted.state.activeSeat).toBe("p2");
+  expect(accepted.state.players.p2.vp).toBe(19);
+  expect(accepted.state.pending).toEqual([]);
+  result.state.revision = 1;
+  expect(replayGame(s, [{ revision: 1, seat: "p1", action }]).state).toEqual(
+    result.state,
+  );
+});
+
+it("cannot finish a turn with an unresolved building reward or use the new window in engine-6", () => {
+  let s = actionState();
+  s.board.buildings.A1.kind = "guild";
+  s = step(s, { kind: "upgrade", hex: "A1", to: "school" });
+  expect(applyAction(s, "p1", { kind: "endTurn" })).toMatchObject({
+    ok: false,
+    error: { code: "PENDING_CHOICES" },
+  });
+  const old = actionState();
+  old.rulesVersion = old.setup.rulesVersion = "aoi-1.1+2024-09.engine-6";
+  const upgraded = applyAction(old, "p1", {
+    kind: "upgrade",
+    hex: "A1",
+    to: "guild",
+  });
+  if (!upgraded.ok) throw Error(upgraded.error.code);
+  expect(
+    applyAction(upgraded.state, "p1", {
+      kind: "convert",
+      from: "tool",
+      to: "coin",
+      count: 1,
+    }),
+  ).toMatchObject({ ok: false, error: { code: "PENDING_CHOICES" } });
+});
 it.each([true, false])(
   "split spade construction allows conversion, build=%s",
   (build) => {
@@ -182,7 +254,7 @@ it("income sources match independent expected income and scholar supply caps", (
   giveIncome(s);
   expect(p.resources).toEqual({
     coins: 12,
-    tools: 1,
+    tools: 2, // Base tool + engineering 9.
     scholars: 7,
     books: [0, 0, 0, 0],
     power: [0, 11, 1],

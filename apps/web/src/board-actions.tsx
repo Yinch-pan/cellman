@@ -11,6 +11,7 @@ import { applyAction } from "../../../packages/rules/src/engine";
 import { bonusDescriptions } from "./i18n/content";
 import { specialOptions } from "./i18n/presentation";
 import { label, RequestError } from "./api";
+import { withPowerBurn } from "./power-payment";
 export interface BoardIntent {
   kind: "power" | "book" | "innovation" | "build";
   id?: string;
@@ -76,6 +77,12 @@ export function BoardActions({
             const price = Number(cost) - (p.faction === "illusionists" ? 1 : 0);
             const used = state.shared.usedActions.includes(id),
               lack = p.resources.power[2] < price;
+            const payment = withPowerBurn(state, seat, {
+              kind: "powerAction",
+              id,
+            });
+            const burn =
+              payment.kind === "powerAction" ? payment.burn : undefined;
             return (
               <button
                 className="board-tile"
@@ -107,7 +114,9 @@ export function BoardActions({
                   {used
                     ? translate("ui.board-actions.f2f683d25a")
                     : lack
-                      ? translate("ui.board-actions.5f3a0074e0")
+                      ? burn
+                        ? translate("powerPayment.short", { count: burn })
+                        : translate("ui.board-actions.5f3a0074e0")
                       : translate("ui.board-actions.8689c9b993")}
                 </small>
               </button>

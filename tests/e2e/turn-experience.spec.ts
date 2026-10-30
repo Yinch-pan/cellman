@@ -1,6 +1,8 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect, type Page } from "@playwright/test";
 import { actionState } from "../../packages/rules/test/fixtures/actions";
 import type { GameState } from "../../packages/rules/src/types";
+import { replayRecord } from "../../packages/rules/src/replay";
 async function open(page: Page, s: GameState) {
   await page.addInitScript(() => {
     localStorage.setItem("cellman-turn-planning", "on");
@@ -78,6 +80,68 @@ test("book action tiles show their own exact costs and effects", async ({
     page.getByRole("button", { name: /书籍行动 · 2 本书 → 免费升级公会/ }),
   ).toBeVisible();
 });
+
+test("last conversion remains private before handing paid leech to the next player", async ({
+  page,
+}) => {
+  const s = actionState();
+  await page.setViewportSize({ width: 390, height: 900 });
+  await open(page, s);
+  const saved = () =>
+    page.evaluate(() => JSON.parse(localStorage.getItem("boardgame-demo-v1")!));
+  await page.getByRole("button", { name: /^A1 / }).click();
+  const panel = page.getByRole("region", { name: "地块操作" });
+  await panel.getByRole("button", { name: /^升级为公会/ }).click();
+  await panel.getByRole("button", { name: "确认步骤", exact: true }).click();
+  await expect(
+    page
+      .getByText("提交前仍可转换资源；提交后由其他玩家处理蹭魔。", {
+        exact: true,
+      })
+      .first(),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "打开资源转换面板", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "资源转换", exact: true });
+  await dialog
+    .getByRole("button", { name: "1 工具 → 1 金币", exact: true })
+    .click();
+  await dialog.getByRole("button", { name: "完成转换", exact: true }).click();
+  expect((await saved()).revision).toBe(0);
+  expect((await saved()).pending).toEqual([]);
+  expect((await saved()).players.p1.resources.coins).toBe(15);
+  await page.reload();
+  await expect(
+    page.getByText("本回合试走 · 2 步", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "提交并等待回应", exact: true })
+    .click();
+  await page.getByRole("button", { name: "确认提交", exact: true }).click();
+  await expect.poll(async () => (await saved()).revision).toBe(1);
+  const published = await saved();
+  expect(published.activeSeat).toBe("p2");
+  expect(published.players.p1.resources).toMatchObject({ tools: 0, coins: 13 });
+  expect(published.players.p2.vp).toBe(20);
+  expect(published.pending[0]).toMatchObject({
+    kind: "leech",
+    seat: "p2",
+    amount: 2,
+  });
+  const choice = page.locator(`[data-choice-id="${published.pending[0].id}"]`);
+  await choice.getByRole("button", { name: "接受", exact: true }).click();
+  await page.getByRole("button", { name: "确认提交", exact: true }).click();
+  await expect.poll(async () => (await saved()).revision).toBe(2);
+  const final = await saved();
+  expect(final.players.p2.vp).toBe(19);
+  expect(final.pending).toEqual([]);
+  expect(final.activeSeat).toBe("p2");
+  const record = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("boardgame-demo-record")!),
+  );
+  expect(replayRecord(record).state).toEqual(final);
+});
 test("board spade -> terrain -> conversion -> construction -> atomic publication", async ({
   page,
 }, info) => {
@@ -88,11 +152,13 @@ test("board spade -> terrain -> conversion -> construction -> atomic publication
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page, s);
   await page.getByRole("button", { name: "能量板：1 铲", exact: true }).click();
-  await page.getByRole("button", { name: /^C5 / }).click();
+  await page
+    .getByRole("button", { name: new RegExp(`^${hexLabel("C5")} `) })
+    .click();
   // Selecting the target while an action is chosen must retain that action.
   await page.getByRole("button", { name: "使用铲子", exact: true }).click();
   await page.getByRole("button", { name: "确认步骤", exact: true }).click();
-  await expect(page.getByText(/C5 已完成改造/)).toBeVisible();
+  await expect(page.getByText(/C4 已完成改造/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "建造工坊", exact: true }),
   ).toBeDisabled();
@@ -135,8 +201,14 @@ test("interactive tutorial completes all eight real-rule steps and can reset", a
     "预览结束本轮",
   ];
   for (let i = 0; i < buttons.length; i++) {
-    if (i === 0) await page.getByRole("button", { name: /^B4 / }).click();
-    if (i === 2) await page.getByRole("button", { name: /^C5 / }).click();
+    if (i === 0)
+      await page
+        .getByRole("button", { name: new RegExp(`^${hexLabel("B4")} `) })
+        .click();
+    if (i === 2)
+      await page
+        .getByRole("button", { name: new RegExp(`^${hexLabel("C5")} `) })
+        .click();
     await page.getByRole("button", { name: buttons[i], exact: true }).click();
     await page
       .getByRole("button", { name: "确认教学步骤", exact: true })

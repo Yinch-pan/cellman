@@ -1,5 +1,6 @@
 import type { GameState, Player } from "./types";
 import { palaces } from "./content";
+import { RULES_VERSION } from "./state";
 export interface IncomeSource {
   source: string;
   coins?: number;
@@ -19,7 +20,12 @@ export function incomeSources(s: GameState, p: Player): IncomeSource[] {
   const count = (kind: string) => bs.filter((b) => b.kind === kind).length;
   const g = count("guild");
   const rows: IncomeSource[] = [
-    { source: "工坊", tools: count("workshop") },
+    // The first tool icon is always visible on the home board (rulebook p. 10).
+    // Retain historical income when displaying or replaying older games.
+    {
+      source: "工坊",
+      tools: count("workshop") + (s.rulesVersion === RULES_VERSION ? 1 : 0),
+    },
     { source: "商会", coins: 2 * g, power: [0, 1, 2, 4, 6][g] },
     { source: "学校与大学", scholars: count("school") + count("university") },
   ];

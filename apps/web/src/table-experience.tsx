@@ -1,4 +1,5 @@
 import { t as translate } from "./i18n";
+import { hexLabel } from "./map-coordinates";
 import { translateRuleText } from "./i18n/presentation";
 import React from "react";
 import type {
@@ -14,6 +15,7 @@ import {
 import { specialOptions } from "./i18n/presentation";
 import { placementOptions } from "../../../packages/rules/src/setup";
 import { label } from "./api";
+import { GameSymbol } from "./game-symbols";
 
 export const terrainPresentation: Record<
   Terrain,
@@ -65,6 +67,9 @@ export function choiceTitle(c: PendingChoice) {
     bridge: translate("ui.table-experience.ecad82034e"),
     city: translate("ui.table-experience.eeb837dfb8"),
     competency: translate("ui.table-experience.bfe8aa1cd9"),
+    palace: translate("palace.choose"),
+    bonus: translate("pass.chooseBonus"),
+    passFinish: translate("pass.finishPrompt"),
     neutral: translate("ui.table-experience.e804d84983", {
       p0: label(c.buildingKind ?? "tower"),
     }),
@@ -93,7 +98,7 @@ export function choiceSource(state: GameState, c: PendingChoice) {
       p0:
         state.players[building.seat]?.name ??
         translate("ui.table-experience.518b1e7736"),
-      p1: c.source,
+      p1: hexLabel(c.source),
       p2: label(building.kind),
     });
   if (c.source.startsWith("city:")) {
@@ -101,10 +106,17 @@ export function choiceSource(state: GameState, c: PendingChoice) {
       .filter(([, b]) => b.cityId === c.source)
       .map(([id]) => id);
     return translate("ui.table-experience.bb42760d71", {
-      p0: hexes.join("、") || translate("ui.table-experience.85f5161056"),
+      p0:
+        hexes.map(hexLabel).join("、") ||
+        translate("ui.table-experience.85f5161056"),
     });
   }
-  return translate("ui.table-experience.4801ccb5e0", { p0: label(c.source) });
+  return translate("ui.table-experience.4801ccb5e0", {
+    p0:
+      c.kind === "buildWorkshop"
+        ? (c.buildHexes ?? [c.source]).map(hexLabel).join(" / ")
+        : label(c.source),
+  });
 }
 export function currentTask(state: GameState, seat: string) {
   if (state.status === "finished")
@@ -200,19 +212,20 @@ export function PlayerResources({ player }: { player: Player }) {
       })}
     >
       <span title={translate("ui.table-experience.bbece6f829")}>
-        ◉ <b>{r.coins}</b>
+        <GameSymbol kind="coins" /> <b>{r.coins}</b>
         <small>{translate("ui.table-experience.bbece6f829")}</small>
       </span>
       <span title={translate("ui.table-experience.5ca6730d44")}>
-        ⚒ <b>{r.tools}</b>
+        <GameSymbol kind="tools" /> <b>{r.tools}</b>
         <small>{translate("ui.table-experience.5ca6730d44")}</small>
       </span>
       <span title={translate("ui.table-experience.230cc1d6c8")}>
-        ♟ <b>{r.scholars}</b>
+        <GameSymbol kind="scholars" /> <b>{r.scholars}</b>
         <small>{translate("ui.table-experience.230cc1d6c8")}</small>
       </span>
       <span title={translate("ui.table-experience.dffc39f38f")}>
-        ⚿ <b>{Math.max(0, player.keys - player.keysUsed)}</b>
+        <GameSymbol kind="key" />{" "}
+        <b>{Math.max(0, player.keys - player.keysUsed)}</b>
         <small>{translate("ui.table-experience.6d132744a9")}</small>
       </span>
       <div
@@ -262,7 +275,9 @@ export function FinalScores({ state }: { state: GameState }) {
           ? translate("ui.table-experience.96739aa233")
           : translate("ui.table-experience.2ca0069ec3")}
       </h2>
-      {state.matchResult ? (
+      {state.matchResult?.reason === "consensus" ? (
+        <p>{translate("endGame.effect")}</p>
+      ) : state.matchResult ? (
         <p>
           {translate("ui.table-experience.6b6cacca64")}
           {state.matchResult.reason === "inactive"

@@ -519,7 +519,7 @@ describe("bonus incomes and active rewards", () => {
     giveIncome(s);
     expect(p.resources).toEqual({
       coins: 30 + coins,
-      tools: 20 + tools,
+      tools: 20 + 1 + tools, // Always-visible base tool plus bonus income.
       scholars: 3 + scholars,
       power: [0, 12 - power, power],
       books: [0, 0, 0, 0],
@@ -693,7 +693,9 @@ describe("travel continues into construction in the default turn planner", () =>
       build: false,
       deferBuild: true,
     };
-    expect(applyAction(old, "p1", a)).toEqual(frozenV5Action(old, "p1", a));
+    expect(applyAction(old, "p1", a)).toEqual(
+      frozenV5Action(old as Parameters<typeof frozenV5Action>[0], "p1", a),
+    );
     const n = step(old, a),
       c = n.pending[0];
     expect(
@@ -703,7 +705,7 @@ describe("travel continues into construction in the default turn planner", () =>
         option: "build",
       }),
     ).toMatchObject({ ok: false, error: { code: "OUT_OF_REACH" } });
-    const turn: GameAction = {
+    const turn: Parameters<typeof frozenV5Action>[2] = {
       kind: "turn",
       actions: [
         {
@@ -725,7 +727,7 @@ describe("travel continues into construction in the default turn planner", () =>
       }).state,
     ).toEqual(expected);
     expect(applyAction(old, "p1", turn)).toEqual(
-      frozenV5Action(old, "p1", turn),
+      frozenV5Action(old as Parameters<typeof frozenV5Action>[0], "p1", turn),
     );
   });
 });

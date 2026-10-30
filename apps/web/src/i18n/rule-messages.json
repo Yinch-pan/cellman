@@ -508,10 +508,6 @@
     "key": "rules.770a6f6d98"
   },
   {
-    "source": "处理待响应",
-    "key": "rules.80a83fdc68"
-  },
-  {
     "source": "资源转换",
     "key": "rules.a12a2f3342"
   },
@@ -520,16 +516,20 @@
     "key": "rules.94656bc8f2"
   },
   {
+    "source": "结束回合",
+    "key": "rules.975778d990"
+  },
+  {
+    "source": "处理待响应",
+    "key": "rules.80a83fdc68"
+  },
+  {
     "source": "选择开局配置",
     "key": "rules.6df997b13d"
   },
   {
     "source": "放置起始工坊",
     "key": "rules.a8bd53cd55"
-  },
-  {
-    "source": "结束回合",
-    "key": "rules.975778d990"
   },
   {
     "source": "改造与建造",
@@ -660,6 +660,10 @@
     "key": "rules.15f6a4f37f"
   },
   {
+    "source": "领取书籍",
+    "key": "rules.59f3f619dd"
+  },
+  {
     "source": "轮抽开局配置",
     "key": "rules.958e34a7ff"
   },
@@ -760,6 +764,10 @@
     "key": "rules.8cff79bb4f"
   },
   {
+    "source": "全体玩家同意结束本局；保留对局记录，不判胜负，不计入分数和胜率。",
+    "key": "rules.5195ff5738"
+  },
+  {
     "source": "{p0} 因超时被移除；按末名结算，其余玩家并列第一。余局不再改变战绩。",
     "key": "rules.39dab7dbf8"
   },
@@ -786,6 +794,10 @@
   {
     "source": "{p0} 获得 {p1} 魔力，支付 {p2} 分",
     "key": "rules.6615faf138"
+  },
+  {
+    "source": "{p0} 自动拒绝付分蹭魔",
+    "key": "rules.bb7cad7940"
   },
   {
     "source": "第 {p0} 轮计分板",

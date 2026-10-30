@@ -1,0 +1,59 @@
+.end-game-panel {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  background: var(--paper);
+}
+.end-game-panel summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 0;
+}
+.end-game-panel p {
+  margin: 6px 0;
+}
+.end-game-panel form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.end-game-panel label {
+  display: grid;
+  gap: 6px;
+}
+.end-game-panel textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  font: inherit;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+}
+.end-game-voters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  list-style: none;
+  padding: 0;
+}
+.end-game-voters li {
+  overflow-wrap: anywhere;
+}
+.end-game-reason {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.end-game-vote .inline {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.end-game-history {
+  margin-top: 8px;
+}
+.end-game-history ul {
+  padding-left: 20px;
+}

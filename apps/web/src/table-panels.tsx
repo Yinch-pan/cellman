@@ -1,4 +1,5 @@
 import { t as translate } from "./i18n";
+import { bridgeLabel, eventHexes, hexLabel } from "./map-coordinates";
 import { fieldLabels, eventText } from "./i18n/presentation";
 import React, { useState } from "react";
 import type {
@@ -31,7 +32,8 @@ export function SetupPanel({
   selectedPick?: { category: string; option: string };
 }) {
   if (state.setup.draft) {
-    const categories = ["faction", "native", "palace", "bonus"] as const;
+    const categories = ["faction", "native", "bonus", "palace"] as const;
+    const resultCategories = ["faction", "native", "palace", "bonus"] as const;
     const names = {
       faction: translate("ui.table-panels.b49377b38c"),
       native: translate("ui.table-panels.51695ad45a"),
@@ -90,37 +92,13 @@ export function SetupPanel({
             .map((seat) => state.players[seat].name)
             .join(" → ")}
         </p>
-        <div className="draft-picked">
-          <table aria-label={translate("ui.table-panels.92b6003dc9")}>
-            <thead>
-              <tr>
-                <th>{translate("ui.table-panels.991e63fe29")}</th>
-                {categories.map((c) => (
-                  <th key={c}>{names[c]}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {state.turnOrder.map((seat) => (
-                <tr key={seat} data-active={seat === state.activeSeat}>
-                  <th>
-                    {state.players[seat].name}
-                    {seat === state.activeSeat && (
-                      <small>{translate("ui.table-panels.c259fa9a3b")}</small>
-                    )}
-                  </th>
-                  {categories.map((category) => (
-                    <td key={category}>
-                      {title(category, state.draftPicks?.[seat]?.[category])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
         {categories.map((category) => (
-          <section key={category} aria-label={names[category]}>
+          <section
+            className="draft-category"
+            data-category={category}
+            key={category}
+            aria-label={names[category]}
+          >
             <h3>{names[category]}</h3>
             <div className="setup-options">
               {state.setup.draft!.pools[category].map((option) => {
@@ -172,7 +150,9 @@ export function SetupPanel({
                         : { faction: "♟", palace: "♜", bonus: "✦" }[category]}
                     </span>
                     <strong>{title(category, option)}</strong>
-                    <span>{description(category, option)}</span>
+                    <span className="tile-description">
+                      {description(category, option)}
+                    </span>
                     {owner && (
                       <small>
                         {state.players[owner].name}{" "}
@@ -189,6 +169,35 @@ export function SetupPanel({
             </div>
           </section>
         ))}
+        <div className="draft-picked" tabIndex={0}>
+          <table aria-label={translate("ui.table-panels.92b6003dc9")}>
+            <thead>
+              <tr>
+                <th>{translate("ui.table-panels.991e63fe29")}</th>
+                {resultCategories.map((c) => (
+                  <th key={c}>{names[c]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {state.turnOrder.map((seat) => (
+                <tr key={seat} data-active={seat === state.activeSeat}>
+                  <th>
+                    {state.players[seat].name}
+                    {seat === state.activeSeat && (
+                      <small>{translate("ui.table-panels.c259fa9a3b")}</small>
+                    )}
+                  </th>
+                  {resultCategories.map((category) => (
+                    <td key={category}>
+                      {title(category, state.draftPicks?.[seat]?.[category])}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     );
   }
@@ -354,6 +363,7 @@ export function LedgerPanel({
   onUndo,
   seat,
   revoked = [],
+  onLocate,
 }: {
   history: { revision: number; events: RuleEvent[] }[];
   state: GameState;
@@ -363,6 +373,7 @@ export function LedgerPanel({
   onUndo?: (revision: number) => void;
   seat?: string;
   revoked?: number[];
+  onLocate?: (hex: string) => void;
 }) {
   const [playerFilter, setPlayerFilter] = useState("");
   const [roundFilter, setRoundFilter] = useState("");
@@ -447,7 +458,11 @@ export function LedgerPanel({
         )}
       </div>
       {[...filtered].reverse().map((h) => (
-        <div className="history-row" key={h.revision}>
+        <div
+          className="history-row"
+          key={h.revision}
+          data-revision={h.revision}
+        >
           <span>
             #{h.revision}
             {revoked.includes(h.revision) && (
@@ -499,6 +514,19 @@ export function LedgerPanel({
               .map((e, i) => (
                 <div key={i}>
                   <strong>{eventText(e, state)}</strong>
+                  {onLocate &&
+                    eventHexes(e).map((hex) => (
+                      <button
+                        className="text-button log-map-link"
+                        key={hex}
+                        onClick={() => onLocate(hex)}
+                        aria-label={translate("history.locateHex", {
+                          hex: hexLabel(hex),
+                        })}
+                      >
+                        {hexLabel(hex)} ↗
+                      </button>
+                    ))}
                   {(
                     (e.details?.scoreSources ?? []) as {
                       seat: string;
@@ -567,7 +595,7 @@ export function BridgeChoice({
           .filter((v) => v !== "discard")
           .map((v) => (
             <option key={v} value={v}>
-              {v.replace(":", " ↔ ")}
+              {bridgeLabel(v)}
             </option>
           ))}
       </select>

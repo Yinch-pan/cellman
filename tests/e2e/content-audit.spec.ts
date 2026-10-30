@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect, type Page } from "@playwright/test";
 import {
   auditState,
@@ -33,9 +34,15 @@ const saved = (page: Page): Promise<GameState> =>
 const click = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true }).click();
 const hex = (page: Page, id: string) =>
-  page.getByRole("button", { name: new RegExp(`^${id} `) }).click();
+  page.getByRole("button", { name: new RegExp(`^${hexLabel(id)} `) }).click();
 async function confirm(page: Page, planning = false) {
-  await click(page, planning ? "确认步骤" : "确认提交");
+  await page
+    .locator("#table-preview")
+    .getByRole("button", {
+      name: planning ? "确认步骤" : "确认提交",
+      exact: true,
+    })
+    .click();
 }
 
 async function move(page: Page, state: GameState, a: GameAction) {
@@ -75,7 +82,7 @@ async function move(page: Page, state: GameState, a: GameAction) {
       await hex(page, a.hex);
       await page
         .getByRole("region", { name: "地块操作" })
-        .getByRole("button", { name: /^(改造并)?建造工坊/ })
+        .getByRole("button", { name: /^(先改造地形|建造工坊)/ })
         .click();
       break;
     case "special": {
@@ -104,15 +111,28 @@ async function move(page: Page, state: GameState, a: GameAction) {
       break;
     case "pass":
       await click(page, "轮次");
+      await click(page, "结束本轮");
+      await confirm(page);
       if (state.round < 6)
         await page
-          .locator(".bonus-market")
+          .locator("[data-choice-id]")
           .getByRole("button", {
-            name: new RegExp(`^${bonusCodes[a.bonus!]} `),
+            name: new RegExp("^" + label("bonus:" + a.bonus)),
           })
           .click();
-      await click(page, "结束本轮");
-      break;
+      const afterBonus = await saved(page);
+      if (
+        getAvailableChoices(afterBonus).some(
+          (c) => c.kind !== "passFinish" && c.seat === state.activeSeat,
+        )
+      ) {
+        await drain(page, afterBonus);
+        return saved(page);
+      }
+      await expect
+        .poll(async () => (await saved(page)).revision)
+        .toBe(state.revision + (state.round < 6 ? 3 : 2));
+      return saved(page);
     case "respond": {
       const c = state.pending.find((c) => c.id === a.choiceId)!;
       const panel = page.locator(`[data-choice-id="${c.id}"]`);
@@ -126,7 +146,10 @@ async function move(page: Page, state: GameState, a: GameAction) {
       ) {
         await hex(page, a.option);
         await panel
-          .getByRole("button", { name: "放置 " + a.option, exact: true })
+          .getByRole("button", {
+            name: "放置 " + hexLabel(a.option),
+            exact: true,
+          })
           .click();
       } else if (c.kind === "bridge" && a.option !== "discard") {
         await panel.getByLabel("免费桥位置").selectOption(a.option);
@@ -137,10 +160,20 @@ async function move(page: Page, state: GameState, a: GameAction) {
           .getByRole("combobox")
           .last()
           .selectOption(a.terraform.terrain);
-        if (a.terraform.build) await panel.getByRole("checkbox").check();
+        a.terraform.build = false;
+        a.terraform.deferBuild =
+          c.canBuild !== false &&
+          a.terraform.terrain === state.players[c.seat].native &&
+          (state.board.terrain[a.terraform.hex] ??
+            officialLarge.hexes[a.terraform.hex].terrain) !==
+            state.players[c.seat].native;
         await panel
           .getByRole("button", { name: "使用铲子", exact: true })
           .click();
+        const discard = page.getByRole("button", {
+          name: /^确认放弃剩余 \d+ 铲并完成改造$/,
+        });
+        if (await discard.isVisible()) await discard.click();
       } else {
         const name =
           c.kind === "key"
@@ -173,15 +206,38 @@ async function move(page: Page, state: GameState, a: GameAction) {
             exact: !["competency", "city"].includes(c.kind),
           })
           .click();
+        if (c.kind === "book") {
+          await panel
+            .getByRole("region", { name: "分配书籍" })
+            .getByRole("button", { name: "确认提交", exact: true })
+            .click();
+        }
+        if (c.kind === "city") {
+          a.cityHex = Object.keys(state.board.buildings).find(
+            (id) => state.board.buildings[id].cityId === c.source,
+          )!;
+          if (a.cityHex) await hex(page, a.cityHex);
+        }
       }
       break;
     }
     default:
       throw Error(`Missing UI move ${a.kind}`);
   }
-  await confirm(page);
+  const collectedBook =
+    a.kind === "respond" &&
+    state.pending.find((c) => c.id === a.choiceId)?.kind === "book";
+  if (!collectedBook) await confirm(page);
+  const result = applyAction(state, state.activeSeat, a);
+  const autoFinish =
+    result.ok &&
+    getAvailableChoices(result.state).some((c) => c.kind === "passFinish");
+  if (autoFinish)
+    await expect
+      .poll(async () => (await saved(page)).revision)
+      .toBe(state.revision + 2);
   const n = await saved(page);
-  expect(n.revision).toBe(state.revision + 1);
+  expect(n.revision).toBe(state.revision + (autoFinish ? 2 : 1));
   return n;
 }
 async function drain(page: Page, state: GameState) {
@@ -194,22 +250,29 @@ async function drain(page: Page, state: GameState) {
       c.kind === "spades" &&
       (c.source === "setup-desert" || c.source === "lizards")
     ) {
-      const target = Object.keys(officialLarge.hexes).find(
-        (hex) =>
-          applyAction(s, c.seat, {
-            kind: "respond",
-            choiceId: c.id,
-            option: "terraform",
-            terraform: { hex, terrain: s.players[c.seat].native, build: false },
-          }).ok,
-      )!;
+      const target = Object.keys(officialLarge.hexes)
+        .flatMap((hex) =>
+          [s.players[c.seat].native, ...terrainCycle].map((terrain) => ({
+            hex,
+            terrain,
+          })),
+        )
+        .find(
+          ({ hex, terrain }) =>
+            applyAction(s, c.seat, {
+              kind: "respond",
+              choiceId: c.id,
+              option: "terraform",
+              terraform: { hex, terrain, build: false },
+            }).ok,
+        )!;
       a = {
         kind: "respond",
         choiceId: c.id,
         option: "terraform",
         terraform: {
-          hex: target,
-          terrain: s.players[c.seat].native,
+          hex: target.hex,
+          terrain: target.terrain,
           build: false,
         },
       };
@@ -257,11 +320,15 @@ async function drain(page: Page, state: GameState) {
               ? "coins"
               : c.kind === "key"
                 ? "use"
-                : c.kind === "leech"
-                  ? "decline"
-                  : c.kind === "spades"
-                    ? "discard"
-                    : "0",
+                : c.kind === "passFinish"
+                  ? "finish"
+                  : c.kind === "leech"
+                    ? "decline"
+                    : c.kind === "spades"
+                      ? "discard"
+                      : c.kind === "buildWorkshop"
+                        ? "build"
+                        : "0",
       };
     s = await move(page, s, a);
   }
@@ -652,6 +719,8 @@ test("goblins: using a spade in map construction grants two coins", async ({
     terrain: "forest",
     build: true,
   });
+  expect(s.players.p1.resources.coins).toBe(32);
+  s = await drain(page, s);
   expect(s.players.p1.resources.coins).toBe(30);
   await replay(page, s);
 });

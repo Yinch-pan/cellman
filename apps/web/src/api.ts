@@ -12,6 +12,11 @@ export class RequestError extends Error {
   }
 }
 const messages: Record<string, string> = {
+  END_REQUEST_PENDING: translate("error.END_REQUEST_PENDING"),
+  END_REQUEST_COOLDOWN: translate("error.END_REQUEST_COOLDOWN"),
+  DRAFT_POOL_TOO_SMALL: translate("error.DRAFT_POOL_TOO_SMALL"),
+  DRAFT_BANS_REQUIRE_SNAKE: translate("error.DRAFT_BANS_REQUIRE_SNAKE"),
+  INVALID_DRAFT_BANS: translate("error.INVALID_DRAFT_BANS"),
   PLAYER_REMOVED: translate("error.PLAYER_REMOVED"),
   RESULT_ALREADY_SETTLED: translate("error.RESULT_ALREADY_SETTLED"),
   RESULT_NOT_SETTLED: translate("error.RESULT_NOT_SETTLED"),
@@ -105,6 +110,7 @@ const messages: Record<string, string> = {
   RULESET_UNAVAILABLE: translate("error.RULESET_UNAVAILABLE"),
   RESOLVE_KEY_FIRST: translate("error.RESOLVE_KEY_FIRST"),
   RESOLVE_NEUTRAL_FIRST: translate("error.RESOLVE_NEUTRAL_FIRST"),
+  RESOLVE_PALACE_FIRST: translate("error.RESOLVE_PALACE_FIRST"),
   WAIT_SCIENCE_ORDER: translate("error.WAIT_SCIENCE_ORDER"),
   NO_CITY_KEY: translate("error.NO_CITY_KEY"),
 };

@@ -82,6 +82,12 @@ export async function migrate(db: Database) {
       "utf8",
     ),
   );
+  await db.query(
+    await readFile(
+      new URL("../../migrations/013-consensual-end.sql", import.meta.url),
+      "utf8",
+    ),
+  );
 }
 export async function transaction<T>(
   db: Database,

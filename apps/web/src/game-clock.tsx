@@ -79,9 +79,11 @@ export function GameClockPanel({
       {state.matchResult && (
         <div className="notice" role="status">
           <strong>
-            {state.matchResult.reason === "forfeit"
-              ? translate("ui.game-clock.19c62aba23")
-              : translate("ui.game-clock.a7c764e596")}
+            {state.matchResult.reason === "consensus"
+              ? translate("endGame.finished")
+              : state.matchResult.reason === "forfeit"
+                ? translate("ui.game-clock.19c62aba23")
+                : translate("ui.game-clock.a7c764e596")}
           </strong>
           <p>
             {state.matchResult.reason === "forfeit"

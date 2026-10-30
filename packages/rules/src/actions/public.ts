@@ -31,6 +31,15 @@ export function publicPower(
   };
   requireRule(a.id in costs, "UNSUPPORTED_POWER_ACTION");
   requireRule(!s.shared.usedActions.includes(a.id), "ACTION_OCCUPIED");
+  if (a.deferSpades)
+    requireRule(
+      a.id === "spades" &&
+        !a.build &&
+        !!a.deferBuild &&
+        !a.additional?.length &&
+        a.terrain === p.native,
+      "INVALID_TERRAFORM",
+    );
   spendPower(p, costs[a.id] - (p.faction === "illusionists" ? 1 : 0));
   if (p.faction === "illusionists")
     awardPoints(s, p, s.turnOrder.length >= 4 ? 2 : 1, "幻术师");
@@ -43,6 +52,7 @@ export function publicPower(
   if (a.id === "coins") p.resources.coins += 7;
   if (a.id === "spade" || a.id === "spades") {
     requireRule(a.hex && a.terrain, "MISSING_TERRAFORM");
+    const previousChoices = new Set(s.pending.map((c) => c.id));
     const r = terraform(
       s,
       p,
@@ -59,6 +69,27 @@ export function publicPower(
     );
     awardRound(s, p, "spade", r.spades);
     if (r.built) awardRound(s, p, "workshop");
+    if (a.deferSpades && r.spades < 2) {
+      queueChoice(
+        s,
+        p.seat,
+        "spades",
+        2 - r.spades,
+        ["terraform", "discard"],
+        "power-action-surplus",
+      );
+      const remaining = s.pending.at(-1)!;
+      remaining.canBuild = false;
+      remaining.canBuySpades = false;
+      for (const choice of s.pending)
+        if (
+          !previousChoices.has(choice.id) &&
+          choice.kind === "buildWorkshop"
+        ) {
+          choice.dependsOn = [remaining.id];
+          choice.buildHexes = [a.hex];
+        }
+    }
     findCities(s, p);
   }
   s.shared.usedActions.push(a.id);

@@ -1,0 +1,69 @@
+.public-games {
+  max-width: 1400px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+.watch-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+.watch-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid #d3c8b4;
+  border-radius: 8px;
+  background: #fffdf7;
+  color: #244638;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.watch-card:hover,
+.watch-card:focus-visible {
+  outline: 2px solid #2876a4;
+}
+.watch-card > b {
+  justify-self: end;
+}
+.watch-pagination {
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.spectator-banner .inline {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.watch-perspective {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+.watch-perspective select {
+  max-width: 100%;
+}
+.watch-log {
+  background: #fffdf7;
+  border: 1px solid #d3c8b4;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-wrap: anywhere;
+}
+.watch-log ol {
+  padding-left: 24px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+.watch-log li {
+  margin: 12px 0;
+}
+.watch-log p {
+  margin: 4px 0;
+}
+.spectator-page .board-tile:disabled,
+.spectator-page .setup-option:disabled {
+  opacity: 1;
+  cursor: default;
+}

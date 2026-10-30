@@ -17,6 +17,9 @@ import {
 import { submitCommand, getGame } from "../src/games/commands";
 import { createGame } from "../../../packages/rules/src/state";
 import { sampleSetup } from "../../../packages/rules/test/fixtures/setup";
+import { queueChoice } from "../../../packages/rules/src/responses";
+import { actionState } from "../../../packages/rules/test/fixtures/actions";
+import { replayGame } from "../../../packages/rules/src/replay";
 const schema = "test_" + randomUUID().replaceAll("-", "");
 const url = process.env.TEST_DATABASE_URL;
 const admin = new Pool({ connectionString: url });
@@ -64,6 +67,204 @@ async function seededGame() {
   return id;
 }
 describe("PostgreSQL transactions", () => {
+  it("persists staged passing and retries bonus coins without double payment", async () => {
+    const id = await seededGame();
+    const state = actionState();
+    state.setup.id = id;
+    state.shared.bonusCoins.bigbuilding = 2;
+    await db.query("UPDATE games SET state=$2 WHERE id=$1", [
+      id,
+      JSON.stringify(state),
+    ]);
+    await submitCommand(db, actors[0], id, {
+      commandId: randomUUID(),
+      expectedRevision: 0,
+      action: { kind: "pass", deferBonus: true },
+    });
+    let current = (await getGame(db, actors[0], id)).state;
+    expect(current.activeSeat).toBe("p1");
+    const bonus = {
+      commandId: randomUUID(),
+      expectedRevision: 1,
+      action: {
+        kind: "respond" as const,
+        choiceId: current.pending.find((c) => c.kind === "bonus")!.id,
+        option: "bigbuilding",
+      },
+    };
+    const [a, b] = await Promise.all([
+      submitCommand(db, actors[0], id, bonus),
+      submitCommand(db, actors[0], id, bonus),
+    ]);
+    expect(a).toEqual(b);
+    current = (await getGame(db, actors[0], id)).state;
+    expect(current.players.p1.resources.coins).toBe(
+      state.players.p1.resources.coins + 2,
+    );
+    expect(current.activeSeat).toBe("p1");
+    await submitCommand(db, actors[0], id, {
+      commandId: randomUUID(),
+      expectedRevision: 2,
+      action: {
+        kind: "respond",
+        choiceId: current.pending.find((c) => c.kind === "passFinish")!.id,
+        option: "finish",
+      },
+    });
+    current = (await getGame(db, actors[1], id)).state;
+    expect(current.activeSeat).toBe("p2");
+    expect(current.revision).toBe(3);
+    expect(current.passOrder).toEqual(["p1"]);
+    expect(
+      (await db.query("SELECT * FROM game_events WHERE game_id=$1", [id]))
+        .rowCount,
+    ).toBe(3);
+  });
+  it("publishes a palace before leech and persists a retried ability choice once", async () => {
+    const id = await seededGame();
+    const state = actionState();
+    state.setup.id = id;
+    state.board.buildings.A1.kind = "guild";
+    state.players.p1.resources.tools = 8;
+    state.shared.palaces = ["engineering-palace"];
+    await db.query("UPDATE games SET state=$2 WHERE id=$1", [
+      id,
+      JSON.stringify(state),
+    ]);
+    const upgrade = {
+      commandId: randomUUID(),
+      expectedRevision: 0,
+      action: {
+        kind: "upgrade" as const,
+        hex: "A1",
+        to: "palace" as const,
+        deferPalace: true,
+      },
+    };
+    await submitCommand(db, actors[0], id, upgrade);
+    const published = (await getGame(db, actors[1], id)).state;
+    expect(published.board.buildings.A1.kind).toBe("palace");
+    expect(published.players.p1.palace).toBeNull();
+    const palace = published.pending.find((c) => c.kind === "palace")!;
+    const leech = published.pending.find((c) => c.kind === "leech")!;
+    const choose = {
+      commandId: randomUUID(),
+      expectedRevision: 1,
+      action: {
+        kind: "respond" as const,
+        choiceId: palace.id,
+        option: "engineering-palace",
+      },
+    };
+    await expect(
+      submitCommand(db, actors[0], id, choose),
+    ).rejects.toMatchObject({ code: "WAIT_DEPENDENCY" });
+    const response = {
+      commandId: randomUUID(),
+      expectedRevision: 1,
+      action: {
+        kind: "respond" as const,
+        choiceId: leech.id,
+        option: "decline",
+      },
+    };
+    await submitCommand(db, actors[1], id, response);
+    choose.expectedRevision = 2;
+    const [first, retry] = await Promise.all([
+      submitCommand(db, actors[0], id, choose),
+      submitCommand(db, actors[0], id, choose),
+    ]);
+    expect(first).toEqual(retry);
+    const after = (await getGame(db, actors[0], id)).state;
+    expect(after.revision).toBe(3);
+    expect(after.players.p1.resources.tools).toBe(4);
+    expect(after.players.p1.palace).toBe("engineering-palace");
+    expect(after.pending).toHaveLength(5);
+    expect(
+      (await db.query("SELECT * FROM game_events WHERE game_id=$1", [id]))
+        .rowCount,
+    ).toBe(3);
+    expect(
+      replayGame(state, [
+        { revision: 1, seat: "p1", action: upgrade.action },
+        { revision: 2, seat: "p2", action: response.action },
+        { revision: 3, seat: "p1", action: choose.action },
+      ]).state,
+    ).toEqual(after);
+  });
+  it("book allocation and combined burn retry atomically and replay at one revision each", async () => {
+    const id = await seededGame();
+    const state = actionState();
+    state.setup.id = id;
+    state.phase = "income";
+    state.players.p1.resources.power = [0, 10, 2];
+    queueChoice(state, "p1", "book", 2, ["0", "1", "2", "3"], "income");
+    await db.query("UPDATE games SET state=$2 WHERE id=$1", [
+      id,
+      JSON.stringify(state),
+    ]);
+    const books = {
+      commandId: randomUUID(),
+      expectedRevision: 0,
+      action: {
+        kind: "collectBooks" as const,
+        selections: state.pending.map((c, i) => ({
+          choiceId: c.id,
+          option: (i ? "2" : "0") as "0" | "2",
+        })),
+      },
+    };
+    const [a, b] = await Promise.all([
+      submitCommand(db, actors[0], id, books),
+      submitCommand(db, actors[0], id, books),
+    ]);
+    expect(a).toEqual(b);
+    expect(
+      (await getGame(db, actors[0], id)).state.players.p1.resources.books,
+    ).toEqual([1, 0, 1, 0]);
+    const power = {
+      commandId: randomUUID(),
+      expectedRevision: 1,
+      action: { kind: "powerAction" as const, id: "coins", burn: 2 },
+    };
+    const paid = await submitCommand(db, actors[0], id, power);
+    expect(await submitCommand(db, actors[0], id, power)).toEqual(paid);
+    const conversions = {
+      commandId: randomUUID(),
+      expectedRevision: 2,
+      action: {
+        kind: "convertBatch" as const,
+        actions: [
+          { kind: "burn" as const, count: 3 },
+          {
+            kind: "convert" as const,
+            from: "power" as const,
+            to: "tool" as const,
+            count: 1,
+          },
+        ],
+      },
+    };
+    const [c, d] = await Promise.all([
+      submitCommand(db, actors[0], id, conversions),
+      submitCommand(db, actors[0], id, conversions),
+    ]);
+    expect(c).toEqual(d);
+    const after = (await getGame(db, actors[0], id)).state;
+    expect(after.revision).toBe(3);
+    expect(after.players.p1.resources.power).toEqual([7, 0, 0]);
+    expect(
+      (await db.query("SELECT * FROM game_events WHERE game_id=$1", [id]))
+        .rowCount,
+    ).toBe(3);
+    expect(
+      replayGame(state, [
+        { revision: 1, seat: "p1", action: books.action },
+        { revision: 2, seat: "p1", action: power.action },
+        { revision: 3, seat: "p1", action: conversions.action },
+      ]).state,
+    ).toEqual(after);
+  });
   it("duplicate command retries return the saved result without another event", async () => {
     const id = await seededGame();
     const command = {

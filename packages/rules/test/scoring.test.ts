@@ -3,7 +3,34 @@ import { applyAction } from "../src/engine";
 import { actionState } from "./fixtures/actions";
 import { rankPoints, finishGame } from "../src/scoring";
 import { giveIncome } from "../src/rounds";
+import { bgaFinalState } from "./fixtures/bga-final";
 describe("round lifecycle and scoring, rules p10,17–18", () => {
+  it("matches BGA 939319293 move 97: normal ending, tied ranks, zero science and automatic conversion", () => {
+    let s = bgaFinalState();
+    const resources = structuredClone(
+      Object.values(s.players).map((p) => p.resources),
+    );
+    for (const seat of ["p1", "p3", "p2"]) {
+      const result = applyAction(s, seat, { kind: "pass" });
+      expect(result.ok).toBe(true);
+      if (result.ok) s = result.state;
+    }
+    expect(s.status).toBe("finished");
+    expect(s.round).toBe(6);
+    expect(s.pending).toEqual([]);
+    expect(Object.values(s.players).map((p) => p.resources)).toEqual(resources);
+    expect(
+      s.scores.map((score) => ({
+        seat: score.seat,
+        total: score.total,
+        parts: score.items.map((i) => i.points),
+      })),
+    ).toEqual([
+      { seat: "p1", total: 61, parts: [19, 9, 4, 2, 6, 6, 15] },
+      { seat: "p2", total: 79, parts: [29, 18, 8, 4, 6, 6, 8] },
+      { seat: "p3", total: 67, parts: [40, 9, 2, 8, 0, 0, 8] },
+    ]);
+  });
   it("pools occupied ranks on ties and floors shares", () => {
     expect(rankPoints({ a: 8, b: 8, c: 4 }, [18, 12, 6])).toEqual({
       a: 15,
@@ -26,7 +53,7 @@ describe("round lifecycle and scoring, rules p10,17–18", () => {
     giveIncome(s);
     expect(s.players.p1.resources).toMatchObject({
       coins: 26,
-      tools: 5,
+      tools: 6,
       scholars: 3,
     });
   });

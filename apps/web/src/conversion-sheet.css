@@ -1,0 +1,78 @@
+.conversion-sheet {
+  width: min(680px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid #aaa18a;
+  border-radius: 12px;
+  background: #fffdf6;
+  color: #282820;
+}
+.conversion-sheet::backdrop {
+  background: #17201899;
+}
+.conversion-sheet header,
+.conversion-sheet footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.conversion-sheet h2 {
+  margin: 0;
+}
+.conversion-balances {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  padding: 12px;
+  background: #eeecdf;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.conversion-balances span {
+  overflow-wrap: anywhere;
+}
+.conversion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+.conversion-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  min-height: 48px;
+  text-align: left;
+}
+.conversion-sheet button {
+  min-height: 44px;
+}
+.conversion-grid strong {
+  white-space: nowrap;
+}
+.conversion-steps {
+  margin: 12px 0;
+}
+.conversion-sheet footer {
+  position: sticky;
+  bottom: -20px;
+  padding: 12px 0;
+  background: #fffdf6;
+}
+@media (max-width: 480px) {
+  .conversion-sheet {
+    padding: 12px;
+  }
+  .conversion-grid {
+    grid-template-columns: 1fr;
+  }
+  .conversion-sheet footer {
+    bottom: -12px;
+  }
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Restore latest cellman backup into a temporary database and verify replays
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/cellman/current/deploy/restore-check.py
+StateDirectory=cellman-restore
+StateDirectoryMode=0700
+UMask=0077
+Nice=10
+CPUQuota=50%
+MemoryMax=256M
+TimeoutStartSec=15min

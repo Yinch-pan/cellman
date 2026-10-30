@@ -2,7 +2,16 @@ import React from "react";
 import type { Player } from "../../../packages/rules/src/types";
 import { t } from "./i18n";
 
-export function PlayerTechnology({ player }: { player: Player }) {
+export type TechnologyTrack = "sailing" | "terraform";
+export type TechnologyControls = {
+  onAdvance?: (track: TechnologyTrack) => void;
+  advanceEnabled?: Partial<Record<TechnologyTrack, boolean>>;
+};
+export function PlayerTechnology({
+  player,
+  onAdvance,
+  advanceEnabled,
+}: { player: Player } & TechnologyControls) {
   return (
     <div className="player-technology">
       {(["sailing", "terraform"] as const).map((track) => {
@@ -49,8 +58,23 @@ export function PlayerTechnology({ player }: { player: Player }) {
                         : ""
                   }
                 >
-                  <b>{level}</b>
-                  <small>{rewards[level]}</small>
+                  {onAdvance && level === current + 1 ? (
+                    <button
+                      className="tech-advance"
+                      type="button"
+                      aria-label={t("playerTech.advanceTo", { name, level })}
+                      disabled={!advanceEnabled?.[track]}
+                      onClick={() => onAdvance(track)}
+                    >
+                      <b>{level}</b>
+                      <small>{rewards[level]}</small>
+                    </button>
+                  ) : (
+                    <>
+                      <b>{level}</b>
+                      <small>{rewards[level]}</small>
+                    </>
+                  )}
                 </li>
               ))}
             </ol>

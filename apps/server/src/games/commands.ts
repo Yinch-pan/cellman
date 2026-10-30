@@ -102,6 +102,10 @@ export async function submitCommand(
       !isDeepStrictEqual(result.state, rows[0].state);
     const revision = rows[0].revision + 1;
     result.state.revision = revision;
+    await c.query(
+      "UPDATE game_end_requests SET status='changed' WHERE game_id=$1 AND status='pending'",
+      [id],
+    );
     const response = {
       commandId: command.commandId,
       revision,
@@ -186,6 +190,12 @@ export async function getReplay(db: Database, actor: string, id: string) {
       undoRequests: (
         await c.query(
           "SELECT id,requester_seat,base_revision,target_revision,reason,votes,status,applied_revision,created_at FROM game_undo_requests WHERE game_id=$1 ORDER BY created_at,id",
+          [id],
+        )
+      ).rows,
+      endRequests: (
+        await c.query(
+          "SELECT id,requester_seat,base_revision,reason,votes,status,applied_revision,created_at,expires_at FROM game_end_requests WHERE game_id=$1 ORDER BY created_at,id",
           [id],
         )
       ).rows,

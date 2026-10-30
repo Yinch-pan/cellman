@@ -197,7 +197,8 @@ export interface GameState {
   placementKinds?: BuildingKind[];
   scores: ScoreBreakdown[];
   matchResult?: {
-    reason: "forfeit" | "inactive";
+    // Administrative result metadata is shared across engine versions.
+    reason: "forfeit" | "inactive" | "consensus";
     at: string;
     loser?: SeatId;
     winners: SeatId[];

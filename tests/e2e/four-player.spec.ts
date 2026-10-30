@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { reviewContext } from "./review-context";
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -12,7 +13,7 @@ async function previewMove(page: Page, state: GameState, action: GameAction) {
   const click = (name: string) =>
     page.getByRole("button", { name, exact: true }).click();
   const hex = (id: string) =>
-    page.getByRole("button", { name: new RegExp(`^${id} `) }).click();
+    page.getByRole("button", { name: new RegExp(`^${hexLabel(id)} `) }).click();
   switch (action.kind) {
     case "draftPick":
       await page
@@ -40,7 +41,7 @@ async function previewMove(page: Page, state: GameState, action: GameAction) {
       break;
     case "pass":
       await click("轮次");
-      if (state.round < 6)
+      if (state.round < 6 && (await page.getByLabel("下一轮奖励").count()))
         await page.getByLabel("下一轮奖励").selectOption(action.bonus!);
       await click("结束本轮");
       break;
@@ -49,7 +50,7 @@ async function previewMove(page: Page, state: GameState, action: GameAction) {
       await hex(action.hex);
       await page
         .getByRole("region", { name: "地块操作" })
-        .getByRole("button", { name: /^(改造并)?建造工坊/ })
+        .getByRole("button", { name: /^(先改造地形|建造工坊)/ })
         .click();
       break;
     case "upgrade":
@@ -122,7 +123,7 @@ async function previewMove(page: Page, state: GameState, action: GameAction) {
         await hex(action.option);
         await choicePanel
           .getByRole("button", {
-            name: "放置 " + action.option,
+            name: "放置 " + hexLabel(action.option),
             exact: true,
           })
           .click();
@@ -133,37 +134,51 @@ async function previewMove(page: Page, state: GameState, action: GameAction) {
           .click();
       } else {
         const name =
-          c.kind === "key"
-            ? action.option === "use"
-              ? "使用钥匙并继续"
-              : "保留钥匙，停在 7 级"
-            : action.option === "accept"
-              ? "接受"
-              : action.option === "decline"
-                ? "放弃"
-                : action.option === "discard"
-                  ? c.kind === "bridge"
-                    ? "放弃剩余桥梁"
-                    : c.kind === "spades"
-                      ? "放弃剩余铲子"
-                      : "放弃剩余收益"
-                  : ["0", "1", "2", "3"].includes(action.option)
-                    ? ["银行 / 黄", "法学 / 蓝", "工程 / 棕", "医学 / 白"][
-                        Number(action.option)
-                      ]
-                    : label(
-                        ["competency", "city"].includes(c.kind)
-                          ? `${c.kind}:${action.option}`
-                          : action.option,
-                      );
+          c.kind === "passFinish"
+            ? "完成换轮"
+            : c.kind === "buildWorkshop"
+              ? action.option === "build"
+                ? "建造工坊"
+                : "不建造"
+              : c.kind === "key"
+                ? action.option === "use"
+                  ? "使用钥匙并继续"
+                  : "保留钥匙，停在 7 级"
+                : action.option === "accept"
+                  ? "接受"
+                  : action.option === "decline"
+                    ? "放弃"
+                    : action.option === "discard"
+                      ? c.kind === "bridge"
+                        ? "放弃剩余桥梁"
+                        : c.kind === "spades"
+                          ? "放弃剩余铲子"
+                          : "放弃剩余收益"
+                      : ["0", "1", "2", "3"].includes(action.option)
+                        ? ["银行 / 黄", "法学 / 蓝", "工程 / 棕", "医学 / 白"][
+                            Number(action.option)
+                          ]
+                        : label(
+                            ["competency", "city", "bonus", "palace"].includes(
+                              c.kind,
+                            )
+                              ? `${c.kind}:${action.option}`
+                              : action.option,
+                          );
         await choicePanel
           .locator(".choice-buttons")
           .getByRole("button", {
             name,
-            exact: !["competency", "city"].includes(c.kind),
+            exact: !["competency", "city", "bonus", "palace"].includes(c.kind),
           })
           .first()
           .click();
+        if (c.kind === "city") {
+          action.cityHex = Object.keys(state.board.buildings).find(
+            (id) => state.board.buildings[id].cityId === c.source,
+          )!;
+          if (action.cityHex) await hex(action.cityHex);
+        }
       }
       break;
     }
@@ -308,11 +323,22 @@ for (const setupMode of ["snake-forward", "snake-reverse"] as const)
           page.getByText(`局面版本 ${state.revision}`, { exact: true }),
         ).toBeVisible();
         const previewStarted = Date.now();
+        const quantityForm =
+          action.kind === "respond" &&
+          state.pending.find((c) => c.id === action.choiceId)?.kind === "book";
         const [preview] = await Promise.all([
           page.waitForResponse((r) => r.url().endsWith("/preview"), {
             timeout: 15000,
           }),
-          previewMove(page, state, action),
+          previewMove(page, state, action).then(async () => {
+            if (quantityForm)
+              await page
+                .locator(
+                  `[data-choice-id="${action.kind === "respond" ? action.choiceId : ""}"]`,
+                )
+                .getByRole("button", { name: "确认提交", exact: true })
+                .click();
+          }),
         ]);
         expect(
           preview.status(),
@@ -337,9 +363,21 @@ for (const setupMode of ["snake-forward", "snake-reverse"] as const)
           });
         }
         const syncStarted = Date.now();
-        await page
-          .getByRole("button", { name: "确认提交", exact: true })
-          .click();
+        if (
+          !quantityForm &&
+          !(
+            action.kind === "respond" &&
+            state.pending.some(
+              (c) =>
+                c.id === action.choiceId &&
+                ["bonus", "passFinish", "palace"].includes(c.kind),
+            )
+          )
+        )
+          await page
+            .locator("#table-preview")
+            .getByRole("button", { name: "确认提交", exact: true })
+            .click();
         for (const p of pages)
           await expect(
             p.getByText(`局面版本 ${state.revision + 1}`, { exact: true }),

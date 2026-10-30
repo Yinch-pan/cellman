@@ -1,6 +1,16 @@
-import { applyAction } from "../../../packages/rules/src/engine";
+import {
+  applyAction,
+  canEndTurnWithLeech,
+} from "../../../packages/rules/src/engine";
 import type { GameAction, GameState } from "../../../packages/rules/src/types";
 export type Step = Exclude<GameAction, { kind: "turn" }>;
+export function isLeechResponse(state: GameState, action: GameAction) {
+  if (action.kind !== "respond") return false;
+  const id = action.choiceId;
+  return state.pending.some(
+    (choice) => choice.id === id && choice.kind === "leech",
+  );
+}
 export interface TurnDraft {
   baseRevision: number;
   actions: Step[];
@@ -24,7 +34,7 @@ export function submissionActions(draft: TurnDraft, seat: string): Step[] {
   return s.status === "active" &&
     s.phase === "actions" &&
     s.activeSeat === seat &&
-    !s.pending.length &&
+    (!s.pending.length || canEndTurnWithLeech(s, seat)) &&
     s.players[seat].primaryDone
     ? [...draft.actions, { kind: "endTurn" }]
     : draft.actions;

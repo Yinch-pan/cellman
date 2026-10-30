@@ -132,6 +132,10 @@ export async function requestUndo(
       JSON.stringify(pauseClock(game.clock)),
       id,
     ]);
+    await c.query(
+      "UPDATE game_end_requests SET status='changed' WHERE game_id=$1 AND status='pending'",
+      [id],
+    );
     await transitionMailWaits(c, id, game.state, null);
     return { revision: game.revision };
   });

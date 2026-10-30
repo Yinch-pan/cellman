@@ -2,6 +2,7 @@ import type {
   Player,
   RuleEvent,
   GameState,
+  GameAction,
 } from "../../../../packages/rules/src/types";
 import { specialOptions as ruleSpecialOptions } from "../../../../packages/rules/src/actions/special";
 import {
@@ -17,6 +18,7 @@ import {
   competencyDescriptions,
 } from "./content";
 import { tileCode } from "./tile-codes";
+import { hexLabel } from "../map-coordinates";
 import { t } from "./index";
 import ruleMessages from "./rule-messages.json" with { type: "json" };
 
@@ -78,13 +80,47 @@ export const actionNames = Object.fromEntries(
 ) as typeof ruleActionNames;
 export function eventText(event: RuleEvent, state: GameState) {
   if (event.kind === "ledger" && event.details?.action && event.seat) {
-    const action = event.details.action as {
-      kind: keyof typeof actionNames;
-      hex?: string;
-    };
-    return `${state.players[event.seat]?.name ?? event.seat}：${actionNames[action.kind] ?? action.kind}${action.hex ? " · " + action.hex : ""}`;
+    return `${state.players[event.seat]?.name ?? event.seat}：${ledgerActionLabel(event)}`;
   }
   return translateRuleText(event.text);
+}
+// Describe persisted actions from their existing ledger metadata. Do not change
+// rule events or replay semantics just to improve historical labels.
+export function ledgerActionLabel(event: RuleEvent): string {
+  const action = event.details?.action as GameAction | undefined;
+  if (!action) return translateRuleText(event.text);
+  if (action.kind === "respond") {
+    if (Object.hasOwn(competencyDescriptions, action.option)) {
+      const title = t("history.takeCompetency", {
+        tile: tileCode("competency", action.option),
+      });
+      return action.option === "two-spades"
+        ? t("history.takeSpadesCompetency", { title })
+        : title;
+    }
+    if (action.option === "terraform" && action.terraform)
+      return t("history.useSpades", {
+        hexes: [
+          action.terraform.hex,
+          ...(action.terraform.additional ?? []).map((target) => target.hex),
+        ]
+          .map(hexLabel)
+          .join("、"),
+      });
+    if (/^[0-3]$/.test(action.option)) {
+      const field = `books.${action.option}`;
+      const gain = (
+        event.details?.changes as
+          { seat: string; field: string; delta: number }[] | undefined
+      )?.find((c) => c.seat === event.seat && c.field === field && c.delta > 0);
+      if (gain)
+        return t("history.takeBooks", {
+          n: gain.delta,
+          resource: fieldLabels[field],
+        });
+    }
+  }
+  return `${actionNames[action.kind] ?? action.kind}${"hex" in action && action.hex ? " · " + hexLabel(action.hex) : ""}`;
 }
 export function specialOptions(player: Player) {
   return ruleSpecialOptions(player).map((option) => {

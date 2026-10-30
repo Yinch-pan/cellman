@@ -162,7 +162,7 @@ it.each([
     giveIncome(s);
     expect(p.resources).toEqual({
       coins,
-      tools,
+      tools: 1 + tools, // Always-visible base tool plus palace income.
       scholars,
       books: [0, 0, 0, 0],
       power: [12 - power, power, 0],

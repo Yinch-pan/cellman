@@ -24,7 +24,7 @@ export async function rememberTimeouts(
   }
   return clock;
 }
-async function record(
+export async function recordLifecycle(
   c: PoolClient,
   game: any,
   actor: string,
@@ -52,6 +52,10 @@ async function record(
   );
   await c.query(
     "UPDATE game_undo_requests SET status='cancelled' WHERE game_id=$1 AND status='pending'",
+    [game.id],
+  );
+  await c.query(
+    "UPDATE game_end_requests SET status='changed' WHERE game_id=$1 AND status='pending'",
     [game.id],
   );
   await transitionMailWaits(
@@ -83,7 +87,12 @@ export async function maintainGame(db: Database, id: string, now = Date.now()) {
     const game = (
       await c.query("SELECT * FROM games WHERE id=$1 FOR UPDATE", [id])
     ).rows[0];
-    if (!game || game.state.status === "finished") return null;
+    if (!game) return null;
+    await c.query(
+      "UPDATE game_end_requests SET status='expired' WHERE game_id=$1 AND status='pending' AND expires_at<=$2",
+      [id, new Date(now)],
+    );
+    if (game.state.status === "finished") return null;
     await rememberTimeouts(c, game, now);
     if (now - new Date(game.last_activity_at).getTime() < INACTIVE_MS)
       return null;
@@ -95,7 +104,7 @@ export async function maintainGame(db: Database, id: string, now = Date.now()) {
       )
     ).rows[0];
     if (!member) return null;
-    return record(c, game, member.user_id, member.seat, {
+    return recordLifecycle(c, game, member.user_id, member.seat, {
       kind: "adjudicate",
       reason: "inactive",
       at: new Date(now).toISOString(),
@@ -170,7 +179,7 @@ export async function adjudicateGame(
         "RESULT_NOT_SETTLED",
         409,
       );
-    return record(c, game, actor, member.seat, {
+    return recordLifecycle(c, game, actor, member.seat, {
       kind: "adjudicate",
       ...input,
       at: new Date().toISOString(),

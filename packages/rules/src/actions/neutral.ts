@@ -36,9 +36,15 @@ export function queueNeutral(
   source: string,
 ) {
   const sites = neutralSites(s, p);
-  if (!sites.length) return;
-  queueChoice(s, p.seat, "neutral", 1, sites, source);
+  // Keep the reward even when no site is currently affordable: the player may
+  // convert resources before placing it, or explicitly decline the building.
+  queueChoice(s, p.seat, "neutral", 1, [...sites, "discard"], source);
   s.pending[s.pending.length - 1].buildingKind = kind;
+}
+export function refreshNeutralChoices(s: GameState) {
+  for (const choice of s.pending)
+    if (choice.kind === "neutral")
+      choice.options = [...neutralSites(s, s.players[choice.seat]), "discard"];
 }
 export function placeNeutral(
   s: GameState,

@@ -1,11 +1,24 @@
 import type { GameState, SetupConfig, Terrain, BuildingKind } from "./types";
-import { createGame, RULES_VERSION, supportsTurnPlanning } from "./state";
+import {
+  createGame,
+  RULES_VERSION,
+  supportsTurnPlanning,
+  resetStartingResources,
+} from "./state";
+import { advanceScience } from "./actions/science";
+import type { Discipline } from "./types";
 import { factions, palaces, innovations, bonusIds, roundIds } from "./content";
 import { terrainCycle } from "./map";
 import { competencyIds } from "./catalog";
 import { requireRule } from "./internal";
 import { queueChoice } from "./responses";
 import { competencyOptions } from "./actions/competency";
+import {
+  type DraftBans,
+  emptyDraftBans,
+  invalidDraftBans,
+  excessiveDraftBans,
+} from "./draft-bans";
 // Randomness is supplied by the caller; only the resulting setup is persisted.
 export function placementOptions(s: GameState, seat: string): BuildingKind[] {
   if (s.phase !== "placement" || s.activeSeat !== seat) return [];
@@ -150,6 +163,8 @@ export function chooseSetup(s: GameState, seat: string, offer: number) {
   ];
   // Initialize resources only after all selected sets are known and unique.
   const fresh = createGame({ ...s.setup, offers: undefined });
+  for (const seat of s.turnOrder)
+    fresh.players[seat].leechPolicy = s.players[seat].leechPolicy;
   s.players = fresh.players;
   s.shared = fresh.shared;
   beginPlacement(s);
@@ -172,7 +187,12 @@ function beginPlacement(s: GameState) {
   }
   s.phase = "placement";
   s.activeSeat = s.placementOrder[0];
-  for (const p of Object.values(s.players)) {
+  for (const p of Object.values(s.players)) resetStartingResources(p);
+}
+export function queueStartingRewards(s: GameState) {
+  s.setupStage = "rewards";
+  for (const id of s.turnOrder) {
+    const p = s.players[id];
     if (p.faction === "lizards")
       for (let i = 0; i < 2; i++)
         queueChoice(
@@ -192,11 +212,22 @@ function beginPlacement(s: GameState) {
         ["0", "1", "2", "3"],
         "setup-wasteland",
       );
+    if (p.native === "desert")
+      queueChoice(s, id, "spades", 1, ["terraform", "discard"], "setup-desert");
   }
+  for (const c of s.pending)
+    if (c.kind === "spades") {
+      c.canBuild = false;
+      c.canBuySpades = false;
+    }
 }
 export function finishPlacement(s: GameState) {
   s.phase = "setup";
   s.activeSeat = s.turnOrder[0];
+  queueStartingRewards(s);
+}
+export function queueStartingCompetencies(s: GameState) {
+  s.setupStage = "competencies";
   for (const id of s.turnOrder) {
     const p = s.players[id];
     if (p.faction === "inventors" || p.faction === "monks")
@@ -208,17 +239,41 @@ export function finishPlacement(s: GameState) {
         competencyOptions(s, p),
         "setup-competency",
       );
-    if (p.native === "desert")
-      queueChoice(s, id, "spades", 1, ["terraform", "discard"], "setup-desert");
   }
   for (const c of s.pending) if (c.kind === "spades") c.canBuild = false;
+}
+export function grantStartingResources(s: GameState) {
+  for (const id of s.turnOrder) {
+    const p = s.players[id];
+    p.resources.coins += 15;
+    p.resources.tools +=
+      3 +
+      (factions[p.faction]?.tools ?? 0) +
+      (p.native === "wasteland" ? 1 : 0);
+    p.resources.scholars += p.native === "swamp" ? 1 : 0;
+    for (const track of [0, 1, 2, 3] as Discipline[])
+      advanceScience(
+        s,
+        p,
+        track,
+        (p.native === "forest" ? 1 : 0) +
+          (factions[p.faction]?.science[track] ?? 0),
+      );
+  }
+  delete s.setupStage;
 }
 export function snakeSetup(
   id: string,
   players: { id: string; name: string }[],
   direction: "forward" | "reverse",
   random: () => number = Math.random,
+  bans: DraftBans = emptyDraftBans(),
 ): SetupConfig {
+  requireRule(!invalidDraftBans(bans), "INVALID_DRAFT_BANS");
+  requireRule(
+    excessiveDraftBans(bans, players.length).length === 0,
+    "DRAFT_POOL_TOO_SMALL",
+  );
   const setup = standardSetup(id, players, random);
   const shuffled = <T>(values: readonly T[]) => {
     const items = [...values];
@@ -229,12 +284,21 @@ export function snakeSetup(
     return items;
   };
   const pools = {
-    native: shuffled(terrainCycle).slice(0, 6),
-    faction: shuffled(Object.keys(factions)).slice(0, players.length + 1),
-    palace: shuffled(
-      Object.keys(palaces).filter((id) => id !== "immediate-score"),
+    native: shuffled(
+      terrainCycle.filter((id) => !bans.native.includes(id)),
+    ).slice(0, 6),
+    faction: shuffled(
+      Object.keys(factions).filter((id) => !bans.faction.includes(id)),
     ).slice(0, players.length + 1),
-    bonus: shuffled(bonusIds).slice(0, players.length + 3),
+    palace: shuffled(
+      Object.keys(palaces).filter(
+        (id) => id !== "immediate-score" && !bans.palace.includes(id),
+      ),
+    ).slice(0, players.length + 1),
+    bonus: shuffled(bonusIds.filter((id) => !bans.bonus.includes(id))).slice(
+      0,
+      players.length + 3,
+    ),
   };
   setup.players = setup.players.map((p, i) => ({
     ...p,
@@ -293,6 +357,8 @@ export function draftPick(
     bonus: s.draftPicks![p.seat].bonus!,
   }));
   const fresh = createGame({ ...s.setup, draft: undefined });
+  for (const seat of s.turnOrder)
+    fresh.players[seat].leechPolicy = s.players[seat].leechPolicy;
   s.players = fresh.players;
   s.shared = fresh.shared;
   for (const p of Object.values(s.players))

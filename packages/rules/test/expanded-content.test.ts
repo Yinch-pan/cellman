@@ -158,7 +158,7 @@ it("new palace income and trading routes use independently calculated amounts (p
   ];
   const before = structuredClone(p);
   giveIncome(s);
-  expect(p.resources.tools - before.resources.tools).toBe(4); // one workshop + neutral innovation income 3
+  expect(p.resources.tools - before.resources.tools).toBe(5); // base 1 + one workshop + neutral innovation income 3
   expect(p.resources.coins - before.resources.coins).toBe(11); // bonus coins 6 + innovation 5
   expect(p.resources.power).toEqual([0, 8, 4]); // 5 palace +4 innovation
   expect(p.vp - before.vp).toBe(2);

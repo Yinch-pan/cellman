@@ -2,6 +2,8 @@ import type { GameAction, GameState, RuleEvent } from "./types";
 import { scoreAwards } from "./score-events";
 
 export const actionNames: Record<GameAction["kind"], string> = {
+  collectBooks: "领取书籍",
+  convertBatch: "资源转换",
   draftPick: "轮抽开局配置",
   turn: "提交回合",
   chooseSetup: "选择种族与家园",
@@ -87,7 +89,10 @@ export function ledgerEntry(
       phase: before.phase,
       changes,
       scoreSources: scoreAwards(after),
-      choiceSource: selection?.source,
+      choiceSource:
+        action.kind === "respond" && action.buildHex
+          ? action.buildHex
+          : selection?.source,
       choices: after.pending
         .filter((c) => !before.pending.some((b) => b.id === c.id))
         .map((c) => ({

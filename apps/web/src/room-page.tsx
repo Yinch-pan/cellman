@@ -2,6 +2,11 @@ import { t as translate } from "./i18n";
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "./api";
 import { RoomOptions, SettingsSummary } from "./room-settings";
+import { DraftBanEditor } from "./room-draft-bans";
+import {
+  excessiveDraftBans,
+  emptyDraftBans,
+} from "../../../packages/rules/src/draft-bans";
 import {
   defaultGameSettings,
   setupLabel,
@@ -211,13 +216,29 @@ export function Room({
                     minimumSeats={room.seats.length}
                     onChange={(next) => setEdit({ ...edit, ...next })}
                   />
+                  <DraftBanEditor
+                    value={edit.settings.draftBans}
+                    players={edit.seats}
+                    onChange={(draftBans) =>
+                      setEdit({
+                        ...edit,
+                        settings: { ...edit.settings, draftBans },
+                      })
+                    }
+                  />
                   <p className="muted">
                     {translate("ui.room-page.2bda31821d")}
                   </p>
                   <div className="inline">
                     <button
                       className="primary"
-                      disabled={edit.expectedRevision !== room.settingsRevision}
+                      disabled={
+                        edit.expectedRevision !== room.settingsRevision ||
+                        excessiveDraftBans(
+                          edit.settings.draftBans ?? emptyDraftBans(),
+                          edit.seats,
+                        ).length > 0
+                      }
                     >
                       {translate("ui.room-page.c8550237ba")}
                     </button>
@@ -244,6 +265,15 @@ export function Room({
                   settings={room.settings}
                   mode={room.setupMode}
                 />
+                {host && waiting && (
+                  <button
+                    className="text-button"
+                    disabled={busy}
+                    onClick={() => setEdit(editOf(room))}
+                  >
+                    {translate("draftBan.edit")}
+                  </button>
+                )}
               </>
             )}
           </section>

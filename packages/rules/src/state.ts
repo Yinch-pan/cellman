@@ -7,11 +7,29 @@ import { createGame as createV2Game } from "../legacy/v2/state";
 import { createGame as createV3Game } from "../legacy/v3/state";
 import { createGame as createV4Game } from "../legacy/v4/state";
 import { createGame as createV5Game } from "../legacy/v5/state";
-export const RULES_VERSION = "aoi-1.1+2024-09.engine-6";
+import { createGame as createV6Game } from "../legacy/v6/state";
+export const RULES_VERSION = "aoi-1.1+2024-09.engine-8";
+// Engine 8 only corrects base tool income; engine 7 keeps its original income
+// while sharing the same action protocol and deferred choices.
+export const usesCurrentActionProtocol = (version: string) =>
+  [RULES_VERSION, "aoi-1.1+2024-09.engine-7"].includes(version);
 export const supportsTurnPlanning = (version: string) =>
-  [RULES_VERSION, "aoi-1.1+2024-09.engine-5"].includes(version);
+  [
+    RULES_VERSION,
+    "aoi-1.1+2024-09.engine-7",
+    "aoi-1.1+2024-09.engine-6",
+    "aoi-1.1+2024-09.engine-5",
+  ].includes(version);
+export const supportsBatchActions = (version: string) =>
+  [
+    RULES_VERSION,
+    "aoi-1.1+2024-09.engine-7",
+    "aoi-1.1+2024-09.engine-6",
+  ].includes(version);
 export const SUPPORTED_RULES = [
   RULES_VERSION,
+  "aoi-1.1+2024-09.engine-7",
+  "aoi-1.1+2024-09.engine-6",
   "aoi-1.1+2024-09.engine-5",
   "aoi-1.1+2024-09.engine-4",
   "aoi-1.1+2024-09.engine-3",
@@ -19,6 +37,8 @@ export const SUPPORTED_RULES = [
   "aoi-1.1+2024-09",
 ];
 export function createGame(setup: SetupConfig): GameState {
+  if (setup.rulesVersion === "aoi-1.1+2024-09.engine-6")
+    return createV6Game(setup);
   if (setup.rulesVersion === "aoi-1.1+2024-09.engine-5")
     return createV5Game(setup);
   if (setup.rulesVersion === "aoi-1.1+2024-09.engine-4")
@@ -29,7 +49,7 @@ export function createGame(setup: SetupConfig): GameState {
     return createV2Game(setup);
   if (setup.rulesVersion === "aoi-1.1+2024-09")
     return createLegacyGame(setup) as GameState;
-  if (setup.rulesVersion !== RULES_VERSION)
+  if (!usesCurrentActionProtocol(setup.rulesVersion))
     throw new Error("RULESET_UNAVAILABLE");
   if (setup.mapId !== "official-large") throw new Error("UNSUPPORTED_MAP");
   if (setup.players.length < 3 || setup.players.length > 5)
@@ -78,7 +98,7 @@ export function createGame(setup: SetupConfig): GameState {
       passed: false,
       primaryDone: false,
       usedSpecials: [],
-      leechPolicy: { enabled: false, maxVpCost: 0 },
+      leechPolicy: { enabled: true, maxVpCost: 0 },
     };
     const player = players[p.seat];
     for (const level of science)
@@ -90,11 +110,12 @@ export function createGame(setup: SetupConfig): GameState {
       ])
         if (level >= threshold)
           player.resources.power = gainPower(player.resources.power, power);
+    if (setup.offers || setup.draft) resetStartingResources(player);
   }
   const order = setup.players.map((p) => p.seat);
   return {
     schemaVersion: 1,
-    rulesVersion: RULES_VERSION,
+    rulesVersion: setup.rulesVersion,
     revision: 0,
     setup: structuredClone(setup),
     phase: setup.offers || setup.draft ? "draft" : "placement",
@@ -149,6 +170,21 @@ export function createGame(setup: SetupConfig): GameState {
       : {}),
     scores: [],
   };
+}
+// Drafted games expose only the starting power bowls until initial choices end.
+// Preconfigured positions remain useful for fixtures and imported scenarios.
+export function resetStartingResources(p: Player) {
+  p.resources.coins = 0;
+  p.resources.tools = 0;
+  p.resources.scholars = 0;
+  p.resources.books = [0, 0, 0, 0];
+  p.resources.power =
+    p.native === "forest"
+      ? [4, 8, 0]
+      : p.native === "swamp"
+        ? [3, 9, 0]
+        : [5, 7, 0];
+  p.science = [0, 0, 0, 0];
 }
 export function validateState(s: GameState): string[] {
   const errors = new Set<string>();

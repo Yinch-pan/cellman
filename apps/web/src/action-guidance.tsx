@@ -17,6 +17,79 @@ import {
   terrainDistance,
 } from "../../../packages/rules/src/map";
 import { label, RequestError } from "./api";
+import { withPowerBurn } from "./power-payment";
+import { ConversionSheet } from "./conversion-sheet";
+import { supportsBatchActions } from "../../../packages/rules/src/state";
+import { hexLabel } from "./map-coordinates";
+
+export function PlacementTypeReview({
+  state,
+  seat,
+  selected,
+  disabled,
+  onCommit,
+  onCancel,
+}: {
+  state: GameState;
+  seat: string;
+  selected: string;
+  disabled: boolean;
+  onCommit: (action: GameAction) => void;
+  onCancel: () => void;
+}) {
+  const [confirmed, setConfirmed] = useState(false);
+  const options = placementOptions(state, seat).filter(
+    (building) =>
+      applyAction(state, seat, {
+        kind: "place",
+        hex: selected,
+        building: building as "tower" | "workshop",
+      }).ok,
+  );
+  if (!selected || !options.length) return null;
+  return (
+    <div
+      className="preview-panel draft-confirmation"
+      id="table-placement-review"
+    >
+      <strong>
+        {translate("placement.position", { hex: hexLabel(selected) })}
+      </strong>
+      {confirmed ? (
+        <>
+          <p>{translate("placement.chooseType")}</p>
+          {options.map((building) => (
+            <button
+              key={building}
+              className="primary"
+              disabled={disabled}
+              onClick={() =>
+                onCommit({
+                  kind: "place",
+                  hex: selected,
+                  building: building as "tower" | "workshop",
+                })
+              }
+            >
+              {label(building)}
+            </button>
+          ))}
+        </>
+      ) : (
+        <button
+          className="primary"
+          disabled={disabled}
+          onClick={() => setConfirmed(true)}
+        >
+          {translate("ui.game.9ebe36f8cf")}
+        </button>
+      )}
+      <button className="text-button" disabled={disabled} onClick={onCancel}>
+        {translate("placement.changePosition")}
+      </button>
+    </div>
+  );
+}
 
 export function terraformTargets(
   state: GameState,
@@ -51,6 +124,21 @@ export function suggestBooks(
   return remaining === 0 ? result : null;
 }
 
+export function scholarKeyLimited(
+  state: GameState,
+  seat: string,
+  action: GameAction,
+) {
+  if (action.kind !== "scholar") return false;
+  const p = state.players[seat];
+  const gain = action.slot === null ? 1 : action.slot === 0 ? 3 : 2;
+  return (
+    p.science[action.track] < 8 &&
+    p.science[action.track] + gain >= 8 &&
+    p.keysUsed >= p.keys
+  );
+}
+
 export function buildHighlights(state: GameState, seat: string) {
   const p = state.players[seat];
   const result = new Set<string>();
@@ -71,7 +159,7 @@ export function buildHighlights(state: GameState, seat: string) {
           )
             result.add(id);
       } else if (c.kind === "buildWorkshop" && officialLarge.hexes[c.source])
-        result.add(c.source);
+        for (const hex of c.buildHexes ?? [c.source]) result.add(hex);
       else if (c.kind === "spades") {
         for (const h of Object.values(officialLarge.hexes)) {
           if (h.terrain === "river") continue;
@@ -163,6 +251,7 @@ export function GuidedAction({
   onPreview: (a: GameAction) => void;
   children: React.ReactNode;
 }) {
+  action = action ? withPowerBurn(state, seat, action) : null;
   const result = action ? applyAction(state, seat, action) : null;
   const p = state.players[seat];
   const after = result?.ok ? result.state.players[seat] : null;
@@ -201,6 +290,11 @@ export function GuidedAction({
   }
   return (
     <div className="guided-action">
+      {action?.kind === "powerAction" && !!action.burn && (
+        <p className="power-burn-quote">
+          {translate("powerPayment.burn", { count: action.burn })}
+        </p>
+      )}
       {!disabled && result && (
         <p className={"action-quote small " + (result.ok ? "" : "unavailable")}>
           {result.ok
@@ -236,11 +330,8 @@ export function PlacementPanel({
   disabled: boolean;
   onPreview: (a: GameAction) => void;
 }) {
-  const [chosen, setChosen] = useState("workshop");
   const options = placementOptions(state, seat);
-  const building = options.includes(chosen as BuildingKind)
-    ? (chosen as BuildingKind)
-    : options[0];
+  const building = options.length === 1 ? options[0] : undefined;
   return (
     <>
       <div className="eyebrow">
@@ -266,41 +357,31 @@ export function PlacementPanel({
         }{" "}
         {translate("ui.action-guidance.a646285d2d")}
       </p>
-      {options.length > 1 && (
-        <label>
-          {translate("ui.action-guidance.c516865657")}
-          <select value={building} onChange={(e) => setChosen(e.target.value)}>
-            {options.map((kind) => (
-              <option key={kind} value={kind}>
-                {label(kind)}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
       <p className="small muted">
         {translate("ui.action-guidance.363a463aab")}
         {label(state.players[seat].native)}
         {translate("ui.action-guidance.a1699952f9")}
-        {options.length > 1 ? translate("ui.action-guidance.ed0618a410") : ""}
+        {options.length > 1 ? translate("placement.positionFirst") : ""}
       </p>
-      <GuidedAction
-        state={state}
-        seat={seat}
-        action={
-          selected && building
-            ? {
-                kind: "place",
-                hex: selected,
-                building: building as "workshop" | "tower" | "university",
-              }
-            : null
-        }
-        disabled={disabled}
-        onPreview={onPreview}
-      >
-        {translate("ui.action-guidance.3960edc1d7")}
-      </GuidedAction>
+      {options.length === 1 && (
+        <GuidedAction
+          state={state}
+          seat={seat}
+          action={
+            selected && building
+              ? {
+                  kind: "place",
+                  hex: selected,
+                  building: building as "workshop" | "tower" | "university",
+                }
+              : null
+          }
+          disabled={disabled}
+          onPreview={onPreview}
+        >
+          {translate("ui.action-guidance.3960edc1d7")}
+        </GuidedAction>
+      )}
     </>
   );
 }
@@ -325,6 +406,7 @@ export function FreeActions({
   disabled: boolean;
   onPreview: (a: GameAction) => void;
 }) {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [index, setIndex] = useState(0),
     [count, setCount] = useState(1),
     [color, setColor] = useState(0);
@@ -348,6 +430,25 @@ export function FreeActions({
     >
       <summary>{translate("ui.action-guidance.a3cf0766f5")}</summary>
       <div className="form-stack">
+        {supportsBatchActions(state.rulesVersion) && (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setSheetOpen(true)}
+          >
+            {translate("conversion.open")}
+          </button>
+        )}
+        {sheetOpen && (
+          <ConversionSheet
+            key={`${seat}:${state.revision}`}
+            state={state}
+            seat={seat}
+            disabled={disabled}
+            onPreview={onPreview}
+            onClose={() => setSheetOpen(false)}
+          />
+        )}
         <label>
           {translate("ui.action-guidance.aa21376766")}
           <select

@@ -8,7 +8,7 @@ export function standings(state: GameState) {
       items: [],
       total: null,
       rank:
-        state.matchResult!.reason === "inactive"
+        state.matchResult!.reason !== "forfeit"
           ? null
           : seat === state.matchResult!.loser
             ? Object.keys(state.players).length
@@ -66,6 +66,7 @@ export async function playerStats(db: Database, actor: string) {
     ),
     forfeits: games.filter((g) => g.forfeited).length,
     inactive: games.filter((g) => g.reason === "inactive").length,
+    consensual: games.filter((g) => g.reason === "consensus").length,
     games: games.slice(0, 100),
     factions: group(
       games.filter((g) => g.reason === "normal"),
@@ -123,6 +124,8 @@ export async function siteStats(db: Database, count?: number) {
     count: states.length,
     forfeits: states.filter((s) => s.matchResult?.reason === "forfeit").length,
     inactive: states.filter((s) => s.matchResult?.reason === "inactive").length,
+    consensual: states.filter((s) => s.matchResult?.reason === "consensus")
+      .length,
     factions: group(entries, (e) => e.faction),
     positions: count
       ? group(entries, (e) => e.position).sort(

@@ -48,7 +48,9 @@ const db = new Pool({
   connectionString: url,
   options: `-c search_path=${schema}`,
 });
-const app = createApp(db);
+// Simulate distinct clients through our loopback test proxy. Production proxy
+// trust and shared-IP budgets remain covered separately by security tests.
+const app = createApp(db, "http://127.0.0.1:5173", false, ["127.0.0.1"]);
 let created = false,
   restored = false;
 let restoreDb: InstanceType<typeof Pool> | undefined;
@@ -121,6 +123,7 @@ try {
           cookie: "session=" + actors[i].session,
           "x-csrf-token": actors[i].csrf,
           "content-type": "application/json",
+          "x-forwarded-for": `198.18.0.${i + 1}`,
         },
         body: body === undefined ? undefined : JSON.stringify(body),
         signal: AbortSignal.timeout(10000),
@@ -157,7 +160,12 @@ try {
           );
           stream.request = get(
             `${address}/api/games/${games[Math.floor(i / 4)]}/events`,
-            { headers: { cookie: "session=" + actor.session } },
+            {
+              headers: {
+                cookie: "session=" + actor.session,
+                "x-forwarded-for": `198.18.0.${i + 1}`,
+              },
+            },
             (response) => {
               stream.response = response;
               if (response.statusCode !== 200) {
@@ -258,7 +266,16 @@ try {
     25,
   );
   const recovered = await getGame(restoreDb, actors[0].user.id, games[0]);
-  assert.deepEqual(recovered, saved);
+  // getGame projects the running clock at request time, so its remaining time
+  // must change during backup/restore. Compare persisted values separately.
+  const { clock: savedClock, ...savedStable } = saved;
+  const { clock: recoveredClock, ...recoveredStable } = recovered;
+  assert.deepEqual(recoveredStable, savedStable);
+  assert.deepEqual(
+    (await restoreDb.query("SELECT clock FROM games WHERE id=$1", [games[0]]))
+      .rows,
+    (await db.query("SELECT clock FROM games WHERE id=$1", [games[0]])).rows,
+  );
   assert.deepEqual(
     replayRecord(await getReplay(restoreDb, actors[0].user.id, games[0])).state,
     recovered.state,

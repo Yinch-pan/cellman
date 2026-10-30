@@ -1,3 +1,12 @@
+export type FreeConversion =
+  | { kind: "burn"; count: number }
+  | {
+      kind: "convert";
+      from: "power" | "scholar" | "tool" | "book";
+      to: "coin" | "tool" | "scholar" | "book";
+      count: number;
+      color?: Discipline;
+    };
 export type SeatId = string;
 export type HexId = string;
 export type Terrain =
@@ -29,6 +38,7 @@ export interface Building {
   seat: SeatId;
   kind: BuildingKind;
   cityId?: string;
+  cityTile?: string;
   annex?: boolean;
   neutral?: boolean;
 }
@@ -66,7 +76,7 @@ export interface Player {
   primaryDone: boolean;
   extraActions?: number;
   usedSpecials: string[];
-  leechPolicy: { enabled: boolean; maxVpCost: number };
+  leechPolicy: { enabled: boolean; maxVpCost: number; rejectPaid?: boolean };
 }
 export interface SetupConfig {
   id: string;
@@ -105,6 +115,9 @@ export interface PendingChoice {
     | "leech"
     | "city"
     | "competency"
+    | "palace"
+    | "bonus"
+    | "passFinish"
     | "book"
     | "science"
     | "spades"
@@ -125,8 +138,10 @@ export interface PendingChoice {
   dependsOn?: string[];
   triggerRevision?: number;
   batch?: string;
+  canInterleave?: boolean;
   freeBuild?: boolean;
   travelPaid?: boolean;
+  buildHexes?: HexId[];
 }
 export interface RuleEvent {
   kind: string;
@@ -187,6 +202,7 @@ export interface GameState {
   passOrder: SeatId[];
   placementOrder: SeatId[];
   placementIndex: number;
+  setupStage?: "competencies" | "rewards";
   choiceSerial: number;
   draftIndex?: number;
   chosenOffers?: number[];
@@ -198,7 +214,7 @@ export interface GameState {
   placementKinds?: BuildingKind[];
   scores: ScoreBreakdown[];
   matchResult?: {
-    reason: "forfeit" | "inactive";
+    reason: "forfeit" | "inactive" | "consensus";
     at: string;
     loser?: SeatId;
     winners: SeatId[];
@@ -206,6 +222,11 @@ export interface GameState {
   };
 }
 export type GameAction =
+  | { kind: "convertBatch"; actions: FreeConversion[] }
+  | {
+      kind: "collectBooks";
+      selections: { choiceId: string; option: "0" | "1" | "2" | "3" }[];
+    }
   | {
       kind: "draftPick";
       category: "faction" | "native" | "palace" | "bonus";
@@ -228,7 +249,14 @@ export type GameAction =
       additional?: { hex: HexId; terrain: Terrain }[];
       travel?: "tunnel" | "flight";
     }
-  | { kind: "upgrade"; hex: HexId; to: BuildingKind; palace?: string }
+  | {
+      kind: "upgrade";
+      hex: HexId;
+      to: BuildingKind;
+      palace?: string;
+      deferPalace?: boolean;
+      deferCompetency?: boolean;
+    }
   | {
       kind: "convert";
       from: "power" | "scholar" | "tool" | "book";
@@ -237,10 +265,17 @@ export type GameAction =
       color?: Discipline;
     }
   | { kind: "burn"; count: number }
-  | { kind: "scholar"; track: Discipline; slot: number | null }
+  | {
+      kind: "scholar";
+      track: Discipline;
+      slot: number | null;
+      useKey?: boolean;
+    }
   | { kind: "advance"; track: "sailing" | "terraform" }
   | {
       kind: "powerAction";
+      deferSpades?: boolean;
+      burn?: number;
       travel?: "tunnel" | "flight";
       id: string;
       hex?: HexId;
@@ -268,12 +303,14 @@ export type GameAction =
       b?: HexId;
       track?: Discipline;
     }
-  | { kind: "pass"; bonus?: string }
+  | { kind: "pass"; bonus?: string; deferBonus?: boolean }
   | { kind: "endTurn" }
   | {
       kind: "respond";
       choiceId: string;
       option: string;
+      cityHex?: HexId;
+      buildHex?: HexId;
       terraform?: {
         hex: HexId;
         terrain: Terrain;
@@ -283,7 +320,12 @@ export type GameAction =
         travel?: "tunnel" | "flight";
       };
     }
-  | { kind: "setLeech"; enabled: boolean; maxVpCost: number };
+  | {
+      kind: "setLeech";
+      enabled: boolean;
+      maxVpCost: number;
+      rejectPaid?: boolean;
+    };
 export interface ActionOption {
   kind: GameAction["kind"];
   label: string;

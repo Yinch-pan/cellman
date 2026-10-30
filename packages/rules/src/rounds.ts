@@ -7,6 +7,7 @@ import { gainPower } from "./actions/power";
 import { advanceScience } from "./actions/science";
 import { queueChoice } from "./responses";
 import { finishGame } from "./scoring";
+import { grantStartingResources, queueStartingCompetencies } from "./setup";
 export function giveIncome(s: GameState) {
   s.phase = "income";
   for (const p of Object.values(s.players)) {
@@ -97,8 +98,34 @@ function roundBonus(s: GameState) {
       );
   }
 }
-export function pass(s: GameState, p: Player, bonus?: string) {
-  if (s.round < 6) {
+export function takeBonus(s: GameState, p: Player, bonus: string) {
+  requireRule(s.setup.bonusPool.includes(bonus), "INVALID_BONUS");
+  requireRule(
+    !Object.values(s.players).some((x) => x.bonus === bonus),
+    "BONUS_UNAVAILABLE",
+  );
+  p.resources.coins += s.shared.bonusCoins[bonus] ?? 0;
+  s.shared.bonusCoins[bonus] = 0;
+  p.bonus = bonus;
+}
+export function finishPass(s: GameState, p: Player) {
+  if (s.passOrder.length === s.turnOrder.length) {
+    if (!s.pending.length) completeRound(s);
+  } else {
+    let i = s.turnOrder.indexOf(p.seat);
+    do {
+      i = (i + 1) % s.turnOrder.length;
+    } while (s.players[s.turnOrder[i]].passed);
+    s.activeSeat = s.turnOrder[i];
+  }
+}
+export function pass(
+  s: GameState,
+  p: Player,
+  bonus?: string,
+  deferred = false,
+) {
+  if (s.round < 6 && !deferred) {
     requireRule(!!bonus && s.setup.bonusPool.includes(bonus), "INVALID_BONUS");
     requireRule(
       !Object.values(s.players).some((x) => x.bonus === bonus),
@@ -138,7 +165,7 @@ export function pass(s: GameState, p: Player, bonus?: string) {
     for (let i = 0; i < n; i++)
       queueChoice(s, p.seat, "science", 1, ["0", "1", "2", "3"], "pass");
   }
-  if (s.round < 6) {
+  if (s.round < 6 && !deferred) {
     p.resources.coins += s.shared.bonusCoins[bonus!] ?? 0;
     s.shared.bonusCoins[bonus!] = 0;
     p.bonus = bonus!;
@@ -146,15 +173,30 @@ export function pass(s: GameState, p: Player, bonus?: string) {
   p.passed = true;
   p.primaryDone = false;
   s.passOrder.push(p.seat);
-  if (s.passOrder.length === s.turnOrder.length) {
-    if (!s.pending.length) completeRound(s);
-  } else {
-    let i = s.turnOrder.indexOf(p.seat);
-    do {
-      i = (i + 1) % s.turnOrder.length;
-    } while (s.players[s.turnOrder[i]].passed);
-    s.activeSeat = s.turnOrder[i];
-  }
+  if (deferred) {
+    requireRule(!bonus, "INVALID_BONUS");
+    if (s.round < 6) {
+      queueChoice(
+        s,
+        p.seat,
+        "bonus",
+        1,
+        s.setup.bonusPool.filter(
+          (id) => !Object.values(s.players).some((x) => x.bonus === id),
+        ),
+        "pass",
+      );
+      const bonusId = s.pending.at(-1)!.id;
+      for (const choice of s.pending)
+        if (choice.seat === p.seat && choice.id !== bonusId)
+          choice.dependsOn = [...(choice.dependsOn ?? []), bonusId];
+    }
+    const dependencies = s.pending
+      .filter((c) => c.seat === p.seat)
+      .map((c) => c.id);
+    queueChoice(s, p.seat, "passFinish", 1, ["finish"], "pass");
+    s.pending.at(-1)!.dependsOn = dependencies;
+  } else finishPass(s, p);
 }
 
 export function completeRound(s: GameState) {
@@ -169,6 +211,11 @@ export function completeRound(s: GameState) {
 export function settlePhase(s: GameState) {
   if (s.pending.length) return;
   if (s.phase === "setup") {
+    if (s.setupStage === "rewards") {
+      queueStartingCompetencies(s);
+      if (s.pending.length) return;
+    }
+    if (s.setupStage === "competencies") grantStartingResources(s);
     giveIncome(s);
     return;
   }

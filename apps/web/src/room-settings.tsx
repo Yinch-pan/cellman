@@ -7,6 +7,8 @@ import {
   defaultGameSettings,
 } from "../../../packages/contracts/src/room";
 import { timeLabel, durationLabel, setupLabel } from "./i18n/time";
+import { DraftBanSummary } from "./room-draft-bans";
+import { draftCategories } from "../../../packages/rules/src/draft-bans";
 export type RoomOptionsValue = {
   visibility: "public" | "private";
   seats: number;
@@ -45,6 +47,7 @@ export function RoomOptions({
               {translate("ui.room-settings.d1a1fdff92")}
             </option>
           </select>
+          <small>{translate("watch.roomHint")}</small>
         </label>
         <label>
           {translate("ui.room-settings.4b2e05d718")}
@@ -279,6 +282,9 @@ export function RoomSummary({
           ? translate("ui.room-settings.27ddd214b2")
           : translate("ui.room-settings.2d82491823"),
         translate("ui.room-settings.4d983d179c"),
+        ...(draftCategories.some((c) => settings.draftBans?.[c].length)
+          ? [translate("draftBan.configured")]
+          : []),
       ].join(" · ")}
     </span>
   );
@@ -322,6 +328,9 @@ export function SettingsSummary({
         </span>
       )}
       {locked && <span>{translate("ui.room-settings.d617f69c27")}</span>}
+      {(mode?.startsWith("snake-") || s.draftBans) && (
+        <DraftBanSummary value={s.draftBans} />
+      )}
     </div>
   );
 }

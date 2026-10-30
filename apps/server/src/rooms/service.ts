@@ -18,6 +18,28 @@ import {
 } from "../../../../packages/contracts/src/room";
 import { createClock } from "../games/clock";
 import { lockRoomParticipation, assertRoomCapacity } from "./participation";
+import {
+  draftCategories,
+  emptyDraftBans,
+  excessiveDraftBans,
+} from "../../../../packages/rules/src/draft-bans";
+import type { GameSettings } from "../../../../packages/contracts/src/room";
+function validateDraftBans(
+  settings: GameSettings,
+  mode: string,
+  capacity: number,
+) {
+  const bans = settings.draftBans ?? emptyDraftBans();
+  assertApi(
+    mode.startsWith("snake-") ||
+      draftCategories.every((c) => bans[c].length === 0),
+    "DRAFT_BANS_REQUIRE_SNAKE",
+  );
+  assertApi(
+    excessiveDraftBans(bans, capacity).length === 0,
+    "DRAFT_POOL_TOO_SMALL",
+  );
+}
 const seatOrder = "position NULLS LAST,joined_at,user_id";
 async function lockRoom(
   c: PoolClient,
@@ -90,6 +112,7 @@ export async function createRoom(
   );
   const parsed = roomInputSchema.parse(input);
   const settings = effectiveSettings(parsed.settings, parsed.setupMode);
+  validateDraftBans(settings, parsed.setupMode, parsed.seats);
   assertApi(
     !parsed.setupMode.startsWith("snake-") ||
       ["paced", "incremental"].includes(settings.time.mode),
@@ -128,6 +151,7 @@ export async function updateRoom(
 ) {
   const parsed = roomInputSchema.parse(input),
     settings = effectiveSettings(parsed.settings, parsed.setupMode);
+  validateDraftBans(settings, parsed.setupMode, parsed.seats);
   assertApi(
     !parsed.setupMode.startsWith("snake-") ||
       ["paced", "incremental"].includes(settings.time.mode),
@@ -309,6 +333,7 @@ export async function startRoom(
     );
     const gameId = randomUUID(),
       players = seats.map((s) => ({ id: s.user_id, name: s.display_name }));
+    validateDraftBans(settings, room.setup_mode, room.capacity);
     const setup =
       room.setup_mode === "snake-forward" || room.setup_mode === "snake-reverse"
         ? snakeSetup(
@@ -318,6 +343,7 @@ export async function startRoom(
             settings.seed
               ? seededRandom(settings.seed)
               : () => randomInt(0, 0x100000000) / 0x100000000,
+            settings.draftBans,
           )
         : room.setup_mode === "standard"
           ? standardSetup(

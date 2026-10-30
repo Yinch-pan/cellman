@@ -714,7 +714,7 @@ footer {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.player-chip > div span {
+.player-chip > .player-identity span {
   font-size: 10px;
   color: #8a927e;
 }
@@ -905,12 +905,11 @@ footer {
   text-align: center;
   padding: 9px 4px;
   display: grid;
-  grid-template-columns: 22px 1fr;
+  grid-template-columns: 24px 1fr;
   align-items: center;
 }
-.resource-grid > div > span {
-  font-size: 15px;
-  color: #b29452;
+.resource-grid > div > .game-symbol {
+  justify-content: center;
 }
 .resource-grid strong {
   font-size: 24px;
@@ -1212,9 +1211,11 @@ summary {
 }
 @media (max-width: 760px) {
   .site-header {
-    height: 62px;
-    padding: 0 17px;
-    gap: 12px;
+    height: auto;
+    padding: 12px 17px 6px;
+    gap: 4px;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .brand {
     font-size: 22px;
@@ -1227,11 +1228,15 @@ summary {
     gap: 8px;
     font-size: 11px;
     min-width: 0;
-    flex: 1;
-    justify-content: flex-end;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .site-header nav > a {
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
   .site-header nav > button {
     max-width: 135px;
@@ -1399,7 +1404,7 @@ summary {
     font-size: 12px;
     gap: 3px;
   }
-  .player-chip > div span {
+  .player-chip > .player-identity span {
     font-size: 10px;
   }
   .player-dot {
@@ -1943,7 +1948,7 @@ fieldset.control-column:disabled .action-panel {
   .settings-panel,
   .checkbox,
   .map-mobile-tools,
-  .player-chip > div span,
+  .player-chip > .player-identity span,
   .resource-grid small,
   .power-bowls small,
   .mini-stats {
@@ -2438,3 +2443,11 @@ fieldset.control-column:disabled .action-panel {
   padding-top: 6px;
   color: #466244;
 }
+.support-page {
+  max-width: 850px;
+  margin: 24px auto;
+  padding: 0 16px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.support-page .panel { margin-block: 20px; padding: 20px; }

@@ -243,7 +243,7 @@ describe("independent rulebook examples, English v1.1 + September 2024", () => {
     giveIncome(s);
     expect(p.resources).toEqual({
       coins: 8,
-      tools: 1,
+      tools: 2, // One workshop plus the always-visible tool.
       scholars: 4,
       books: [0, 0, 0, 0],
       power: [6, 6, 0],

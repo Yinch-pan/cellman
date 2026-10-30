@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect } from "@playwright/test";
 import { actionState } from "../../packages/rules/test/fixtures/actions";
 
@@ -48,7 +49,7 @@ test("mobile shortcuts preserve selected target and explain unavailable building
     .getByRole("navigation", { name: "对局快捷导航" })
     .getByRole("button", { name: "地图", exact: true })
     .click();
-  await page.getByRole("button", { name: /^B1 / }).click();
+  await page.getByRole("button", { name: new RegExp(`^${hexLabel("B1")} `) }).click();
   await page
     .getByRole("navigation", { name: "对局快捷导航" })
     .getByRole("button", { name: "操作", exact: true })
@@ -86,6 +87,9 @@ test("offline status stops new submissions, reconnect restores controls, and gui
   );
   await page.route("**/api/games/usability", (route) =>
     route.fulfill({ json: { state, seat: "p1" } }),
+  );
+  await page.route("**/api/watch/usability", (route) =>
+    route.fulfill({ json: { state, memberSeat: "p1" } }),
   );
   await page.route("**/api/games/usability/history", (route) =>
     route.fulfill({ json: [] }),

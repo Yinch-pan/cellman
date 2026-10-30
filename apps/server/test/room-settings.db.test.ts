@@ -22,6 +22,10 @@ import {
 } from "../../../packages/contracts/src/room";
 import { replayRecord } from "../../../packages/rules/src/replay";
 import { draftOptions } from "../../../packages/rules/src/setup";
+import {
+  emptyDraftBans,
+  draftCategories,
+} from "../../../packages/rules/src/draft-bans";
 const url = process.env.TEST_DATABASE_URL,
   schema = "settings_" + randomUUID().replaceAll("-", "");
 const admin = new Pool({ connectionString: url }),
@@ -59,6 +63,111 @@ const base: RoomInput = {
   seats: 3,
   setupMode: "standard",
 };
+it("draft bans are host-only, invalidate readiness, survive reload/start and cannot be changed in a game", async () => {
+  const input: RoomInput = {
+    ...base,
+    setupMode: "snake-forward",
+    settings: {
+      time: {
+        mode: "incremental",
+        initialHours: 72,
+        incrementHours: 24,
+        maximumHours: 72,
+      },
+    },
+  };
+  const room = await full(input);
+  const bans = {
+    faction: ["monks"],
+    native: ["forest"],
+    palace: ["flight"],
+    bonus: ["coins"],
+  };
+  const next = { ...input, settings: { ...input.settings, draftBans: bans } };
+  await expect(
+    updateRoom(db, actors[1], room.id, next, room.settingsRevision),
+  ).rejects.toMatchObject({ code: "HOST_REQUIRED" });
+  const saved = await updateRoom(
+    db,
+    actors[0],
+    room.id,
+    next,
+    room.settingsRevision,
+  );
+  expect(saved.settings.draftBans).toEqual(bans);
+  expect(saved.seats.every((s: any) => !s.ready)).toBe(true);
+  expect((await roomView(db, actors[1], room.id)).settings.draftBans).toEqual(
+    bans,
+  );
+  await expect(
+    setReady(db, actors[1], room.id, true, room.settingsRevision),
+  ).rejects.toMatchObject({ code: "ROOM_SETTINGS_CHANGED" });
+  await expect(
+    startRoom(db, actors[0], room.id, saved.settingsRevision),
+  ).rejects.toMatchObject({ code: "NOT_READY" });
+  for (const a of actors.slice(0, 3))
+    await setReady(db, a, room.id, true, saved.settingsRevision);
+  const { gameId } = await startRoom(
+    db,
+    actors[0],
+    room.id,
+    saved.settingsRevision,
+  );
+  const game = await getGame(db, actors[0], gameId);
+  expect(game.settings.draftBans).toEqual(bans);
+  for (const category of draftCategories)
+    for (const id of bans[category])
+      expect(game.state.setup.draft!.pools[category]).not.toContain(id);
+  const record = await getReplay(db, actors[0], gameId);
+  expect(record.settings.draftBans).toEqual(bans);
+  expect(replayRecord(record).state).toEqual(game.state);
+  await expect(
+    updateRoom(db, actors[0], room.id, next, saved.settingsRevision),
+  ).rejects.toMatchObject({ code: "ROOM_STARTED" });
+});
+it("excessive bans and incompatible modes cannot create rooms, resize them or invalidate ready flags", async () => {
+  const bans = { ...emptyDraftBans(), bonus: ["coins", "power", "guild"] };
+  const input: RoomInput = {
+    ...base,
+    setupMode: "snake-reverse",
+    settings: {
+      draftBans: bans,
+      time: {
+        mode: "incremental",
+        initialHours: 72,
+        incrementHours: 24,
+        maximumHours: 72,
+      },
+    },
+  };
+  await expect(
+    createRoom(db, actors[0], { ...input, seats: 5 }),
+  ).rejects.toMatchObject({ code: "DRAFT_POOL_TOO_SMALL" });
+  await expect(
+    createRoom(db, actors[0], { ...input, setupMode: "standard" }),
+  ).rejects.toMatchObject({ code: "DRAFT_BANS_REQUIRE_SNAKE" });
+  const room = await full(input);
+  await expect(
+    updateRoom(
+      db,
+      actors[0],
+      room.id,
+      { ...input, seats: 5 },
+      room.settingsRevision,
+    ),
+  ).rejects.toMatchObject({ code: "DRAFT_POOL_TOO_SMALL" });
+  const same = await roomView(db, actors[0], room.id);
+  expect(same.settingsRevision).toBe(room.settingsRevision);
+  expect(same.seats.every((s: any) => s.ready)).toBe(true);
+  // Defensive validation at start also protects persisted settings.
+  await db.query(
+    "UPDATE rooms SET settings=jsonb_set(settings,'{draftBans,native}','[\"forest\",\"lake\"]') WHERE id=$1",
+    [room.id],
+  );
+  await expect(startRoom(db, actors[0], room.id)).rejects.toMatchObject({
+    code: "DRAFT_POOL_TOO_SMALL",
+  });
+});
 async function full(input: RoomInput = base) {
   const r = await createRoom(db, actors[0], input);
   for (const a of actors.slice(1, input.seats))

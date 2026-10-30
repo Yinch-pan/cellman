@@ -1,4 +1,113 @@
 /* Shared board and choice language; content is rendered from rule definitions. */
+.table-workspace,
+.table-play-area,
+.table-player-rail {
+  min-width: 0;
+}
+.game-page .turn-bar .draft-confirmation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px 14px;
+  flex-basis: 100%;
+  margin: 0;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid #d4cbb8;
+  background: transparent;
+  box-shadow: none;
+}
+.draft-confirmation .preview-summary {
+  min-width: 0;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.draft-confirmation .preview-changes {
+  margin: 0;
+}
+.draft-confirmation .full {
+  width: auto;
+  margin: 0;
+  min-height: 44px;
+}
+.draft-confirmation .error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.game-page .final-scores {
+  margin: 0 0 20px;
+}
+@media (min-width: 1200px) {
+  .table-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    align-items: start;
+    gap: 18px;
+  }
+  .table-play-area {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .table-player-rail {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .game-page .table-player-rail .player-bar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .game-page .table-grid:not(.draft-layout) {
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 16px;
+  }
+}
+.game-page.snake-drafting .draft-category {
+  margin-top: 14px;
+  padding-top: 10px;
+}
+.snake-drafting .draft-category h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+.game-page.snake-drafting .draft-category .setup-options {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.game-page.snake-drafting .draft-category .setup-option {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 6px;
+  min-height: 112px;
+  padding: 10px;
+  align-content: start;
+}
+.snake-drafting .draft-category .tile-emblem {
+  font-size: 24px;
+}
+.snake-drafting .draft-category .tile-description,
+.snake-drafting .draft-category .setup-option small {
+  grid-column: 1 / -1;
+}
+.snake-drafting .draft-category .setup-option > .tile-description {
+  line-height: 1.5;
+}
+.game-page .setup-option:focus-visible,
+.game-page .draft-picked:focus-visible {
+  outline: 3px solid #2876a4;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .game-page .turn-bar .draft-confirmation {
+    grid-template-columns: 1fr 1fr;
+  }
+  .draft-confirmation .preview-summary {
+    grid-column: 1 / -1;
+    max-height: 85px;
+  }
+  .game-page.snake-drafting .draft-category .setup-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .game-page .table-heading {
   margin: 6px 0;
   padding: 0;
@@ -467,11 +576,12 @@
     font-size: 16px;
   }
   .game-page .chip-resources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px;
     font-size: 11px;
   }
   .chip-resources > span small {
-    display: none;
+    flex-basis: 100%;
   }
   .chip-bowls,
   .chip-books {
@@ -574,6 +684,30 @@
 .game-page .tech-track li small {
   font-size: 10px;
   text-align: center;
+}
+.game-page .tech-track li:has(.tech-advance) {
+  padding: 0;
+}
+.game-page .tech-advance {
+  width: 100%;
+  min-height: 44px;
+  padding: 5px 1px;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: #e0efe9;
+  color: #173e2d;
+  border-radius: 3px;
+}
+.game-page .tech-advance:disabled {
+  background: #faf7ee;
+  color: #59634f;
+}
+.game-page .tech-advance:focus-visible {
+  outline: 3px solid #2c789a;
+  outline-offset: 2px;
 }
 .game-page .tech-track-note {
   margin: 4px 0 0;
@@ -748,11 +882,23 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
-.game-page .table-action-editor .book-payment label {
+.game-page .table-action-editor .book-payment-color {
   border: 1px solid #bbbda7;
   border-radius: 6px;
   padding: 8px;
   min-width: 0;
+}
+.game-page .book-payment-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 6px;
+}
+.game-page .book-payment-counter button {
+  min-width: 36px;
+  min-height: 40px;
+  padding: 4px;
 }
 .game-page .table-action-editor .book-payment small {
   display: block;
@@ -800,4 +946,51 @@
   .game-page .competency-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+.map-frame [data-located="true"] > polygon:first-of-type {
+  stroke: #a8360a;
+  stroke-width: 6px;
+  stroke-dasharray: 5 3;
+}
+.map-location-notice {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fff2d4;
+  color: #78310e;
+}
+.log-map-link {
+  margin-inline-start: 8px;
+  min-height: 44px;
+}
+.leech-presets {
+  border: 0;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.leech-presets legend {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.leech-presets .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid #d9dfcd;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.leech-presets .checkbox:has(input:checked) {
+  border-color: #718c5d;
+  background: #edf2e6;
+}
+.leech-presets input[type="radio"] {
+  flex: 0 0 auto;
+  accent-color: #486456;
 }

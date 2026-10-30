@@ -5,7 +5,7 @@ import {
   type IncomeSource,
 } from "../../../packages/rules/src/income";
 import { t } from "./i18n";
-import { PlayerTechnology } from "./player-technology";
+import { PlayerTechnology, type TechnologyControls } from "./player-technology";
 
 const resources = [
   "coins",
@@ -20,10 +20,12 @@ const resources = [
 export function PlayerIncome({
   state,
   player,
+  onAdvance,
+  advanceEnabled,
 }: {
   state: GameState;
   player: Player;
-}) {
+} & TechnologyControls) {
   const rows = incomeSources(state, player);
   const total = (key: Exclude<keyof IncomeSource, "source">) =>
     rows.reduce((sum, row) => sum + (row[key] ?? 0), 0);
@@ -33,7 +35,11 @@ export function PlayerIncome({
       className="player-income"
       aria-label={t("playerIncome.label", { name: player.name })}
     >
-      <PlayerTechnology player={player} />
+      <PlayerTechnology
+        player={player}
+        onAdvance={onAdvance}
+        advanceEnabled={advanceEnabled}
+      />
       {noNextIncome ? (
         <p className="player-income-title">{t("playerIncome.noNext")}</p>
       ) : (

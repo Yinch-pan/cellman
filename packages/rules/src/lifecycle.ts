@@ -6,14 +6,50 @@ import { officialLarge } from "./map";
 // Administrative actions are replayable, but never accepted by the game-command API.
 export type LifecycleAction = {
   kind: "adjudicate";
-  reason: "forfeit" | "inactive" | "close";
+  reason: "forfeit" | "inactive" | "close" | "consensus";
   target?: string;
   at: string;
+  consent?: {
+    requestId: string;
+    proposer: string;
+    approvedSeats: string[];
+    reason: string;
+  };
 };
 export function adjudicate(state: GameState, action: LifecycleAction) {
   const next = structuredClone(state);
   if (state.status === "finished") throw Error("GAME_FINISHED");
   const events: RuleEvent[] = [];
+  if (action.reason === "consensus") {
+    const seats = Object.keys(state.players),
+      consent = action.consent;
+    if (
+      state.matchResult ||
+      !consent ||
+      !seats.includes(consent.proposer) ||
+      new Set(consent.approvedSeats).size !== seats.length ||
+      consent.approvedSeats.length !== seats.length ||
+      !seats.every((seat) => consent.approvedSeats.includes(seat))
+    )
+      throw Error("INVALID_ADJUDICATION");
+    next.matchResult = {
+      reason: "consensus",
+      at: action.at,
+      winners: [],
+      round: next.round,
+    };
+    next.status = "finished";
+    next.phase = "finished";
+    next.pending = [];
+    next.scores = [];
+    events.push({
+      kind: "consensus",
+      seat: consent.proposer,
+      text: "全体玩家同意结束本局；保留对局记录，不判胜负，不计入分数和胜率。",
+      details: { ...consent },
+    });
+    return { ok: true as const, state: next, events };
+  }
   if (action.reason === "forfeit") {
     if (next.matchResult || !action.target || !next.players[action.target])
       throw Error("INVALID_ADJUDICATION");

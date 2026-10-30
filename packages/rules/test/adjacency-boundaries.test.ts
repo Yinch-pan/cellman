@@ -27,7 +27,17 @@ it("taking the tower competency is legal when the neutral building cannot be pla
   expect(r.ok).toBe(true);
   if (r.ok) {
     expect(r.state.players.p1.competencies).toContain("tower");
-    expect(r.state.pending).toEqual([]);
+    expect(r.state.pending).toHaveLength(1);
+    expect(r.state.pending[0]).toMatchObject({
+      kind: "neutral",
+      options: ["discard"],
+    });
+    const declined = applyAction(r.state, "p1", {
+      kind: "respond",
+      choiceId: r.state.pending[0].id,
+      option: "discard",
+    });
+    expect(declined).toMatchObject({ ok: true, state: { pending: [] } });
     expect(r.state.board.buildings).toEqual({});
   }
 });

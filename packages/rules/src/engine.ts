@@ -1,4 +1,5 @@
 import { awardPoints } from "./score-events";
+import { sameBookReward } from "./book-choice";
 import { advanceDeparted } from "./lifecycle";
 import type {
   GameState,
@@ -12,20 +13,27 @@ import { RuleViolation, requireRule, pay, note, integer } from "./internal";
 import { burnPower } from "./actions/power";
 import { advanceScience } from "./actions/science";
 import { convert } from "./actions/convert";
-import { terraform, upgrade, checkSupply } from "./actions/build";
+import { terraform, upgrade, checkSupply, takePalace } from "./actions/build";
 import { acceptLeech, autoLeech, queueChoice, offerLeech } from "./responses";
 import { officialLarge, reachable } from "./map";
-import { giveIncome, pass, awardRound, settlePhase } from "./rounds";
+import {
+  giveIncome,
+  pass,
+  finishPass,
+  takeBonus,
+  awardRound,
+  settlePhase,
+} from "./rounds";
 import { findCities, takeCity } from "./actions/city";
 import { publicPower, innovate } from "./actions/public";
 import { takeCompetency } from "./actions/competency";
 import { special } from "./actions/special";
 import { bookAction } from "./actions/books";
-import { placeNeutral } from "./actions/neutral";
+import { placeNeutral, refreshNeutralChoices } from "./actions/neutral";
 import { competencyMarket } from "./catalog";
 import { gainScholar } from "./internal";
 import { gainPower } from "./actions/power";
-import { RULES_VERSION, supportsTurnPlanning } from "./state";
+import { usesCurrentActionProtocol, supportsTurnPlanning } from "./state";
 import { ledgerEntry } from "./ledger";
 import { applyAction as legacyAction } from "../legacy/v1/engine";
 import {
@@ -59,6 +67,11 @@ import {
   applyActionRaw as v5Action,
   getAvailableChoices as v5Choices,
 } from "../legacy/v5/engine";
+import {
+  applyActionRaw as v6Action,
+  applyTurn as v6Turn,
+  getAvailableChoices as v6Choices,
+} from "../legacy/v6/engine";
 export { gainPower } from "./actions/power";
 function palaceRewardsFirst(
   s: GameState,
@@ -73,20 +86,33 @@ function palaceRewardsFirst(
     )
   );
 }
-export function getAvailableChoices(s: GameState) {
-  if (s.rulesVersion.endsWith("engine-5")) return v5Choices(s);
+export function getAvailableChoices(s: GameState): GameState["pending"] {
+  if (s.rulesVersion.endsWith("engine-6"))
+    return v6Choices(s as Parameters<typeof v6Choices>[0]);
+  if (s.rulesVersion.endsWith("engine-5"))
+    return v5Choices(s as Parameters<typeof v5Choices>[0]);
   if (s.rulesVersion.endsWith("engine-2"))
     return v2Choices(s as any) as GameState["pending"];
   if (s.rulesVersion.endsWith("engine-3"))
     return v3Choices(s as any) as GameState["pending"];
   if (s.rulesVersion.endsWith("engine-4"))
     return v4Choices(s as any) as GameState["pending"];
+  const setupSeat =
+    s.phase === "setup" && s.setupStage
+      ? s.turnOrder.find((seat) => s.pending.some((c) => c.seat === seat))
+      : undefined;
   return s.pending.filter(
     (c) =>
+      (!setupSeat || c.seat === setupSeat) &&
       (!s.activeEffectBatch ||
         c.batch === s.activeEffectBatch ||
         c.kind === "leech") &&
       !palaceRewardsFirst(s, c) &&
+      (c.kind === "palace" ||
+        c.kind === "leech" ||
+        !s.pending.some(
+          (other) => other.seat === c.seat && other.kind === "palace",
+        )) &&
       !c.dependsOn?.some((id) => s.pending.some((other) => other.id === id)) &&
       (!(["science", "setup"].includes(s.phase) && c.kind === "spades") ||
         s.pending.find((other) => other.kind === "spades")?.id === c.id) &&
@@ -107,20 +133,54 @@ export const getWaitingSeats = (s: GameState): SeatId[] =>
     : s.pending.length
       ? [...new Set(getAvailableChoices(s).map((c) => c.seat))]
       : [s.activeSeat];
+export function canEndTurnWithLeech(s: GameState, seat: SeatId) {
+  return (
+    usesCurrentActionProtocol(s.rulesVersion) &&
+    s.status === "active" &&
+    s.phase === "actions" &&
+    s.activeSeat === seat &&
+    s.players[seat]?.primaryDone &&
+    !s.players[seat].passed &&
+    s.pending.length > 0 &&
+    s.pending.every((choice) => choice.kind === "leech" && choice.seat !== seat)
+  );
+}
+export function canYieldToLeech(s: GameState, seat: SeatId) {
+  const available = getAvailableChoices(s);
+  return (
+    usesCurrentActionProtocol(s.rulesVersion) &&
+    s.status === "active" &&
+    s.phase === "actions" &&
+    s.activeSeat === seat &&
+    !!s.players[seat]?.primaryDone &&
+    !s.players[seat].passed &&
+    available.length > 0 &&
+    available.every((c) => c.kind === "leech" && c.seat !== seat)
+  );
+}
 export function canConvertDuringChoice(s: GameState, seat: SeatId) {
   return (
     supportsTurnPlanning(s.rulesVersion) &&
     s.status !== "finished" &&
     s.phase === "actions" &&
     s.activeSeat === seat &&
-    !s.players[seat]?.passed &&
-    s.pending.some((c) => c.seat === seat)
+    (!s.players[seat]?.passed ||
+      getAvailableChoices(s).some(
+        (c) => c.seat === seat && c.kind === "passFinish",
+      )) &&
+    (s.pending.some((c) => c.seat === seat) || canEndTurnWithLeech(s, seat))
   );
 }
 export function getLegalActions(s: GameState, seat: SeatId): ActionOption[] {
   if (s.matchResult?.loser === seat) return [];
   if (!s.players[seat] || s.status === "finished") return [];
   if (s.phase === "science" && !getWaitingSeats(s).includes(seat)) return [];
+  if (canEndTurnWithLeech(s, seat))
+    return [
+      { kind: "convert", label: "资源转换" },
+      { kind: "burn", label: "燃烧魔力" },
+      { kind: "endTurn", label: "结束回合" },
+    ];
   if (s.pending.some((c) => c.seat === seat))
     return [
       { kind: "respond", label: "处理待响应" },
@@ -179,8 +239,153 @@ export function applyActionRaw(
   seat: SeatId,
   action: GameAction,
 ): Transition {
+  if (
+    action.kind === "scholar" &&
+    action.useKey !== undefined &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (
+    action.kind === "powerAction" &&
+    action.deferSpades &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (
+    action.kind === "respond" &&
+    (action.cityHex !== undefined || action.buildHex !== undefined) &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (
+    action.kind === "pass" &&
+    action.deferBonus &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (
+    action.kind === "upgrade" &&
+    (action.deferPalace || action.deferCompetency) &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (
+    action.kind === "setLeech" &&
+    action.rejectPaid !== undefined &&
+    !usesCurrentActionProtocol(state.rulesVersion)
+  )
+    return {
+      ok: false,
+      error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+    };
+  if (state.rulesVersion === "aoi-1.1+2024-09.engine-6")
+    return v6Action(state as Parameters<typeof v6Action>[0], seat, action);
+  if (action.kind === "convertBatch") {
+    if (
+      !usesCurrentActionProtocol(state.rulesVersion) ||
+      !action.actions.length ||
+      action.actions.length > 100 ||
+      action.actions.some((a) => a.kind !== "burn" && a.kind !== "convert")
+    )
+      return {
+        ok: false,
+        error: { code: "INVALID_TURN", message: "INVALID_TURN" },
+      };
+    let next = state;
+    const events: RuleEvent[] = [];
+    for (const child of action.actions) {
+      const result = applyActionRaw(next, seat, child);
+      if (!result.ok) return result;
+      next = result.state;
+      events.push(...result.events);
+    }
+    return { ok: true, state: next, events };
+  }
+  if (action.kind === "powerAction" && action.burn !== undefined) {
+    if (!usesCurrentActionProtocol(state.rulesVersion))
+      return {
+        ok: false,
+        error: { code: "RULESET_UNAVAILABLE", message: "RULESET_UNAVAILABLE" },
+      };
+    const { burn, ...payment } = action;
+    const burned = applyActionRaw(state, seat, { kind: "burn", count: burn });
+    if (!burned.ok) return burned;
+    const paid = applyActionRaw(burned.state, seat, payment);
+    if (!paid.ok) return paid;
+    return {
+      ok: true,
+      state: paid.state,
+      events: [...burned.events, ...paid.events],
+    };
+  }
+  if (action.kind === "collectBooks") {
+    const invalid: Transition = {
+      ok: false,
+      error: { code: "INVALID_CHOICE", message: "INVALID_CHOICE" },
+    };
+    if (
+      !usesCurrentActionProtocol(state.rulesVersion) ||
+      !action.selections.length ||
+      action.selections.length > 100
+    )
+      return invalid;
+    const available = getAvailableChoices(state).filter(
+      (c) => c.seat === seat && c.kind === "book" && c.amount === 1,
+    );
+    const first = available.find((c) => c.id === action.selections[0].choiceId);
+    if (
+      !first ||
+      new Set(action.selections.map((s) => s.choiceId)).size !==
+        action.selections.length
+    )
+      return invalid;
+    if (
+      action.selections.some(
+        (selection) =>
+          !available.some(
+            (c) =>
+              c.id === selection.choiceId &&
+              sameBookReward(first, c) &&
+              c.options.includes(selection.option) &&
+              ["0", "1", "2", "3"].includes(selection.option),
+          ),
+      )
+    )
+      return invalid;
+    let next = state;
+    const events: RuleEvent[] = [];
+    for (const selection of action.selections) {
+      const result = applyActionRaw(next, seat, {
+        kind: "respond",
+        ...selection,
+      });
+      if (!result.ok) return result;
+      next = result.state;
+      events.push(...result.events);
+    }
+    return { ok: true, state: next, events };
+  }
   if (state.rulesVersion === "aoi-1.1+2024-09.engine-5")
-    return v5Action(state, seat, action);
+    return v5Action(
+      state as Parameters<typeof v5Action>[0],
+      seat,
+      action as Parameters<typeof v5Action>[2],
+    );
   if (action.kind === "turn") return applyTurn(state, seat, action.actions);
   const result =
     action.kind === "draftPick"
@@ -199,6 +404,8 @@ export function applyActionRaw(
               ? v4Action(state as Parameters<typeof v4Action>[0], seat, action)
               : applyCurrentAction(state, seat, action);
   if (result.ok) {
+    if (usesCurrentActionProtocol(state.rulesVersion))
+      refreshNeutralChoices(result.state);
     for (const c of result.state.pending)
       if (!state.pending.some((old) => old.id === c.id))
         c.triggerRevision = state.revision + 1;
@@ -222,11 +429,14 @@ export function applyTurn(
   seat: SeatId,
   actions: Exclude<GameAction, { kind: "turn" }>[],
 ): Transition {
+  if (state.rulesVersion === "aoi-1.1+2024-09.engine-6")
+    return v6Turn(state as Parameters<typeof v6Turn>[0], seat, actions);
   const fail = (code: string): Transition => ({
     ok: false,
     error: { code, message: code },
   });
-  if (state.rulesVersion !== RULES_VERSION) return fail("RULESET_UNAVAILABLE");
+  if (!usesCurrentActionProtocol(state.rulesVersion))
+    return fail("RULESET_UNAVAILABLE");
   if (
     state.phase !== "actions" ||
     state.activeSeat !== seat ||
@@ -237,6 +447,7 @@ export function applyTurn(
   if (!actions.length || actions.length > 100) return fail("INVALID_TURN");
   let next = state;
   const events: RuleEvent[] = [];
+  let finishedPass = false;
   for (let i = 0; i < actions.length; i++) {
     const action = actions[i];
     if (
@@ -251,10 +462,20 @@ export function applyTurn(
       i &&
       (next.activeSeat !== seat ||
         next.phase !== "actions" ||
-        next.players[seat].passed ||
+        (next.players[seat].passed &&
+          !next.pending.some(
+            (c) => c.seat === seat && c.kind === "passFinish",
+          )) ||
         actions[i - 1].kind === "endTurn")
     )
       return fail("TURN_ALREADY_ENDED");
+    if (
+      action.kind === "respond" &&
+      next.pending.some(
+        (c) => c.id === action.choiceId && c.kind === "passFinish",
+      )
+    )
+      finishedPass = true;
     const result = applyActionRaw(next, seat, action);
     if (!result.ok) return result;
     next = result.state;
@@ -264,6 +485,7 @@ export function applyTurn(
   if (
     last.kind !== "endTurn" &&
     last.kind !== "pass" &&
+    !finishedPass &&
     !next.pending.some((c) => c.seat !== seat) &&
     next.status !== "finished"
   )
@@ -275,7 +497,7 @@ function applyCurrentAction(
   seat: SeatId,
   action: GameAction,
 ): Transition {
-  if (state.rulesVersion !== RULES_VERSION)
+  if (!usesCurrentActionProtocol(state.rulesVersion))
     return {
       ok: false,
       error: {
@@ -310,7 +532,19 @@ function applyCurrentAction(
         action.maxVpCost <= 999 && typeof action.enabled === "boolean",
         "INVALID_POLICY",
       );
-      p.leechPolicy = { enabled: action.enabled, maxVpCost: action.maxVpCost };
+      requireRule(
+        action.rejectPaid === undefined ||
+          typeof action.rejectPaid === "boolean",
+        "INVALID_POLICY",
+      );
+      p.leechPolicy = {
+        ...p.leechPolicy,
+        enabled: action.enabled,
+        maxVpCost: action.maxVpCost,
+        ...(action.rejectPaid !== undefined
+          ? { rejectPaid: action.rejectPaid }
+          : {}),
+      };
       autoLeech(s, events);
       if (
         s.activeEffectBatch &&
@@ -324,7 +558,23 @@ function applyCurrentAction(
       const i = s.pending.findIndex((c) => c.id === action.choiceId);
       requireRule(i >= 0, "STALE_CHOICE");
       const c = s.pending[i];
+      requireRule(
+        action.cityHex === undefined || c.kind === "city",
+        "INVALID_CHOICE",
+      );
+      requireRule(
+        action.buildHex === undefined ||
+          (c.kind === "buildWorkshop" && action.option === "build"),
+        "INVALID_CHOICE",
+      );
       requireRule(c.seat === seat, "WRONG_RESPONDER");
+      if (s.phase === "setup" && s.setupStage)
+        requireRule(
+          s.turnOrder.find((id) =>
+            s.pending.some((choice) => choice.seat === id),
+          ) === seat,
+          "WAIT_SCIENCE_ORDER",
+        );
       requireRule(
         !s.activeEffectBatch ||
           c.batch === s.activeEffectBatch ||
@@ -332,7 +582,15 @@ function applyCurrentAction(
         "FINISH_EFFECT_BATCH",
       );
       requireRule(!palaceRewardsFirst(s, c), "FINISH_PALACE_REWARDS");
-      if (c.batch) s.activeEffectBatch = c.batch;
+      requireRule(
+        c.kind === "palace" ||
+          c.kind === "leech" ||
+          !s.pending.some(
+            (other) => other.seat === seat && other.kind === "palace",
+          ),
+        "RESOLVE_PALACE_FIRST",
+      );
+      if (c.batch && !c.canInterleave) s.activeEffectBatch = c.batch;
       const priorChoices = new Set(s.pending.map((c) => c.id));
       requireRule(
         !c.dependsOn?.some((id) => s.pending.some((other) => other.id === id)),
@@ -365,6 +623,8 @@ function applyCurrentAction(
         acceptLeech(p, c.amount, events);
       else if (c.kind === "spades" && action.option === "terraform") {
         requireRule(action.terraform, "MISSING_TERRAFORM");
+        if (c.source === "power-action-surplus")
+          requireRule(!action.terraform.travel, "OUT_OF_REACH");
         requireRule(
           c.canBuild !== false ||
             (!action.terraform.build && !action.terraform.deferBuild),
@@ -379,28 +639,60 @@ function applyCurrentAction(
         );
         if (c.canBuySpades === false)
           requireRule(p.resources.tools === before, "CANNOT_BUY_SPADES");
+        if (
+          c.source === "power-action-surplus" &&
+          action.terraform.terrain === p.native
+        ) {
+          const build = s.pending.find(
+            (choice) =>
+              choice.kind === "buildWorkshop" &&
+              choice.dependsOn?.includes(c.id),
+          );
+          if (build)
+            build.buildHexes = [
+              ...(build.buildHexes ?? [build.source]),
+              action.terraform.hex,
+            ];
+        }
         if (c.source !== "round-science") {
           awardRound(s, p, "spade", result.spades);
           if (result.built) awardRound(s, p, "workshop");
         }
         findCities(s, p);
       } else if (c.kind === "buildWorkshop" && action.option === "build") {
+        const buildHex = action.buildHex ?? c.source;
+        requireRule(
+          (c.buildHexes ?? [c.source]).includes(buildHex),
+          "INVALID_CHOICE",
+        );
         terraform(
           s,
           p,
           {
             kind: "terraform",
-            hex: c.source,
+            hex: buildHex,
             terrain: p.native,
             build: true,
           },
           0,
-          c.travelPaid === true,
+          c.travelPaid === true && buildHex === c.source,
         );
         awardRound(s, p, "workshop");
         findCities(s, p);
-      } else if (c.kind === "city") takeCity(s, p, action.option);
-      else if (c.kind === "bridge" && action.option !== "discard") {
+      } else if (c.kind === "city") {
+        if (action.cityHex !== undefined) {
+          const marker = s.board.buildings[action.cityHex];
+          requireRule(
+            marker?.seat === seat && marker.cityId === c.source,
+            "INVALID_CHOICE",
+          );
+          marker.cityTile = action.option;
+        }
+        takeCity(s, p, action.option);
+      } else if (c.kind === "palace") {
+        takePalace(s, p, action.option, true);
+        findCities(s, p);
+      } else if (c.kind === "bridge" && action.option !== "discard") {
         const [a, b] = action.option.split(":");
         placeBridge(s, p, a, b);
       } else if (
@@ -443,8 +735,10 @@ function applyCurrentAction(
         requireRule(c.scienceTrack !== undefined, "INVALID_CHOICE");
         requireRule(p.keysUsed < p.keys, "NO_CITY_KEY");
         advanceScience(s, p, c.scienceTrack, c.amount, true);
-      } else if (c.kind === "competency") takeCompetency(s, p, action.option);
-      else if (c.kind === "neutral") {
+      } else if (c.kind === "bonus") takeBonus(s, p, action.option);
+      else if (c.kind === "passFinish") finishPass(s, p);
+      else if (c.kind === "competency") takeCompetency(s, p, action.option);
+      else if (c.kind === "neutral" && action.option !== "discard") {
         requireRule(c.buildingKind, "INVALID_CHOICE");
         placeNeutral(s, p, c.buildingKind, action.option);
       }
@@ -473,6 +767,7 @@ function applyCurrentAction(
     requireRule(s.activeSeat === seat, "NOT_YOUR_TURN");
     requireRule(
       !s.pending.length ||
+        (action.kind === "endTurn" && canEndTurnWithLeech(s, seat)) ||
         ((action.kind === "convert" || action.kind === "burn") &&
           canConvertDuringChoice(s, seat)),
       "PENDING_CHOICES",
@@ -572,7 +867,7 @@ function applyCurrentAction(
           s.shared.scholarSlots[action.track][action.slot] = seat;
           gain = action.slot === 0 ? 3 : 2;
         }
-        advanceScience(s, p, action.track, gain);
+        advanceScience(s, p, action.track, gain, action.useKey === true);
         if (p.bonus === "scholar") awardPoints(s, p, 2, "学者奖励板");
         if (p.competencies.includes("scholar-score"))
           awardPoints(s, p, 2, "派遣学者能力");
@@ -582,7 +877,8 @@ function applyCurrentAction(
       else if (action.kind === "innovation") innovate(s, p, action);
       else if (action.kind === "special") special(s, p, action);
       else if (action.kind === "bookAction") bookAction(s, p, action);
-      else if (action.kind === "pass") pass(s, p, action.bonus);
+      else if (action.kind === "pass")
+        pass(s, p, action.bonus, action.deferBonus);
       else requireRule(false, "UNSUPPORTED_ACTION");
       if (action.kind !== "pass") {
         if (p.extraActions) {

@@ -112,6 +112,29 @@ export function terraform(
   return { spades: totalUsed, built: a.build };
 }
 
+export function takePalace(
+  s: GameState,
+  p: Player,
+  selected: string,
+  deferred = false,
+) {
+  requireRule(
+    !p.palace &&
+      (p.draftPalace
+        ? selected === p.draftPalace
+        : s.shared.palaces.includes(selected)),
+    "INVALID_PALACE",
+  );
+  requireRule(Object.hasOwn(palaces, selected), "UNSUPPORTED_ABILITY");
+  p.palace = selected;
+  const existing = new Set(s.pending.map((c) => c.id));
+  palaceEffect(s, p, selected);
+  if (deferred && selected === "engineering-palace")
+    for (const choice of s.pending)
+      if (!existing.has(choice.id) && ["book", "bridge"].includes(choice.kind))
+        choice.canInterleave = true;
+  s.shared.palaces = s.shared.palaces.filter((id) => id !== selected);
+}
 export function upgrade(
   s: GameState,
   p: Player,
@@ -141,7 +164,7 @@ export function upgrade(
   };
   if (!free) pay(p, costs[a.to as keyof typeof costs]);
   b.kind = a.to;
-  if (a.to === "palace") {
+  if (a.to === "palace" && !a.deferPalace) {
     const selected = p.draftPalace ?? a.palace;
     requireRule(
       !!selected &&
@@ -150,13 +173,28 @@ export function upgrade(
           : s.shared.palaces.includes(selected)),
       "INVALID_PALACE",
     );
-    requireRule(Object.hasOwn(palaces, selected!), "UNSUPPORTED_ABILITY");
-    p.palace = selected!;
-    palaceEffect(s, p, selected!);
-    s.shared.palaces = s.shared.palaces.filter((id) => id !== selected);
+    takePalace(s, p, selected!);
   }
-  if (a.to === "school" || a.to === "university")
+  let competencyId: string | undefined;
+  if (a.to === "school" || a.to === "university") {
     queueChoice(s, p.seat, "competency", 1, competencyOptions(s, p), "upgrade");
+    competencyId = s.pending.at(-1)!.id;
+  }
+  const beforeLeech = new Set(s.pending.map((c) => c.id));
   offerLeech(s, p.seat, a.hex);
+  if (a.deferCompetency && competencyId)
+    s.pending.find((c) => c.id === competencyId)!.dependsOn = s.pending
+      .filter((c) => c.kind === "leech" && !beforeLeech.has(c.id))
+      .map((c) => c.id);
+  if (a.to === "palace" && a.deferPalace) {
+    requireRule(!a.palace, "INVALID_PALACE");
+    const options = p.draftPalace ? [p.draftPalace] : [...s.shared.palaces];
+    requireRule(options.length > 0, "INVALID_PALACE");
+    const dependencies = s.pending
+      .filter((c) => c.kind === "leech" && !beforeLeech.has(c.id))
+      .map((c) => c.id);
+    queueChoice(s, p.seat, "palace", 1, options, a.hex);
+    s.pending.at(-1)!.dependsOn = dependencies;
+  }
   buildingRewards(s, p, a.hex);
 }

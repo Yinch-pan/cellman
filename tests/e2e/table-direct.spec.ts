@@ -1,3 +1,4 @@
+import { hexLabel } from "../../apps/web/src/map-coordinates";
 import { test, expect, type Page } from "@playwright/test";
 import { auditState } from "../../packages/rules/test/fixtures/content-audit";
 import { innovations } from "../../packages/rules/src/content";
@@ -62,7 +63,17 @@ const saved = (page: Page): Promise<GameState> =>
 const click = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true }).click();
 const hex = (page: Page, id: string) =>
-  page.getByRole("button", { name: new RegExp(`^${id} `) }).click();
+  page.getByRole("button", { name: new RegExp(`^${hexLabel(id)} `) }).click();
+async function choosePayment(page: Page, fill = true) {
+  const editor = page.locator("#table-action-editor");
+  await editor
+    .getByRole("button", { name: "继续选择支付书籍", exact: true })
+    .click();
+  if (fill)
+    await editor
+      .getByRole("button", { name: "填入一组可用书籍", exact: true })
+      .click();
+}
 async function replay(page: Page) {
   const record = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("boardgame-demo-record")!),
@@ -85,7 +96,12 @@ async function drain(page: Page) {
         kind: "respond",
         choiceId: c.id,
         option: "terraform",
-        terraform: { hex: "C5", terrain: "forest", build: false },
+        terraform: {
+          hex: "C5",
+          terrain: "forest",
+          build: false,
+          deferBuild: c.canBuild !== false,
+        },
       };
       expect(applyAction(s, c.seat, action).ok).toBe(true);
       if (c.source === "book-action") {
@@ -104,6 +120,10 @@ async function drain(page: Page) {
           .getByRole("button", { name: "使用铲子", exact: true })
           .click();
       }
+      const discard = page.getByRole("button", {
+        name: /^确认放弃剩余 \d+ 铲并完成改造$/,
+      });
+      if (await discard.isVisible()) await discard.click();
     } else if (["neutral", "freeGuild", "freeWorkshop"].includes(c.kind)) {
       const option = c.options.find(
         (option) =>
@@ -115,35 +135,58 @@ async function drain(page: Page) {
       action = { kind: "respond", choiceId: c.id, option };
       await hex(page, option);
       await panel
-        .getByRole("button", { name: `放置 ${option}`, exact: true })
+        .getByRole("button", { name: `放置 ${hexLabel(option)}`, exact: true })
         .click();
     } else {
       const option =
-        c.kind === "leech"
-          ? "decline"
-          : c.kind === "key"
-            ? "use"
-            : c.kind === "city"
-              ? "coins"
-              : c.kind === "competency"
-                ? "immediate-resources"
-                : "0";
+        c.kind === "buildWorkshop"
+          ? "discard"
+          : c.kind === "leech"
+            ? "decline"
+            : c.kind === "key"
+              ? "use"
+              : c.kind === "city"
+                ? "coins"
+                : c.kind === "competency"
+                  ? "immediate-resources"
+                  : "0";
       action = { kind: "respond", choiceId: c.id, option };
       if (c.kind === "competency")
         await click(page, `领取 ${label("competency:" + option)}`);
       else {
         const name =
-          c.kind === "leech"
-            ? "放弃"
-            : c.kind === "key"
-              ? "使用钥匙并继续"
-              : c.kind === "city"
-                ? label("city:" + option)
-                : "银行 / 黄";
+          c.kind === "buildWorkshop"
+            ? "不建造"
+            : c.kind === "leech"
+              ? "放弃"
+              : c.kind === "key"
+                ? "使用钥匙并继续"
+                : c.kind === "city"
+                  ? label("city:" + option)
+                  : "银行 / 黄";
         await panel
           .locator(".choice-buttons")
           .getByRole("button", { name, exact: c.kind !== "city" })
           .click();
+        if (c.kind === "city") {
+          action.cityHex = Object.keys(s.board.buildings).find(
+            (id) => s.board.buildings[id].cityId === c.source,
+          )!;
+          await hex(page, action.cityHex);
+          await page
+            .locator("#table-preview")
+            .getByRole("button", { name: "确认提交", exact: true })
+            .click();
+        }
+        if (c.kind === "book")
+          await panel
+            .getByRole("button", { name: "确认提交", exact: true })
+            .click();
+        if (c.kind === "buildWorkshop")
+          await page
+            .locator("#table-preview")
+            .getByRole("button", { name: "确认提交", exact: true })
+            .click();
       }
     }
     const expected = applyAction(s, c.seat, action);
@@ -183,7 +226,8 @@ for (const id of ["scholar", "tools", "coins", "bridge", "spade", "spades"])
         id,
         hex: "C5",
         terrain: "forest",
-        build: true,
+        build: false,
+        deferBuild: true,
         additional: [],
       };
     const expected = applyAction(s, "p1", action);
@@ -203,10 +247,14 @@ for (const id of ["scholar", "tools", "coins", "bridge", "spade", "spades"])
         .getByRole("button", { name: "到地图选择目标", exact: true })
         .click();
       await hex(page, "C5");
-      await editor.getByLabel("在第一个地块建造工坊").check();
+      await expect(editor.getByLabel("在第一个地块建造工坊")).toHaveCount(0);
       await editor
         .getByRole("button", { name: "使用铲子", exact: true })
         .click();
+      const discard = page.getByRole("button", {
+        name: /^确认放弃剩余 \d+ 铲并完成改造$/,
+      });
+      if (await discard.isVisible()) await discard.click();
     }
     await expectRevision(page, 1);
     if (expected.ok)
@@ -240,6 +288,7 @@ for (const width of [1440, 390]) {
       expect(await saved(page)).toEqual(s);
       await expect(tile).toBeFocused();
       await tile.click();
+      if (id === "coins") await choosePayment(page);
       if (id === "upgrade") {
         const payment = await editor
           .locator('input[type="number"]')
@@ -306,6 +355,13 @@ for (const id of Object.keys(innovations))
     await open(page, s);
     await page.locator(`[data-table-action="innovation:${id}"]`).click();
     await page
+      .getByRole("button", { name: "继续选择支付书籍", exact: true })
+      .click();
+    await page
+      .locator("#table-innovations #table-action-editor")
+      .getByRole("button", { name: "填入一组可用书籍", exact: true })
+      .click();
+    await page
       .locator("#table-innovations #table-action-editor")
       .getByRole("button", { name: "执行此行动", exact: true })
       .click();
@@ -357,6 +413,7 @@ test("inline detailed confirmation stays local and can be cancelled", async ({
   const s = fixture();
   await open(page, s, true);
   await page.locator('[data-table-action="book:coins"]').click();
+  await choosePayment(page);
   const editor = page.locator("#table-action-editor");
   await editor.getByRole("button", { name: "执行此行动", exact: true }).click();
   await expect(editor.locator(".preview-panel")).toBeVisible();
@@ -375,6 +432,7 @@ test("invalid payment, Escape and map cancellation preserve the real state", asy
   const s = fixture();
   await open(page, s);
   await page.locator('[data-table-action="book:coins"]').click();
+  await choosePayment(page, false);
   const editor = page.locator("#table-action-editor");
   for (const input of await editor.locator('input[type="number"]').all())
     await input.fill("0");
@@ -407,7 +465,7 @@ test("direct map selection retains the chosen public action and mobile shortcut 
   await nav.getByRole("button", { name: "地图", exact: true }).click();
   await hex(page, "B4");
   const editor = page.locator("#table-action-editor");
-  await expect(editor).toContainText("已选地块：B4");
+  await expect(editor).toContainText(`已选地块：${hexLabel("B4")}`);
   await expect(page.locator(".map-context-panel")).toHaveCount(0);
   await nav.getByRole("button", { name: "地图", exact: true }).click();
   await nav.getByRole("button", { name: "操作", exact: true }).click();
@@ -617,17 +675,24 @@ for (const id of [
   }) => {
     const s = fixture();
     s.players.p1.resources.power = [0, 12, 0];
+    s.board.buildings.B4.cityId = "city:acceptance";
     queueChoice(s, "p1", "city", 1, [id], "city:acceptance");
     const expected = applyAction(s, "p1", {
       kind: "respond",
       choiceId: s.pending[0].id,
       option: id,
+      cityHex: "B4",
     });
     expect(expected.ok).toBe(true);
     await open(page, s);
     await page
       .locator(`[data-choice-id="${s.pending[0].id}"] .choice-buttons`)
       .getByRole("button", { name: new RegExp(label("city:" + id)) })
+      .click();
+    await hex(page, "B4");
+    await page
+      .locator("#table-preview")
+      .getByRole("button", { name: "确认提交", exact: true })
       .click();
     await expectRevision(page, 1);
     if (expected.ok)
@@ -644,6 +709,7 @@ test("remaining inline trial double click, undo and publish produce only one pay
   await open(page, s, false, true);
   const tile = page.locator('[data-table-action="book:coins"]');
   await tile.click();
+  await choosePayment(page);
   await page
     .locator("#table-action-editor")
     .getByRole("button", { name: "执行此行动", exact: true })
@@ -654,6 +720,7 @@ test("remaining inline trial double click, undo and publish produce only one pay
   expect((await saved(page)).players.p1.resources.coins).toBe(30);
   await click(page, "撤销上一步");
   await tile.click();
+  await choosePayment(page);
   await page
     .locator("#table-action-editor")
     .getByRole("button", { name: "执行此行动", exact: true })
@@ -753,6 +820,8 @@ test("closure auto leech preference updates without spending the main action", a
   await page.getByText("自动蹭魔设置", { exact: true }).click();
   await page.getByLabel("启用自动接受").check();
   await expectRevision(page, 1);
+  if (!(await page.getByLabel("最多支付分数").isVisible()))
+    await page.getByText("自定义或手动处理", { exact: true }).click();
   await page.getByLabel("最多支付分数").fill("2");
   await page.getByLabel("最多支付分数").press("Tab");
   await expectRevision(page, 2);

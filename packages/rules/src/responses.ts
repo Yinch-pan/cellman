@@ -86,6 +86,28 @@ export function autoLeech(s: GameState, events: RuleEvent[]) {
     if (
       c.kind === "leech" &&
       p.leechPolicy.enabled &&
+      p.leechPolicy.rejectPaid
+    ) {
+      const cost = Math.max(
+        0,
+        Math.min(
+          c.amount,
+          p.vp + 1,
+          p.resources.power[0] * 2 + p.resources.power[1],
+        ) - 1,
+      );
+      if (cost === 0) acceptLeech(p, c.amount, events, true);
+      else
+        note(events, p.seat, "leech", `${p.name} 自动拒绝付分蹭魔`, {
+          automatic: true,
+          declined: true,
+          cost,
+        });
+      return false;
+    }
+    if (
+      c.kind === "leech" &&
+      p.leechPolicy.enabled &&
       Math.max(
         0,
         Math.min(

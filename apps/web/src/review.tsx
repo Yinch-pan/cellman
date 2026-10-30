@@ -1,6 +1,6 @@
 import { t as translate } from "./i18n";
-import { translateRuleText } from "./i18n/presentation";
-import React, { useEffect, useState } from "react";
+import { ledgerActionLabel, translateRuleText } from "./i18n/presentation";
+import React, { useEffect, useRef, useState } from "react";
 import {
   replayRecord,
   type ReplayRecord,
@@ -109,6 +109,7 @@ export function ReviewPanel({
   disabled,
   viewedRevision,
   allowUndo = true,
+  onLocate,
 }: {
   state: GameState;
   seat: string;
@@ -124,6 +125,7 @@ export function ReviewPanel({
   disabled: boolean;
   viewedRevision?: number;
   allowUndo?: boolean;
+  onLocate?: (hex: string) => void;
 }) {
   const [record, setRecord] = useState<ReplayRecord | null>(null);
   const [stats, setStats] = useState<ReturnType<typeof gameStatistics> | null>(
@@ -137,6 +139,16 @@ export function ReviewPanel({
     requestId: string;
   } | null>(null);
   const [reason, setReason] = useState("");
+  const undoFormRef = useRef<HTMLElement>(null);
+  const undoReasonRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!target) return;
+    undoFormRef.current?.scrollIntoView({
+      block: "center",
+      behavior: "instant",
+    });
+    undoReasonRef.current?.focus({ preventScroll: true });
+  }, [target]);
   useEffect(() => {
     setRecord(null);
     setStats(null);
@@ -222,6 +234,15 @@ export function ReviewPanel({
         ),
     )
     .map((h) => h.revision);
+  const undoTargets = [...history].reverse().flatMap((h) => {
+    const entry = h.events.find((e) => e.kind === "ledger" && e.seat === seat);
+    return entry && !revoked.includes(h.revision)
+      ? [{ revision: h.revision - 1, title: ledgerActionLabel(entry) }]
+      : [];
+  });
+  const targetTitle = undoTargets.find(
+    (option) => option.revision === target?.revision,
+  )?.title;
   return (
     <section className="review-panel" id="table-records" tabIndex={-1}>
       {viewedRevision !== undefined && record && (
@@ -250,6 +271,7 @@ export function ReviewPanel({
         </div>
       )}
       <LedgerPanel
+        onLocate={onLocate}
         state={state}
         seat={seat}
         history={history}
@@ -267,11 +289,13 @@ export function ReviewPanel({
                   requestId: crypto.randomUUID(),
                 });
                 setReason("");
+                setError("");
               }
         }
       />
       {target && (
         <section
+          ref={undoFormRef}
           className="undo-form"
           aria-label={translate("ui.review.61b464ad94")}
         >
@@ -280,6 +304,35 @@ export function ReviewPanel({
               ? translate("ui.review.39400ac272")
               : translate("ui.review.fb87e5ff16")}
           </h3>
+          <label>
+            {translate("history.undoStart")}
+            <select
+              value={target.revision}
+              disabled={busy || disabled || !allowUndo}
+              onChange={(e) => {
+                setTarget({
+                  revision: Number(e.target.value),
+                  base: state.revision,
+                  requestId: crypto.randomUUID(),
+                });
+                setError("");
+              }}
+            >
+              {undoTargets.map((option) => (
+                <option key={option.revision} value={option.revision}>
+                  {translate("history.undoOption", {
+                    n: option.revision + 1,
+                    title: option.title,
+                  })}
+                </option>
+              ))}
+            </select>
+          </label>
+          {targetTitle && (
+            <p className="undo-target-summary">
+              {translate("history.undoBefore", { title: targetTitle })}
+            </p>
+          )}
           <p>
             {translate("ui.review.6d81dbf37d")}
             {target.revision}
@@ -296,11 +349,17 @@ export function ReviewPanel({
           <label>
             {translate("ui.review.348c17c8f9")}
             <textarea
+              ref={undoReasonRef}
               value={reason}
               maxLength={300}
               onChange={(e) => setReason(e.target.value)}
             />
           </label>
+          {state.revision !== target.base && (
+            <p className="error" role="alert">
+              {translate("ui.review.4397434ffa")}
+            </p>
+          )}
           <button
             disabled={
               busy ||

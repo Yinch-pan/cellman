@@ -1,5 +1,5 @@
 [Unit]
-Description=Check cellman short-lived certificate every 12 hours
+Description=Check cellman TLS certificates every 12 hours
 
 [Timer]
 OnCalendar=*-*-* 00,12:00:00

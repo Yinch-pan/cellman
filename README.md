@@ -2,6 +2,8 @@
 
 开发中的异步联机桌游网站，优先实现《大创造时代》，之后考虑《神秘大地》及扩展。
 
+在线访问：[https://cellman.top](https://cellman.top)。
+
 现已支持 3–5 人随机选配、同屏轮流游玩和账号房间；12 个种族、17 个宫殿、18 个创新的数据与行动入口，六轮流程、待响应、自动保存和分项计分。参考 Snellman 的命令回放、资源账本与待响应设计，在现有 TypeScript 规则引擎中实现，未复制其 Perl 服务端。
 
 当前仍是测试版：双人小地图尚未开放，复杂能力组合及完整来源案例仍需验证。
@@ -22,6 +24,8 @@
 - [开发计划](docs/superpowers/plans/2026-10-13-boardgame-implementation-plan.md)
 - [官方规则来源](docs/rules/sources.json)
 - [规则覆盖目录](docs/rules/coverage.json)
+- [现有能力盘点与 DIY 首版范围建议](docs/rules/diy-ability-inventory.md)
+- [公测上线检查与需要维护者完成的事项](docs/operations/launch-checklist-20261026.md)
 
 React / Vite / TypeScript，Fastify API，PostgreSQL 17，独立纯函数规则模块。浏览器不能直接更改权威资源；预览与提交共用规则。数据库事务结合 revision 与 commandId 防止并发覆盖和重复扣费。
 

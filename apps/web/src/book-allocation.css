@@ -1,0 +1,51 @@
+.book-allocation-colors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.book-allocation-color {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #c4c3b4;
+  border-radius: 7px;
+  background: #fffdf5;
+  border-top: 4px solid #c7a538;
+}
+.book-allocation-color.book1 {
+  border-top-color: #4189ad;
+}
+.book-allocation-color.book2 {
+  border-top-color: #8a6748;
+}
+.book-allocation-color.book3 {
+  border-top-color: #72a399;
+}
+.book-allocation-color strong {
+  font-size: 12px;
+}
+.book-allocation-counter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+.book-allocation-counter button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px;
+  font-size: 18px;
+}
+.book-allocation-counter output {
+  min-width: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+.book-allocation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.book-allocation-actions button {
+  min-height: 44px;
+}

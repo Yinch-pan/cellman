@@ -19,7 +19,7 @@ it("totals income for the specified player, includes technologies and hides sour
   const text = html.replace(/<[^>]*>/g, "");
   expect(text).toContain("金币 +11");
   expect(text).toContain("能量 +7");
-  expect(text).toContain("工具 +1");
+  expect(text).toContain("工具 +2");
   expect(text).toContain("学者 +3");
   expect(text).toContain("书籍 +0");
   expect(text).toContain("航海等级 2");

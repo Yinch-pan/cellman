@@ -13,6 +13,9 @@ import {
 } from "./room-settings";
 import { defaultGameSettings } from "../../../packages/contracts/src/room";
 import { AccountEmail, EmailRecovery, EmailLink } from "./email";
+import { SupportPage } from "./support";
+import { GameAccess, PublicGames } from "./spectators";
+import { GameHistoryPage } from "./game-history";
 const route = () => location.hash.slice(1) || "/";
 export function go(path: string) {
   location.hash = path;
@@ -68,6 +71,7 @@ export function App() {
           <LanguageSelector />
           <a href="#/">{translate("ui.app.20ae1929b5")}</a>
           <a href="#/games">{translate("ui.app.1ca69d5606")}</a>
+          <a href="#/history">{translate("gameHistory.title")}</a>
           <a href="#/stats">{translate("ui.app.497ad856f6")}</a>
           <a href="#/tutorial">{translate("ui.app.61a2cda8c7")}</a>
           {user && <a href="#/account">{translate("ui.app.5ce662ac8d")}</a>}
@@ -103,21 +107,31 @@ export function App() {
         <EmailRecovery />
       ) : path === "/tutorial" ? (
         <Tutorial />
+      ) : path === "/support" ? (
+        <SupportPage />
       ) : path === "/demo" ? (
         <GamePage key="local-demo" demo />
-      ) : !user ? (
-        <Auth
-          onLogin={(d) => {
-            setUser(d.user);
-            setCsrf(d.csrf);
-          }}
+      ) : path.startsWith("/game/") ? (
+        <GameAccess
+          key={`${path.split("/")[2]}:${user?.id ?? "guest"}`}
+          id={path.split("/")[2]}
         />
+      ) : !user ? (
+        <>
+          <Auth
+            onLogin={(d) => {
+              setUser(d.user);
+              setCsrf(d.csrf);
+            }}
+          />
+          <PublicGames />
+        </>
+      ) : path === "/history" ? (
+        <GameHistoryPage />
       ) : path === "/account" ? (
         <AccountEmail />
       ) : path === "/stats" ? (
         <StatisticsPage />
-      ) : path.startsWith("/game/") ? (
-        <GamePage key={path.split("/")[2]} id={path.split("/")[2]} />
       ) : path.startsWith("/room/") ? (
         <Room
           key={path.split("/")[2].split("?")[0]}
@@ -130,7 +144,10 @@ export function App() {
       ) : (
         <Lobby user={user} onlyGames={path === "/games"} />
       )}
-      <footer>{translate("ui.app.888f567269")}</footer>
+      <footer>
+        {translate("ui.app.888f567269")} ·{" "}
+        <a href="#/support">{translate("ui.app.bb654a440e")}</a>
+      </footer>
     </>
   );
 }
@@ -412,6 +429,7 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
         </span>
       </div>
       {error && <p className="error">{error}</p>}
+      {!onlyGames && <PublicGames />}
       {!onlyGames && (
         <section className="game-feature">
           <div>
@@ -441,9 +459,10 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
           </div>
         </section>
       )}
-      <section>
+      <section aria-label={translate("ui.app.1ca69d5606")}>
         <div className="section-heading">
           <h2>{translate("ui.app.1ca69d5606")}</h2>
+          <a href="#/history">{translate("gameHistory.link")}</a>
           <span>
             {games.length} {translate("ui.app.cd6f79fbed")}
           </span>
@@ -453,6 +472,7 @@ function Lobby({ user, onlyGames }: { user: any; onlyGames: boolean }) {
             {games.map((g) => (
               <button
                 className="game-card"
+                data-game-id={g.id}
                 key={g.id}
                 onClick={() => go("/game/" + g.id)}
               >
